@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundations - AI Design Hub</title>
+    <link rel="stylesheet" href="./styles/ai-hub.css" />
+    <style>
+        /* Principle Cards */
+        .principle-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .principle-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(40, 30, 20,0.06);
+            transition: box-shadow 200ms ease;
+        }
+        .principle-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .principle-card__icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(192, 66, 159, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            color: #C0429F;
+            font-size: 16px;
+        }
+        .principle-card__title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0a0a0a;
+            margin: 0 0 6px;
+            font-family: Lato, sans-serif;
+        }
+        .principle-card__desc {
+            font-size: 12px;
+            color: #5f5f5f;
+            line-height: 1.5;
+            font-family: Lato, sans-serif;
+        }
+
+        /* Maturity Stepper */
+        .maturity-stepper {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            margin: 24px 0;
+        }
+        .maturity-step {
+            flex: 1;
+            position: relative;
+            padding: 20px 24px;
+            background: white;
+            border: 1px solid rgba(40, 30, 20,0.06);
+            font-family: Lato, sans-serif;
+        }
+        .maturity-step:first-child { border-radius: 12px 0 0 12px; }
+        .maturity-step:last-child { border-radius: 0 12px 12px 0; }
+        .maturity-step::after {
+            content: '';
+            position: absolute;
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            border-left: 12px solid white;
+            z-index: 2;
+        }
+        .maturity-step:last-child::after { display: none; }
+        .maturity-step__level {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #C0429F;
+            margin-bottom: 4px;
+        }
+        .maturity-step__name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0a0a0a;
+            margin-bottom: 6px;
+        }
+        .maturity-step__desc {
+            font-size: 12px;
+            color: #5f5f5f;
+            line-height: 1.5;
+        }
+        .maturity-step__bar {
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(192, 66, 159, 0.12);
+            margin-top: 12px;
+            overflow: hidden;
+        }
+        .maturity-step__bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: #C0429F;
+        }
+
+        /* Surface Cards */
+        .surface-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid rgba(40, 30, 20,0.06);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .surface-card__header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(40, 30, 20,0.04);
+        }
+        .surface-card__icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: rgba(192, 66, 159, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .surface-card__title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0a0a0a;
+            font-family: Lato, sans-serif;
+        }
+        .surface-card__trigger {
+            margin-left: auto;
+            font-size: 11px;
+            font-weight: 600;
+            color: #C0429F;
+            background: rgba(192, 66, 159, 0.08);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-family: Lato, sans-serif;
+        }
+        .surface-card__body {
+            display: flex;
+            gap: 24px;
+            padding: 20px 24px;
+        }
+        .surface-card__preview {
+            flex: 1;
+            background: #fafbfc;
+            border-radius: 8px;
+            border: 1px solid rgba(40, 30, 20,0.04);
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #9E9E9E;
+            font-family: Lato, sans-serif;
+        }
+        .surface-card__details {
+            flex: 1;
+            font-family: Lato, sans-serif;
+        }
+        .surface-card__details h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #0a0a0a;
+            margin: 0 0 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .surface-card__details ul {
+            margin: 0 0 16px;
+            padding-left: 16px;
+            font-size: 13px;
+            color: #4a4a4a;
+            line-height: 1.6;
+        }
+
+        /* ===== Surface Decision Tree ===== */
+        :root {
+            --qtree-row-h: 108px;
+            --qtree-gap: 32px;
+            --qtree-col1: 420px;
+            --qtree-gutter: 72px;
+            --qtree-col3: 380px;
+        }
+        .qtree {
+            --row: var(--qtree-row-h);
+            --gap: var(--qtree-gap);
+            --col1: var(--qtree-col1);
+            --gutter: var(--qtree-gutter);
+            display: grid;
+            grid-template-columns: var(--col1) var(--gutter) var(--qtree-col3);
+            grid-template-rows: repeat(4, var(--row));
+            row-gap: var(--gap);
+            column-gap: 0;
+            margin: 24px 0 4px;
+            font-family: Lato, sans-serif;
+        }
+
+        /* Question nodes (left column) */
+        .qtree__question {
+            grid-column: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            border: 1px solid #E7E5E4;
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+        }
+        .qtree__question--1 { grid-row: 1; }
+        .qtree__question--2 { grid-row: 2; }
+        .qtree__question--3 { grid-row: 3; }
+
+        /* Labeled continuation line to the next question below (Q1->Q2 "Yes", Q2->Q3 "No") */
+        .qtree__continue {
+            position: absolute;
+            left: 28px;
+            top: 100%;
+            height: var(--gap);
+        }
+        .qtree__continue::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2px;
+            height: calc(100% - 15px);
+            background: #D6D3D1;
+        }
+        .qtree__continue::after {
+            content: '';
+            position: absolute;
+            left: -3px;
+            top: calc(100% - 15px);
+            width: 8px;
+            height: 7px;
+            background: #A8A29E;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+        }
+        .qtree__continue-label {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            font-weight: 600;
+            color: #4B5563;
+            white-space: nowrap;
+        }
+        .qtree__q-badge {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #C0429F;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qtree__question-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            line-height: 1.4;
+        }
+
+        /* Terminal / surface result nodes (right column) */
+        .qtree__result {
+            grid-column: 3;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            border: 1px solid #E7E5E4;
+            border-left: 4px solid #C0429F;
+            border-radius: 12px;
+            padding: 14px 18px;
+            box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+        }
+        .qtree__result--1 { grid-row: 1; }
+        .qtree__result--2 { grid-row: 2; }
+        .qtree__result--3 { grid-row: 3; }
+        .qtree__result--4 { grid-row: 4; }
+        .qtree__result-icon {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: rgba(192,66,159,0.07);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qtree__result-body { min-width: 0; }
+        .qtree__result-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 3px;
+        }
+        .qtree__result-desc {
+            font-size: 13px;
+            font-weight: 400;
+            color: #4B5563;
+            line-height: 1.6;
+        }
+
+        /* Connectors (middle gutter column) */
+        .qtree__connector {
+            grid-column: 2;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .qtree__connector--1 { grid-row: 1; }
+        .qtree__connector--2 { grid-row: 2; }
+        .qtree__connector--3 { grid-row: 3; }
+        .qtree__connector-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4B5563;
+            margin-bottom: 6px;
+            background: #fff;
+            padding: 0 2px;
+        }
+        .qtree__connector-line {
+            align-self: flex-start;
+            position: relative;
+            width: calc(100% - 15px);
+            height: 2px;
+            background: #E7E5E4;
+        }
+        .qtree__connector-line::after {
+            content: '';
+            position: absolute;
+            right: -7px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 7px;
+            height: 8px;
+            background: #A8A29E;
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+
+        /* Q3 "No" branch: exits bottom-center of Q3, drops down, turns right
+           into the left edge of Inline Widget (row 4). Scoped to Q3 itself so
+           the horizontal midpoint always matches Q3's own center, regardless
+           of column width. */
+        .qtree__q3-no-vline {
+            position: absolute;
+            left: 50%;
+            top: 100%;
+            width: 2px;
+            height: calc(var(--gap) + var(--row) / 2);
+            background: #D6D3D1;
+        }
+        .qtree__q3-no-hline {
+            position: absolute;
+            left: 50%;
+            top: calc(100% + var(--gap) + var(--row) / 2);
+            width: calc(var(--col1) / 2 + var(--gutter) - 15px);
+            height: 2px;
+            background: #D6D3D1;
+        }
+        .qtree__q3-no-hline::after {
+            content: '';
+            position: absolute;
+            right: -7px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 7px;
+            height: 8px;
+            background: #A8A29E;
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+        .qtree__q3-no-label {
+            position: absolute;
+            left: calc(50% + 12px);
+            top: calc(100% + var(--gap) + var(--row) / 2 - 20px);
+            font-size: 12px;
+            font-weight: 600;
+            color: #4B5563;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 760px) {
+            .qtree {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .qtree__question, .qtree__result { width: 100%; }
+            .qtree__connector { display: none; }
+        }
+
+        /* Breathing glow */
+        @keyframes glow-breath-sm {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); filter: drop-shadow(0 0 4px rgba(192,66,159,0.25)); }
+        }
+        .glow-breath-sm { animation: glow-breath-sm 3s ease-in-out infinite; }
+    </style>
+</head>
+<body class="ai-hub">
+    <nav class="ai-hub__nav">
+        <div class="ai-hub__nav-inner">
+        <div class="ai-hub__nav-links">
+            <a href="index.html">Hub</a>
+            <a href="ai-foundations.html" class="active">Foundations</a>
+            <a href="ai-visual-language.html">Visual Language</a>
+            <a href="ai-components.html">Components</a>
+            <a href="ai-trust.html">Trust &amp; Governance</a>
+        </div>
+        </div>
+    </nav>
+    <main class="ai-hub__content">
+        <div class="ai-hub__jump-links">
+            <a href="#principles">Principles</a>
+            <a href="#two-modes">Two Modes</a>
+            <a href="#composition-density">Composition Density</a>
+            <a href="#maturity">Maturity</a>
+            <a href="#decision">Decision Tree</a>
+            <a href="#surfaces">Surface Specs</a>
+            <a href="#surface-playground-link">Surface Playground</a>
+        </div>
+        <div class="ai-hub__header">
+            <h1 class="ai-hub__title">Foundations</h1>
+            <p class="ai-hub__subtitle">The strategic guide for AI at Rosewood. From design principles to surface selection, this page tells the story of how Glow comes to life.</p>
+        </div>
+
+        <!-- ===== 1. THE VISION: Design Principles ===== -->
+        <section id="principles" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Core Design Principles</h2>
+            <p class="ai-hub__section-desc">Six principles that govern every AI interaction in the Rosewood platform.</p>
+
+            <div class="principle-cards">
+                <div class="principle-card">
+                    <div class="principle-card__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+                    <div class="principle-card__title">Transparency</div>
+                    <div class="principle-card__desc">Always indicate when content is AI-generated. Users must know when they're interacting with Glow.</div>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-card__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <div class="principle-card__title">Control</div>
+                    <div class="principle-card__desc">Users can always override, edit, or dismiss AI suggestions. The human has the final word.</div>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-card__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5" stroke-linecap="round"><path d="M4 12h16M4 6h16M4 18h10"/></svg></div>
+                    <div class="principle-card__title">Progressive Disclosure</div>
+                    <div class="principle-card__desc">Show AI complexity gradually, starting with simple outputs and offering depth on demand.</div>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-card__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
+                    <div class="principle-card__title">Contextual Relevance</div>
+                    <div class="principle-card__desc">AI features appear where they add value, not everywhere. Smart placement over saturation.</div>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-card__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5" stroke-linecap="round"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg></div>
+                    <div class="principle-card__title">Graceful Degradation</div>
+                    <div class="principle-card__desc">When AI fails, the experience remains functional. Retry patterns, fallbacks, preserved context.</div>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-card__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="#C0429F"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="#C0429F"/></svg></div>
+                    <div class="principle-card__title">Consistent Identity</div>
+                    <div class="principle-card__desc">Glow has a recognizable visual presence. Ruby Berry accent, sparkle icon, and Glow attribution.</div>
+                </div>
+            </div>
+
+            <h3 style="font-size:16px; font-weight:700; margin:28px 0 8px;">9 Composition Principles</h3>
+            <p class="ai-hub__section-desc">Guardrails for how many AI elements can coexist on a single screen. Apply these when designing any surface that includes AI components.</p>
+            <table class="ai-hub__table">
+                <thead><tr><th style="width:200px;">Principle</th><th>Guideline</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>1. Maximum AI Density</strong></td><td>No screen should surface more than 5 AI-related signals simultaneously. If adding a 6th, remove one or collapse two into progressive disclosure.</td></tr>
+                    <tr><td><strong>2. Progressive Density</strong></td><td>Every AI component must be designed in three densities: full panel (strategic), collapsed headline (workflow), and minimal badge (operational).</td></tr>
+                    <tr><td><strong>3. Transparency on Demand</strong></td><td>Headline visible by default, detail one tap away, full reasoning two taps away. Never front-load full explanations.</td></tr>
+                    <tr><td><strong>4. Proactivity Budget</strong></td><td>Limit AI-initiated interruptions by context: low on operational (1&ndash;2 per session), moderate on workflow (3&ndash;5), uncapped but prioritized on strategic.</td></tr>
+                    <tr><td><strong>5. The Subtraction Test</strong></td><td>For every AI pattern you add, identify one legacy element to remove, simplify, or collapse. AI should reduce complexity, not increase it.</td></tr>
+                    <tr><td><strong>6. Error Invisibility Gradient</strong></td><td>Strategic: full error + recovery options. Workflow: error + one fix. Operational: silent fallback to manual with no modal.</td></tr>
+                    <tr><td><strong>7. Feedback as Exhaust</strong></td><td>Feedback should be a byproduct of normal workflow (implicit correction logging), not a separate action. Explicit feedback only at natural pauses.</td></tr>
+                    <tr><td><strong>8. AI-Second, Not AI-First</strong></td><td>AI surfaces should live where work already happens &mdash; inline, contextual, embedded &mdash; not in separate dedicated AI screens.</td></tr>
+                    <tr><td><strong>9. Appropriate Friction</strong></td><td>Add deliberate pause points at irreversible moments: save, share, send, publish. Speed of creation must not bypass judgment at consequence.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ===== 1b. TWO MODES OF AI DESIGN ===== -->
+        <section id="two-modes" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Two Modes of AI Design</h2>
+            <p class="ai-hub__section-desc">Determine the mode before choosing components. This is the single biggest upstream decision. <strong>AI-Enhanced</strong> screens are conventional interfaces where AI adds a layer. <strong>AI-Native</strong> screens are experiences built entirely around AI.</p>
+
+            <table class="ai-hub__table">
+                <thead><tr><th style="width:160px;">Dimension</th><th>AI-Enhanced</th><th>AI-Native</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>AI Identity</strong></td><td>Badges, borders, attribution &mdash; AI must stand out from conventional UI.</td><td>Minimal identity markers &mdash; the whole experience is AI, so labeling everything is noise.</td></tr>
+                    <tr><td><strong>When to Mark AI</strong></td><td>On every AI-generated or AI-modified element.</td><td>Only at judgment gates: before sending, publishing, confirming, paying.</td></tr>
+                    <tr><td><strong>AI Accent Color</strong></td><td>Used on all AI elements to distinguish them from the product&rsquo;s primary palette.</td><td>Reserved for &ldquo;your judgment is needed here&rdquo; moments &mdash; not for general AI presence.</td></tr>
+                    <tr><td><strong>Wayfinding</strong></td><td>Nudges, spotlights, and capability framing help users find AI features.</td><td>Not needed &mdash; the user is already in an AI experience. Focus on task clarity instead.</td></tr>
+                    <tr><td><strong>Error Handling</strong></td><td>AI errors are visually distinct from system errors (separate color, icon).</td><td>Errors are just errors &mdash; no need to distinguish AI failures from other failures.</td></tr>
+                    <tr><td><strong>Feedback Capture</strong></td><td>Explicit (thumbs up/down visible on AI outputs).</td><td>Implicit by default (correction logging), explicit only at natural pause points.</td></tr>
+                </tbody>
+            </table>
+
+            <h3 style="font-size:16px; font-weight:700; margin:24px 0 8px;">The Governing Principle</h3>
+            <div style="background: linear-gradient(195deg, #EFF0FD 0%, #FDEFF9 48%, #FFEEE3 100%); border-left: 3px solid #C0429F; padding: 16px 20px; border-radius: 0 8px 8px 0; font-family: Lato, sans-serif; font-size: 14px; line-height: 22px; color: #0A0A0A;">
+                Label AI where the user&rsquo;s judgment is the last gate before a consequence. Everywhere else, let AI be infrastructure.
+            </div>
+        </section>
+
+        <!-- ===== 1c. COMPOSITION DENSITY ===== -->
+        <section id="composition-density" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Composition Density</h2>
+            <p class="ai-hub__section-desc">AI component density flexes by screen level, not by user role. Strategic screens get the richest AI treatment; operational screens stay out of the way.</p>
+
+            <table class="ai-hub__table">
+                <thead><tr><th>Screen Level</th><th>Examples</th><th>AI Density</th><th>Behavior</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Strategic</strong></td><td>Reports, dashboards, analytics</td><td>High</td><td>Full reasoning, confidence indicators, source panels.</td></tr>
+                    <tr><td><strong>Workflow</strong></td><td>Appointments, profiles, campaigns</td><td>Moderate</td><td>Collapsed summaries, contextual nudges, detail on tap.</td></tr>
+                    <tr><td><strong>Operational</strong></td><td>Checkout, booking, POS</td><td>Minimal</td><td>Silent autofill, near-invisible badges, quiet fallback to manual.</td></tr>
+                </tbody>
+            </table>
+
+            <h3 style="font-size:16px; font-weight:700; margin:24px 0 12px;">How Density Maps to Components</h3>
+            <p class="ai-hub__section-desc">Every AI component should be designed in three densities so it can adapt to the screen level it appears on.</p>
+            <table class="ai-hub__table">
+                <thead><tr><th style="width:140px;">Density</th><th>Screen Level</th><th>What Shows</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Full Panel</strong></td><td>Strategic</td><td>Complete explanation, confidence bar, sources, feedback controls.</td></tr>
+                    <tr><td><strong>Collapsed Headline</strong></td><td>Workflow</td><td>One-line summary + expand affordance. Detail on tap.</td></tr>
+                    <tr><td><strong>Minimal Badge</strong></td><td>Operational</td><td>Icon or label only. No interruption, silent fallback to manual.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ===== 2. THE SCALE: Maturity Model ===== -->
+        <section id="maturity" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">AI Maturity Model</h2>
+            <p class="ai-hub__section-desc">Rosewood's AI features follow a progressive maturity model. Each level builds on the previous, expanding scope and autonomy.</p>
+
+            <div class="maturity-stepper">
+                <div class="maturity-step">
+                    <div class="maturity-step__level">Level 1</div>
+                    <div class="maturity-step__name">Assistive</div>
+                    <div class="maturity-step__desc">AI provides suggestions that require explicit user approval before any action.</div>
+                    <div class="maturity-step__bar"><div class="maturity-step__bar-fill" style="width:33%;"></div></div>
+                </div>
+                <div class="maturity-step">
+                    <div class="maturity-step__level">Level 2</div>
+                    <div class="maturity-step__name">Collaborative</div>
+                    <div class="maturity-step__desc">AI and user work together. Glow drafts, proposes, and handles routine tasks with oversight.</div>
+                    <div class="maturity-step__bar"><div class="maturity-step__bar-fill" style="width:66%;"></div></div>
+                </div>
+                <div class="maturity-step">
+                    <div class="maturity-step__level">Level 3</div>
+                    <div class="maturity-step__name">Autonomous</div>
+                    <div class="maturity-step__desc">AI executes approved tasks independently within guardrails, reporting outcomes to the user.</div>
+                    <div class="maturity-step__bar"><div class="maturity-step__bar-fill" style="width:100%;"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 4. THE DECISION: Decision Tree ===== -->
+        <section id="decision" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Which Surface Should I Use?</h2>
+            <p class="ai-hub__section-desc">Follow this decision tree to select the right AI surface for your use case.</p>
+
+            <div class="qtree">
+
+                <div class="qtree__question qtree__question--1">
+                    <span class="qtree__q-badge">1</span>
+                    <span class="qtree__question-text">Does the task require the user's current page context?</span>
+                    <div class="qtree__continue">
+                        <span class="qtree__continue-label">Yes</span>
+                    </div>
+                </div>
+                <div class="qtree__connector qtree__connector--1">
+                    <span class="qtree__connector-label">No</span>
+                    <div class="qtree__connector-line"></div>
+                </div>
+                <div class="qtree__result qtree__result--1">
+                    <div class="qtree__result-icon"><img src="images/glow-head-ruby.svg" width="22" height="22" alt=""></div>
+                    <div class="qtree__result-body">
+                        <div class="qtree__result-title">Assistant Overlay</div>
+                        <div class="qtree__result-desc">Global, no page context needed — quick command or lookup.</div>
+                    </div>
+                </div>
+
+                <div class="qtree__question qtree__question--2">
+                    <span class="qtree__q-badge">2</span>
+                    <span class="qtree__question-text">Is the output a persistent, high-density artifact (e.g., full strategy, complex report)?</span>
+                    <div class="qtree__continue">
+                        <span class="qtree__continue-label">No</span>
+                    </div>
+                </div>
+                <div class="qtree__connector qtree__connector--2">
+                    <span class="qtree__connector-label">Yes</span>
+                    <div class="qtree__connector-line"></div>
+                </div>
+                <div class="qtree__result qtree__result--2">
+                    <div class="qtree__result-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3"/></svg></div>
+                    <div class="qtree__result-body">
+                        <div class="qtree__result-title">Full-Page Canvas</div>
+                        <div class="qtree__result-desc">Deep creation/analysis — artifact generation, document review.</div>
+                    </div>
+                </div>
+
+                <div class="qtree__question qtree__question--3">
+                    <span class="qtree__q-badge">3</span>
+                    <span class="qtree__question-text">Does the user need back-and-forth dialogue across multiple steps?</span>
+                    <div class="qtree__q3-no-vline"></div>
+                    <div class="qtree__q3-no-hline"></div>
+                    <span class="qtree__q3-no-label">No</span>
+                </div>
+                <div class="qtree__connector qtree__connector--3">
+                    <span class="qtree__connector-label">Yes</span>
+                    <div class="qtree__connector-line"></div>
+                </div>
+                <div class="qtree__result qtree__result--3">
+                    <div class="qtree__result-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg></div>
+                    <div class="qtree__result-body">
+                        <div class="qtree__result-title">Copilot Sidebar</div>
+                        <div class="qtree__result-desc">Page-contextual — multi-step assistance alongside a workflow.</div>
+                    </div>
+                </div>
+
+                <div class="qtree__result qtree__result--4">
+                    <div class="qtree__result-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="#C0429F"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="#C0429F"/></svg></div>
+                    <div class="qtree__result-body">
+                        <div class="qtree__result-title">Inline Widget</div>
+                        <div class="qtree__result-desc">In-place micro-actions — field-level optimization, zero conversational chrome.</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===== 3. THE EXPERIENCE: AI Surfaces — Specs ===== -->
+        <section id="surfaces" class="ai-hub__section" style="background:transparent; border:none; padding:0;">
+            <h2 class="ai-hub__section-title">Surface Specs</h2>
+            <p class="ai-hub__section-desc">Four distinct surfaces define how Glow appears across the Rosewood platform. Each has a specific trigger, transition, and use case.</p>
+
+            <!-- Assistant Overlay -->
+            <div class="surface-card">
+                <div class="surface-card__header">
+                    <div class="surface-card__icon">
+                        <img class="glow-breath-sm" src="images/glow-head-ruby.svg" width="32" height="32" alt="Glow">
+                    </div>
+                    <div class="surface-card__title">Assistant Overlay</div>
+                    <div class="surface-card__trigger">Header Glow mark</div>
+                </div>
+                <div class="surface-card__body">
+                    <div class="surface-card__preview">Fade-in center modal + backdrop blur</div>
+                    <div class="surface-card__details">
+                        <h4>Use When</h4>
+                        <ul>
+                            <li>Global tasks: "Find my 10 AM appointment"</li>
+                            <li>Quick queries that don't need page context</li>
+                            <li>Command palette-style interactions</li>
+                        </ul>
+                        <h4>Don't Use When</h4>
+                        <ul>
+                            <li>Task requires seeing dashboard data simultaneously</li>
+                            <li>Multi-step workflows with form inputs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copilot Sidebar -->
+            <div class="surface-card">
+                <div class="surface-card__header">
+                    <div class="surface-card__icon">
+                        <svg class="glow-breath-sm" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                    </div>
+                    <div class="surface-card__title">Copilot Sidebar</div>
+                    <div class="surface-card__trigger">Floating FAB</div>
+                </div>
+                <div class="surface-card__body">
+                    <div class="surface-card__preview">Slide-in from right, 16px floating gutter</div>
+                    <div class="surface-card__details">
+                        <h4>Use When</h4>
+                        <ul>
+                            <li>Working alongside a specific workflow (campaigns, scheduling)</li>
+                            <li>AI needs page context to give relevant suggestions</li>
+                            <li>Persistent conversation during multi-step tasks</li>
+                        </ul>
+                        <h4>Don't Use When</h4>
+                        <ul>
+                            <li>Quick one-off questions (use Overlay instead)</li>
+                            <li>Content creation that needs a wide canvas</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Canvas -->
+            <div class="surface-card">
+                <div class="surface-card__header">
+                    <div class="surface-card__icon">
+                        <svg class="glow-breath-sm" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3"/></svg>
+                    </div>
+                    <div class="surface-card__title">Full-Page Canvas</div>
+                    <div class="surface-card__trigger">Inline "Optimize" Button</div>
+                </div>
+                <div class="surface-card__body">
+                    <div class="surface-card__preview">Full-page takeover &rarr; split-view (thread + artifacts)</div>
+                    <div class="surface-card__details">
+                        <h4>Use When</h4>
+                        <ul>
+                            <li>High-density creation: strategies, reports, content briefs</li>
+                            <li>AI produces multiple artifacts that need review</li>
+                            <li>Analytics and business intelligence queries</li>
+                        </ul>
+                        <h4>Don't Use When</h4>
+                        <ul>
+                            <li>Simple yes/no decisions</li>
+                            <li>Tasks that require real-time dashboard visibility</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inline Widget -->
+            <div class="surface-card">
+                <div class="surface-card__header">
+                    <div class="surface-card__icon">
+                        <svg class="glow-breath-sm" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="#C0429F"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="#C0429F"/></svg>
+                    </div>
+                    <div class="surface-card__title">Inline Widget</div>
+                    <div class="surface-card__trigger">Contextual Sparkle</div>
+                </div>
+                <div class="surface-card__body">
+                    <div class="surface-card__preview">Inline expansion or popover (no page shift)</div>
+                    <div class="surface-card__details">
+                        <h4>Use When</h4>
+                        <ul>
+                            <li>Contextual AI within a form field or card</li>
+                            <li>Quick suggestions: "Optimize this subject line"</li>
+                            <li>AI-enhanced inputs that don't need a full conversation</li>
+                        </ul>
+                        <h4>Don't Use When</h4>
+                        <ul>
+                            <li>Complex multi-turn conversations</li>
+                            <li>Tasks that generate multiple deliverables</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="surface-playground-link" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Surface Strategy Playground</h2>
+            <p class="ai-hub__section-desc">Try the four AI surfaces — Assistant, Copilot, Canvas, and Inline Widget — in the live <a href="index.html#surface-playground">playground on the Hub page</a>.</p>
+        </section>
+    </main>
+
+    <script>
+    // Continuous scroll + sticky anchor nav with scroll-spy
+    (function() {
+        var links = document.querySelectorAll('.ai-hub__jump-links a[href^="#"]');
+        var sections = [];
+        links.forEach(function(a) {
+            var id = a.getAttribute('href').slice(1);
+            var el = document.getElementById(id);
+            if (el) sections.push(el);
+        });
+        if (!sections.length) return;
+
+        function setActive(id) {
+            links.forEach(function(a) {
+                a.classList.toggle('active', a.getAttribute('href').slice(1) === id);
+            });
+        }
+
+        var navEl = document.querySelector('.ai-hub__nav');
+        var jumpEl = document.querySelector('.ai-hub__jump-links');
+        var stickyOffset = (navEl ? navEl.offsetHeight : 0) + (jumpEl ? jumpEl.offsetHeight : 0);
+
+        links.forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                var id = a.getAttribute('href').slice(1);
+                var el = document.getElementById(id);
+                if (!el) return;
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                if (window.history && history.replaceState) history.replaceState(null, '', '#' + id);
+                setActive(id);
+            });
+        });
+
+        var spyLocked = false;
+        var observer = new IntersectionObserver(function(entries) {
+            if (spyLocked) return;
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) setActive(entry.target.id);
+            });
+        }, { rootMargin: '-' + (stickyOffset + 1) + 'px 0px -70% 0px', threshold: 0 });
+        sections.forEach(function(el) { observer.observe(el); });
+
+        // Smooth-scroll clicks can briefly cross multiple sections — ignore the
+        // spy mid-flight so the clicked link stays highlighted until it settles.
+        links.forEach(function(a) {
+            a.addEventListener('click', function() {
+                spyLocked = true;
+                clearTimeout(links._unlockTimer);
+                links._unlockTimer = setTimeout(function() { spyLocked = false; }, 600);
+            });
+        });
+
+        if (window.location.hash) {
+            var initialEl = document.getElementById(window.location.hash.slice(1));
+            if (initialEl) {
+                setActive(window.location.hash.slice(1));
+                requestAnimationFrame(function() {
+                    initialEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+                });
+            } else {
+                setActive(sections[0].id);
+            }
+        } else {
+            setActive(sections[0].id);
+        }
+    })();
+    </script>
+</body>
+</html>

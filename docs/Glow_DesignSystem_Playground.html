@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Design System Playground</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===================================================================
+           AI Design Hub — Base Layout CSS (inlined from ai-hub.css)
+           =================================================================== */
+
+        /* ===== Reset & Base ===== */
+        body.ai-hub {
+            margin: 0;
+            font-family: Lato, sans-serif;
+            background: #fafbfc;
+            color: #0a0a0a;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== Hub Theme Variables ===== */
+        body.ai-hub {
+            --hub-accent: #C0429F;
+            --hub-accent-rgb: 192, 66, 159;
+            --hub-accent-light: rgba(192, 66, 159, 0.06);
+            --hub-gradient-1: #C0429F;
+            --hub-gradient-2: #FA7E3F;
+            --hub-gradient-3: #FFEEE3;
+            --hub-gradient-4: #C55D27;
+        }
+        /* ===== Sticky Horizontal Nav ===== */
+        .ai-hub__nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 0 32px;
+            height: 52px;
+            background: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .ai-hub__logo {
+            font-size: 13px;
+            font-weight: 600;
+            color: #435773;
+            text-decoration: none;
+            white-space: nowrap;
+            padding-right: 16px;
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .ai-hub__logo:hover { color: var(--hub-accent); }
+
+        .ai-hub__theme-toggle {
+            margin-left: auto;
+            display: flex;
+            gap: 4px;
+        }
+        .ai-hub__theme-btn {
+            padding: 5px 12px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 6px;
+            background: white;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: Lato, sans-serif;
+            cursor: pointer;
+            color: #4a4a4a;
+            transition: all 150ms ease;
+        }
+        .ai-hub__theme-btn:hover { border-color: var(--hub-accent); color: var(--hub-accent); }
+        .ai-hub__theme-btn--active {
+            background: var(--hub-accent);
+            color: white;
+            border-color: var(--hub-accent);
+        }
+
+        /* ===== Main Content ===== */
+        .ai-hub__content {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 24px 32px 64px;
+        }
+
+        /* ===== Jump Links Bar ===== */
+        .ai-hub__jump-links {
+            position: sticky;
+            top: 52px;
+            z-index: 50;
+            background: #fafbfc;
+            padding: 12px 0;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            font-size: 13px;
+            font-family: Lato, sans-serif;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .ai-hub__jump-links a {
+            color: #5f5f5f;
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            transition: all 150ms ease;
+            font-weight: 500;
+        }
+        .ai-hub__jump-links a:hover {
+            color: var(--hub-accent);
+            background: var(--hub-accent-light);
+        }
+        .ai-hub__jump-links a.active {
+            color: var(--hub-accent);
+            font-weight: 600;
+            border-bottom: 2px solid var(--hub-accent);
+            border-radius: 0;
+            padding-bottom: 6px;
+        }
+        .ai-hub__jump-sep {
+            color: #C7C7C7;
+            font-size: 10px;
+        }
+
+        /* ===== Page Header ===== */
+        .ai-hub__header {
+            margin-bottom: 24px;
+            padding: 8px 0 16px;
+        }
+        .ai-hub__title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0a0a0a;
+            margin: 0 0 8px;
+        }
+        .ai-hub__subtitle {
+            font-size: 15px;
+            color: #5f5f5f;
+            line-height: 1.6;
+            margin: 0;
+            max-width: 680px;
+        }
+
+        /* ===== Section ===== */
+        .ai-hub__section,
+        .section {
+            margin-bottom: 24px;
+            scroll-margin-top: 120px;
+            background: white;
+            border-radius: 12px;
+            padding: 28px 32px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        /* Copilot section needs no white wrapper */
+        #copilot-demo.section {
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+
+        /* ===== Properties Table ===== */
+        .ai-hub__table,
+        .properties-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 16px 0;
+            font-family: Lato, sans-serif;
+        }
+        .ai-hub__table th,
+        .properties-table th {
+            text-align: left;
+            padding: 10px 14px;
+            background: #f5f6fa;
+            font-weight: 600;
+            color: #435773;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .ai-hub__table td,
+        .properties-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            color: #4a4a4a;
+        }
+        .ai-hub__table code,
+        .properties-table code {
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .ai-hub__nav { padding: 0 16px; gap: 8px; }
+            .ai-hub__content { padding: 16px; }
+            .ai-hub__theme-toggle { display: none; }
+        }
+
+        /* ===================================================================
+           Component-level headings and text
+           =================================================================== */
+        .component-header {
+            background: transparent;
+            border: none;
+            padding: 8px 0 16px;
+            margin-bottom: 0;
+        }
+        .heading-1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0a0a0a;
+            margin: 0 0 8px;
+            font-family: Lato, sans-serif;
+        }
+        .heading-2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0a0a0a;
+            margin: 0 0 8px;
+            font-family: Lato, sans-serif;
+        }
+        .heading-3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0a0a0a;
+            margin: 16px 0 8px;
+            font-family: Lato, sans-serif;
+        }
+        .text-body {
+            font-size: 14px;
+            color: #5f5f5f;
+            line-height: 1.6;
+            margin: 0 0 16px;
+            font-family: Lato, sans-serif;
+        }
+
+        /* ===================================================================
+           Prompt Box Component CSS
+           =================================================================== */
+
+        /* ===== Assistant Overlay (Command Center) ===== */
+        .copilot-layout--overlay-mode {
+            background: #1a2332;
+            position: relative;
+            min-height: 520px;
+            flex-direction: column;
+        }
+        .copilot-overlay__backdrop {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .copilot-overlay__backdrop-header {
+            height: 44px;
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            justify-content: space-between;
+        }
+        .copilot-overlay__backdrop-header span {
+            font-size: 12px;
+            font-weight: 600;
+            color: #435773;
+        }
+        .copilot-overlay__backdrop-body {
+            flex: 1;
+            display: flex;
+        }
+        .copilot-overlay__backdrop-nav {
+            width: 48px;
+            background: #1a78c1;
+        }
+        .copilot-overlay__backdrop-content {
+            flex: 1;
+            background: #f0f4f8;
+            padding: 20px;
+        }
+        .copilot-overlay__backdrop-card {
+            background: rgba(255,255,255,0.6);
+            border-radius: 8px;
+            height: 60px;
+            margin-bottom: 12px;
+        }
+        .copilot-overlay__center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.45);
+        }
+        .copilot-overlay__prompt-wrap {
+            width: 560px;
+            max-width: 90%;
+        }
+        .copilot-overlay__prompt-wrap .glow-prompt-box__border-ring {
+            box-shadow: 0 0 30px rgba(192, 66, 159, 0.3), 0 8px 40px rgba(0,0,0,0.2);
+        }
+
+        /* ===== Canvas (Full Page) -- Dynamic States ===== */
+        .copilot-canvas {
+            background: white;
+            flex-direction: column;
+            min-height: 560px;
+        }
+        .copilot-canvas__topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            font-size: 13px;
+            font-weight: 600;
+            color: #435773;
+            font-family: Lato, sans-serif;
+        }
+        .copilot-canvas__topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .copilot-canvas__fresh {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 32px;
+        }
+        .copilot-canvas__watermark {
+            opacity: 0.08;
+            margin-bottom: 24px;
+        }
+        .copilot-canvas__fresh-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0a0a0a;
+            margin: 0 0 6px;
+            font-family: Lato, sans-serif;
+            text-align: center;
+        }
+        .copilot-canvas__fresh-desc {
+            font-size: 14px;
+            color: #5f5f5f;
+            text-align: center;
+            margin: 0 0 24px;
+            max-width: 480px;
+            line-height: 1.5;
+            font-family: Lato, sans-serif;
+        }
+        .copilot-canvas__fresh-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+        .copilot-canvas__fresh-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            border: 1px solid #C0429F;
+            border-radius: 8px;
+            background: white;
+            color: #C0429F;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: Lato, sans-serif;
+            cursor: pointer;
+            transition: background 150ms ease;
+        }
+        .copilot-canvas__fresh-chip:hover { background: rgba(192, 66, 159, 0.06); }
+        .copilot-canvas__fresh-prompt { width: 100%; max-width: 600px; }
+        .copilot-canvas__split {
+            flex: 1;
+            display: none;
+            flex-direction: row;
+        }
+        .copilot-canvas__split--active {
+            display: flex;
+        }
+        .copilot-canvas__thread-pane {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(0,0,0,0.06);
+        }
+        .copilot-canvas__thread-list {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .copilot-canvas__thread-prompt {
+            padding: 12px 20px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+        .copilot-canvas__artifact-pane {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            background: #fafbfc;
+        }
+        .copilot-canvas__artifact-header {
+            padding: 12px 20px;
+            background: #FFEEE3;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: Lato, sans-serif;
+        }
+        .copilot-canvas__artifact-dropdown {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border: 1px solid #C0429F;
+            border-radius: 6px;
+            background: white;
+            color: #C0429F;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: Lato, sans-serif;
+            cursor: pointer;
+        }
+        .copilot-canvas__artifact-dropdown::after {
+            content: '\25BE';
+            font-size: 10px;
+        }
+        .copilot-canvas__artifact-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .copilot-canvas__artifact-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px 20px;
+            border: 1px solid rgba(0,0,0,0.06);
+            margin-bottom: 12px;
+            font-family: Lato, sans-serif;
+        }
+        .copilot-canvas__artifact-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #C0429F;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .copilot-canvas__artifact-text {
+            font-size: 13px;
+            color: #4a4a4a;
+            line-height: 1.6;
+        }
+        .copilot-canvas__recent {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+        .copilot-canvas__recent-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #5f5f5f;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        .copilot-canvas__recent-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #4a4a4a;
+            cursor: pointer;
+            transition: background 150ms ease;
+            font-family: Lato, sans-serif;
+        }
+        .copilot-canvas__recent-item:hover { background: rgba(0,0,0,0.03); }
+        .copilot-canvas__recent-item-sparkle { color: #C0429F; font-size: 12px; }
+        .copilot-canvas__recent-item-time { color: #9E9E9E; font-size: 11px; margin-left: auto; }
+
+        /* ===== Glow Breath animation ===== */
+        @keyframes glow-breath {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 transparent); }
+            50% { transform: scale(1.08); filter: drop-shadow(0 0 6px rgba(192, 66, 159, 0.3)); }
+        }
+        .glow-head-breath { animation: glow-breath 3s ease-in-out infinite; }
+
+        /* ===== Panel Mode ===== */
+        .copilot-layout--panel {
+            background: #f0f4f8;
+        }
+        .copilot-layout--panel .copilot-layout__app { flex: 1; }
+        .copilot-panel {
+            width: 360px;
+            background: white;
+            border-left: 1px solid rgba(0,0,0,0.08);
+            box-shadow: -4px 0 20px rgba(192, 66, 159, 0.06);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .copilot-panel__header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: Lato, sans-serif;
+        }
+        .copilot-panel__thread {
+            flex: 1;
+            padding: 16px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .copilot-panel__prompt {
+            padding: 12px 16px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        /* ===== CSS Houdini for smooth conic rotation ===== */
+        @property --glow-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        /* ===== Theme Variables ===== */
+        [data-theme="ruby"], .glow-prompt-box {
+            --glow-accent: #C0429F;
+            --glow-accent-light: #FBECD6;
+            --glow-accent-rgb: 192, 66, 159;
+            --glow-gradient-1: #C0429F;
+            --glow-gradient-2: #E082C0;
+            --glow-gradient-3: #FBECD6;
+            --glow-gradient-4: #E082C0;
+            --glow-text: #333638;
+        }
+
+        /* ===== Keyframes ===== */
+        @keyframes glow-rainbow-spin {
+            from { --glow-angle: 0deg; }
+            to { --glow-angle: 360deg; }
+        }
+        @keyframes glow-pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; filter: drop-shadow(0 0 4px rgba(var(--glow-accent-rgb), 0.3)); }
+        }
+        @keyframes glow-waveform {
+            0%, 100% { transform: scaleY(0.2); }
+            50% { transform: scaleY(1.0); }
+        }
+        @keyframes glow-fade-in-up {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes glow-shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-4px); }
+            40% { transform: translateX(4px); }
+            60% { transform: translateX(-3px); }
+            80% { transform: translateX(2px); }
+        }
+        @keyframes glow-warmth-shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ===== Sparkle SVG icon ===== */
+        .glow-sparkle-svg {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        /* ===== Prompt Box ===== */
+        .glow-prompt-box {
+            position: relative;
+            width: 100%;
+            font-family: Lato, sans-serif;
+        }
+        .glow-prompt-box__border-ring {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            background: #fff;
+            transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
+            overflow: hidden;
+            position: relative;
+        }
+        .glow-prompt-box__inner {
+            display: flex;
+            flex-direction: column;
+        }
+        .glow-prompt-box__input-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 16px 16px 0 16px;
+        }
+        .glow-prompt-box__sparkle {
+            flex-shrink: 0;
+            margin-top: 2px;
+            animation: glow-pulse-glow 3s ease-in-out infinite;
+            line-height: 1;
+        }
+        .glow-prompt-box__textarea {
+            flex: 1;
+            border: none;
+            outline: none;
+            resize: none;
+            font-family: Lato, sans-serif;
+            font-size: 16px;
+            line-height: 24px;
+            letter-spacing: 0.16px;
+            color: var(--glow-text, #0a0a0a);
+            background: transparent;
+            min-height: 24px;
+            max-height: 320px;
+            overflow-y: hidden;
+            transition: height 200ms ease-out;
+        }
+        .glow-prompt-box__textarea::placeholder {
+            color: #9E9E9E;
+        }
+
+        /* Waveform (listening state) */
+        .glow-prompt-box__waveform {
+            display: none;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 2px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        .glow-prompt-box__waveform span {
+            display: block;
+            width: 3px;
+            height: 100%;
+            border-radius: 1.5px;
+            background: var(--glow-accent);
+            transform-origin: center;
+            animation: glow-waveform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite alternate;
+        }
+        .glow-prompt-box__waveform span:nth-child(1) { animation-delay: 0s; }
+        .glow-prompt-box__waveform span:nth-child(2) { animation-delay: 0.1s; }
+        .glow-prompt-box__waveform span:nth-child(3) { animation-delay: 0.2s; }
+        .glow-prompt-box__waveform span:nth-child(4) { animation-delay: 0.1s; }
+        .glow-prompt-box__waveform span:nth-child(5) { animation-delay: 0.15s; }
+
+        /* Ghost transcript */
+        .glow-prompt-box__ghost-transcript {
+            display: none;
+            font-size: 16px;
+            font-family: Lato, sans-serif;
+            font-weight: 400;
+            color: #9E9E9E;
+            line-height: 24px;
+            letter-spacing: 0.16px;
+            word-wrap: break-word;
+            flex: 1;
+        }
+
+        /* Streaming text area */
+        .glow-prompt-box__stream-area {
+            display: none;
+            font-size: 16px;
+            line-height: 24px;
+            letter-spacing: 0.16px;
+            color: var(--glow-text, #0a0a0a);
+            max-height: 280px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .glow-prompt-box__stream-word {
+            display: inline;
+            animation: glow-fade-in-up 200ms ease-out both;
+        }
+
+        /* Row 2: Plus + action button */
+        .glow-prompt-box__toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px 12px 16px;
+        }
+        .glow-prompt-box__plus-btn {
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #9E9E9E;
+            font-size: 20px;
+            font-weight: 300;
+            line-height: 1;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 200ms ease;
+        }
+        .glow-prompt-box__plus-btn:hover { color: var(--glow-accent); background: rgba(0,0,0,0.04); border-radius: 6px; }
+        .glow-prompt-box__plus-btn svg { width: 18px; height: 18px; }
+
+        .glow-prompt-box__action-btn {
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #9E9E9E;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 200ms ease-out, background 200ms ease;
+        }
+        .glow-prompt-box__action-btn:hover { background: rgba(0,0,0,0.04); border-radius: 6px; }
+        .glow-prompt-box__action-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+        .glow-prompt-box__icon-arrow { display: none; }
+        .glow-prompt-box__icon-stop { display: none; }
+
+        /* Mic button */
+        .glow-prompt-box__mic-btn {
+            display: none;
+            border: none; background: none; cursor: pointer; padding: 0;
+            color: #5F5F5F;
+            width: 24px; height: 24px;
+            align-items: center; justify-content: center;
+            transition: color 200ms ease;
+        }
+        .glow-prompt-box__mic-btn:hover { color: var(--glow-accent); }
+        .glow-prompt-box__mic-btn svg { width: 24px; height: 24px; }
+
+        /* Idle: show mic, hide send arrow */
+        .glow-prompt-box--idle .glow-prompt-box__mic-btn { display: flex; }
+        .glow-prompt-box--idle .glow-prompt-box__icon-arrow { display: none; }
+        .glow-prompt-box--idle .glow-prompt-box__action-btn { display: none; }
+        .glow-prompt-box[data-whisper="false"].glow-prompt-box--idle .glow-prompt-box__action-btn { display: flex; color: #9E9E9E; }
+
+        /* Typing: show arrow, hide mic */
+        .glow-prompt-box--typing .glow-prompt-box__mic-btn { display: none; }
+        .glow-prompt-box--typing .glow-prompt-box__action-btn { display: flex; }
+        .glow-prompt-box--typing .glow-prompt-box__icon-arrow { display: block; }
+
+        /* Whisper disabled */
+        .glow-prompt-box[data-whisper="false"] .glow-prompt-box__mic-btn { display: none !important; }
+        .glow-prompt-box[data-whisper="false"].glow-prompt-box--idle .glow-prompt-box__icon-arrow { display: block; }
+
+        /* 3-tier icon color palette */
+        .glow-prompt-box__plus-btn { color: #9E9E9E; }
+        .glow-prompt-box__plus-btn:hover { color: #5F5F5F; }
+
+        /* New prompt input during generation */
+        .glow-prompt-box__new-prompt {
+            display: none;
+            padding: 6px 16px 0 40px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+        .glow-prompt-box__new-prompt input {
+            width: 100%; border: none; outline: none; background: transparent;
+            font-family: Lato, sans-serif; font-size: 13px; line-height: 20px;
+            color: var(--glow-text, #0a0a0a); letter-spacing: 0.16px;
+        }
+        .glow-prompt-box__new-prompt input::placeholder { color: #9E9E9E; }
+        .glow-prompt-box--generating .glow-prompt-box__new-prompt { display: block; }
+
+        /* ===== STATE: idle ===== */
+        .glow-prompt-box--idle .glow-prompt-box__border-ring {
+            border-color: rgba(0, 0, 0, 0.12);
+        }
+        .glow-prompt-box--idle .glow-prompt-box__action-btn { color: #9E9E9E; }
+
+        /* ===== STATE: typing ===== */
+        .glow-prompt-box--typing .glow-prompt-box__border-ring {
+            border-color: var(--glow-accent);
+        }
+        .glow-prompt-box--typing .glow-prompt-box__action-btn {
+            color: var(--glow-accent);
+        }
+        .glow-prompt-box--typing .glow-prompt-box__sparkle { animation: none; opacity: 1; }
+        .glow-prompt-box--typing .glow-prompt-box__textarea { overflow-y: auto; }
+
+        /* ===== STATE: generating ===== */
+        .glow-prompt-box--generating .glow-prompt-box__border-ring {
+            border-color: transparent;
+            background:
+                linear-gradient(#fff, #fff) padding-box,
+                conic-gradient(
+                    from var(--glow-angle, 0deg),
+                    var(--glow-gradient-1),
+                    var(--glow-gradient-2),
+                    var(--glow-gradient-3),
+                    var(--glow-gradient-4),
+                    var(--glow-gradient-1)
+                ) border-box;
+            border: 2px solid transparent;
+            animation: glow-rainbow-spin 2s linear infinite;
+        }
+        .glow-prompt-box--generating .glow-prompt-box__action-btn { display: flex; color: var(--glow-accent); }
+        .glow-prompt-box--generating .glow-prompt-box__icon-arrow { display: none; }
+        .glow-prompt-box--generating .glow-prompt-box__icon-stop { display: block; }
+        .glow-prompt-box--generating .glow-prompt-box__textarea { display: none; }
+        .glow-prompt-box--generating .glow-prompt-box__stream-area { display: block; }
+        .glow-prompt-box--generating .glow-prompt-box__sparkle { animation: none; opacity: 1; }
+
+        /* ===== STATE: listening ===== */
+        .glow-prompt-box--listening .glow-prompt-box__border-ring {
+            border-color: transparent;
+            background:
+                linear-gradient(#fff, #fff) padding-box,
+                conic-gradient(
+                    from var(--glow-angle, 0deg),
+                    var(--glow-gradient-1),
+                    var(--glow-gradient-2),
+                    var(--glow-gradient-3),
+                    var(--glow-gradient-4),
+                    var(--glow-gradient-1)
+                ) border-box;
+            border: 2px solid transparent;
+            animation: glow-rainbow-spin 2s linear infinite;
+        }
+        .glow-prompt-box--listening .glow-prompt-box__action-btn { display: flex; color: var(--glow-accent); }
+        .glow-prompt-box--listening .glow-prompt-box__icon-arrow { display: none; }
+        .glow-prompt-box--listening .glow-prompt-box__icon-stop { display: block; }
+        .glow-prompt-box--listening .glow-prompt-box__textarea { display: none; }
+        .glow-prompt-box--listening .glow-prompt-box__waveform { display: flex; }
+        .glow-prompt-box--listening .glow-prompt-box__ghost-transcript { display: block; }
+        .glow-prompt-box--listening .glow-prompt-box__sparkle { animation: none; opacity: 1; }
+        .glow-prompt-box__toolbar-right {
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* ===== STATE: activating (Buffer) ===== */
+        .glow-prompt-box--activating .glow-prompt-box__border-ring {
+            border-color: var(--glow-accent);
+            transition: border-color 100ms ease-out;
+        }
+        .glow-prompt-box--activating .glow-prompt-box__action-btn { color: var(--glow-accent); }
+        .glow-prompt-box--activating .glow-prompt-box__icon-arrow { display: none; }
+        .glow-prompt-box--activating .glow-prompt-box__icon-stop { display: block; }
+        .glow-prompt-box--activating .glow-prompt-box__sparkle { animation: none; opacity: 1; }
+
+        /* ===== STATE: validation-error ===== */
+        .glow-prompt-box--validation-error .glow-prompt-box__border-ring {
+            border-color: #C55D27;
+            background: rgba(255, 238, 227, 0.5);
+            animation: glow-shake 300ms ease-in-out;
+        }
+        .glow-prompt-box--validation-error .glow-prompt-box__action-btn { color: #C55D27; }
+
+        /* ===== STATE: system-error ===== */
+        .glow-prompt-box--system-error .glow-prompt-box__border-ring {
+            border-color: rgba(192, 66, 159, 0.4);
+        }
+        .glow-prompt-box--system-error .glow-prompt-box__action-btn { color: var(--glow-accent); }
+        .glow-prompt-box--system-error .glow-prompt-box__icon-arrow { display: none; }
+        .glow-prompt-box--system-error .glow-prompt-box__icon-stop { display: none; }
+        .glow-prompt-box--system-error .glow-prompt-box__icon-retry { display: block; }
+        .glow-prompt-box--system-error .glow-prompt-box__sparkle { animation: none; opacity: 1; }
+
+        /* Retry icon */
+        .glow-prompt-box__icon-retry { display: none; }
+
+        /* Helper text */
+        .glow-prompt-box__helper {
+            display: none;
+            padding: 0 16px 8px 48px;
+            font-size: 12px;
+            font-family: Lato, sans-serif;
+            line-height: 16px;
+        }
+        .glow-prompt-box--validation-error .glow-prompt-box__helper {
+            display: block;
+            color: #C55D27;
+        }
+        .glow-prompt-box--system-error .glow-prompt-box__helper {
+            display: block;
+            color: #5f5f5f;
+        }
+        .glow-prompt-box__helper a {
+            color: var(--glow-accent);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* Mic blocked slash */
+        .glow-prompt-box__mic-btn--blocked { position: relative; }
+        .glow-prompt-box__mic-btn--blocked::after {
+            content: '';
+            position: absolute;
+            top: 3px; left: 3px;
+            width: 18px; height: 18px;
+            border-top: 2px solid #9E9E9E;
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        /* Processing shimmer */
+        #mainPromptBox.glow-prompt-box--generating:not(.glow-prompt-box--system-error) .glow-prompt-box__inner,
+        #mainPromptBox.glow-prompt-box--listening:not(.glow-prompt-box--system-error) .glow-prompt-box__inner {
+            background: white;
+            background-image: linear-gradient(
+                110deg,
+                transparent 30%,
+                rgba(192, 66, 159, 0.04) 50%,
+                transparent 70%
+            );
+            background-size: 200% 100%;
+            animation: glow-warmth-shimmer 2.5s ease infinite;
+        }
+        #mainPromptBox.glow-prompt-box--system-error .glow-prompt-box__inner,
+        .glow-prompt-box--system-error .glow-prompt-box__inner {
+            background: #fff !important;
+            background-image: none !important;
+            animation: none !important;
+        }
+
+        /* ===== LAYOUT: full ===== */
+        .glow-prompt-box--full { max-width: 800px; margin: 0 auto; }
+        .glow-prompt-box--full .glow-prompt-box__border-ring {
+            box-shadow: 0 0 15px rgba(var(--glow-accent-rgb), 0.25);
+        }
+
+        /* ===== LAYOUT: sidebar ===== */
+        .glow-prompt-box--sidebar { max-width: 100%; }
+        .glow-prompt-box--sidebar .glow-prompt-box__border-ring {
+            box-shadow: 0 2px 12px rgba(var(--glow-accent-rgb), 0.08);
+        }
+        .glow-prompt-box--sidebar .glow-prompt-box__input-row { padding: 12px 12px 0 12px; gap: 6px; }
+        .glow-prompt-box--sidebar .glow-prompt-box__textarea { font-size: 14px; line-height: 22px; }
+        .glow-prompt-box--sidebar .glow-prompt-box__sparkle svg { width: 20px; height: 20px; }
+        .glow-prompt-box--sidebar .glow-prompt-box__action-btn svg { width: 20px; height: 20px; }
+        .glow-prompt-box--sidebar .glow-prompt-box__toolbar { padding: 6px 12px 10px 12px; }
+
+        /* ===== LAYOUT: overlay ===== */
+        .glow-prompt-box--overlay { width: clamp(320px, 100%, 400px); margin: 12px; }
+        .glow-prompt-box--overlay .glow-prompt-box__border-ring {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+        .glow-prompt-box--overlay .glow-prompt-box__input-row { padding: 12px 12px 0 12px; gap: 6px; }
+        .glow-prompt-box--overlay .glow-prompt-box__textarea { font-size: 14px; line-height: 22px; }
+        .glow-prompt-box--overlay .glow-prompt-box__sparkle svg { width: 20px; height: 20px; }
+        .glow-prompt-box--overlay .glow-prompt-box__action-btn svg { width: 20px; height: 20px; }
+        .glow-prompt-box--overlay .glow-prompt-box__toolbar { padding: 6px 12px 10px 12px; }
+
+        /* ===== Demo Controls ===== */
+        .demo-controls {
+            display: flex; flex-wrap: wrap; gap: 16px; margin: 1.5rem 0; padding: 16px;
+            background: #f5f6fa; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);
+        }
+        .demo-controls__group { display: flex; flex-direction: column; gap: 6px; }
+        .demo-controls__label {
+            font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.5px; color: #5f5f5f;
+        }
+        .demo-controls__buttons { display: flex; gap: 4px; }
+        .demo-btn {
+            padding: 6px 12px; border: 1px solid rgba(0,0,0,0.12); border-radius: 6px;
+            background: white; font-size: 12px; font-weight: 600; font-family: Lato, sans-serif;
+            cursor: pointer; color: #4a4a4a; transition: all 150ms ease;
+        }
+        .demo-btn:hover { border-color: #1a78c1; color: #1a78c1; }
+        .demo-btn--active { background: #1a78c1; color: white; border-color: #1a78c1; }
+
+        .demo-playground {
+            padding: 32px; background: #fafafa; border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 12px; margin: 1rem 0; min-height: 140px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .demo-playground--sidebar { max-width: 360px; background: white; }
+        .demo-playground--overlay { background: rgba(0,0,0,0.04); }
+
+        /* Thread bubble */
+        .glow-thread-bubble {
+            display: none;
+            max-width: 80%;
+            margin-left: auto;
+            margin-bottom: 12px;
+            padding: 10px 16px;
+            background: var(--glow-accent, #C0429F);
+            color: white;
+            border-radius: 12px 12px 4px 12px;
+            font-family: Lato, sans-serif;
+            font-size: 14px;
+            line-height: 20px;
+            letter-spacing: 0.16px;
+        }
+        .glow-thread-bubble--visible { display: block; }
+
+        /* ===== Copilot Sidebar Demo ===== */
+        .copilot-demo {
+            display: flex;
+            gap: 0;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.08);
+            min-height: 520px;
+        }
+        .copilot-demo__main {
+            flex: 1;
+            background: #f0f4f8;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .copilot-demo__main-header {
+            font-size: 13px;
+            font-weight: 600;
+            color: #435773;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .copilot-demo__card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+        .copilot-demo__card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0a0a0a;
+            margin: 0 0 8px;
+        }
+        .copilot-demo__card-meta {
+            font-size: 12px;
+            color: #9E9E9E;
+        }
+        .copilot-demo__sidebar {
+            width: 340px;
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), -4px 0 20px rgba(192, 66, 159, 0.06);
+            margin: 16px;
+            overflow: hidden;
+        }
+        .copilot-demo__sidebar-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .copilot-demo__avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #C0429F, #FF7584);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .copilot-demo__greeting {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0a0a0a;
+        }
+        .copilot-demo__greeting span {
+            color: #C0429F;
+        }
+        .copilot-demo__chips {
+            padding: 12px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .copilot-demo__chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border: 1px solid #C0429F;
+            border-radius: 20px;
+            background: transparent;
+            color: #C0429F;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: Lato, sans-serif;
+            cursor: pointer;
+            transition: background 150ms ease;
+        }
+        .copilot-demo__chip:hover {
+            background: rgba(192, 66, 159, 0.1);
+        }
+        .copilot-demo__chip-sparkle {
+            font-size: 10px;
+        }
+        .copilot-demo__thread {
+            flex: 1;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+        .copilot-demo__msg {
+            max-width: 90%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+            font-family: Lato, sans-serif;
+        }
+        .copilot-demo__msg--user {
+            background: #F5F5F5;
+            color: #0a0a0a;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .copilot-demo__msg--ai {
+            background: transparent;
+            color: #4a4a4a;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border-left: none;
+            padding-left: 0;
+            max-width: 100%;
+        }
+        .copilot-demo__msg--ai .ai-tag {
+            font-size: 10px;
+            font-weight: 600;
+            color: #C0429F;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .copilot-demo__prompt-area {
+            padding: 12px 20px 16px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        /* Layout tabs */
+        .copilot-tabs {
+            display: flex; gap: 4px; margin: 1rem 0;
+        }
+        .copilot-tab {
+            padding: 8px 16px; border: 1px solid rgba(0,0,0,0.12); border-radius: 6px;
+            background: white; font-size: 13px; font-weight: 600; font-family: Lato, sans-serif;
+            cursor: pointer; color: #4a4a4a; transition: all 150ms ease;
+        }
+        .copilot-tab:hover { border-color: #C0429F; color: #C0429F; }
+        .copilot-tab--active { background: #C0429F; color: white; border-color: #C0429F; }
+
+        /* Layout containers */
+        .copilot-layout { display: none; position: relative; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08); min-height: 480px; background: #f0f4f8; }
+        .copilot-layout--visible { display: flex; }
+
+        /* ===== Collapsed: FAB ===== */
+        .copilot-layout--collapsed { flex-direction: column; }
+        .copilot-layout__app {
+            flex: 1; padding: 0; display: flex; flex-direction: column;
+        }
+        .copilot-layout__topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 16px; background: white; border-bottom: 1px solid rgba(0,0,0,0.08);
+            font-size: 12px; font-weight: 600; color: #435773; font-family: Lato, sans-serif;
+        }
+        .copilot-layout__topbar-icons { display: flex; gap: 12px; align-items: center; }
+        .copilot-layout__topbar-icon { width: 20px; height: 20px; border-radius: 50%; background: #edeff5; }
+        .copilot-layout__breadcrumb {
+            padding: 12px 16px 4px; font-size: 11px; color: #9E9E9E; font-family: Lato, sans-serif;
+        }
+        .copilot-layout__breadcrumb strong { color: #0a0a0a; font-size: 14px; display: block; margin-top: 2px; }
+        .copilot-layout__body { flex: 1; display: flex; padding: 12px 16px; gap: 12px; }
+        .copilot-layout__nav {
+            width: 120px; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0;
+        }
+        .copilot-layout__nav-item {
+            padding: 6px 10px; border-radius: 4px; font-size: 11px; font-family: Lato, sans-serif;
+            color: #5f5f5f; display: flex; align-items: center; gap: 6px;
+        }
+        .copilot-layout__nav-item--active { color: #1a78c1; font-weight: 600; }
+        .copilot-layout__nav-dot {
+            width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #C7C7C7; flex-shrink: 0;
+        }
+        .copilot-layout__nav-dot--done { background: #418A44; border-color: #418A44; }
+        .copilot-layout__nav-dot--active { border-color: #1a78c1; background: #1a78c1; }
+        .copilot-layout__content { flex: 1; background: white; border-radius: 8px; padding: 16px; border: 1px solid rgba(0,0,0,0.06); overflow: hidden; }
+        .copilot-layout__content-title { font-size: 13px; font-weight: 700; color: #0a0a0a; margin: 0 0 4px; }
+        .copilot-layout__content-meta { font-size: 11px; color: #9E9E9E; }
+        .copilot-layout__segment-list {
+            margin-top: 10px; display: flex; flex-direction: column; gap: 4px;
+        }
+        .copilot-layout__segment {
+            padding: 4px 0; font-size: 11px; color: #4a4a4a; font-family: Lato, sans-serif;
+        }
+        .copilot-layout__segment--active { font-weight: 600; color: #0a0a0a; }
+
+        /* FAB */
+        .copilot-fab {
+            position: absolute; bottom: 120px; right: 16px; z-index: 10;
+            width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer;
+            background: linear-gradient(135deg, #C0429F, #FF7584);
+            box-shadow: 0 4px 16px rgba(192, 66, 159, 0.35);
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 200ms ease, box-shadow 200ms ease;
+            color: white;
+        }
+        .copilot-fab:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(192, 66, 159, 0.45); }
+        .copilot-fab svg { width: 24px; height: 24px; }
+
+        /* ===== Vision Header ===== */
+        .vision-header {
+            padding: 24px 28px;
+            border-radius: 12px;
+            background: rgba(192, 66, 159, 0.06);
+            border-left: 4px solid var(--glow-accent, #C0429F);
+            margin: 1.5rem 0;
+        }
+        .vision-header__title {
+            font-size: 20px;
+            font-weight: 700;
+            font-family: Lato, sans-serif;
+            color: var(--glow-accent, #C0429F);
+            margin: 0 0 12px 0;
+            transition: color 300ms ease;
+        }
+        .vision-header__body {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #4a4a4a;
+            font-family: Lato, sans-serif;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="ai-hub">
+    <!-- ===== Sticky Nav ===== -->
+    <nav class="ai-hub__nav">
+        <a href="#" class="ai-hub__logo">Glow Design System Playground</a>
+        <div class="ai-hub__theme-toggle">
+            <button class="ai-hub__theme-btn ai-hub__theme-btn--active" data-hub-theme="ruby" onclick="setHubTheme('ruby')">Ruby Berry</button>
+        </div>
+    </nav>
+
+    <main class="ai-hub__content">
+
+        <!-- Jump Links -->
+        <div class="ai-hub__jump-links">
+            <a href="#playground">Playground</a>
+            <span class="ai-hub__jump-sep">&bull;</span>
+            <a href="#copilot-demo">Layout Modes</a>
+        </div>
+
+        <!-- Page Header -->
+        <header class="component-header">
+            <h1 class="heading-1">Glow Design System Interactive Playground</h1>
+            <p class="text-body">Rosewood AI Design System &mdash; Ruby Berry Theme. Interactive AI input component with animated states, multiple layouts, and swappable color themes.</p>
+        </header>
+
+        <!-- ===== SVG Gradient Defs (shared) ===== -->
+        <svg style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">
+            <defs>
+                <linearGradient id="static-sparkle-1" x1="1.125" y1="2.064" x2="24.77" y2="23.882" gradientUnits="userSpaceOnUse"><stop stop-color="#E082C0"/><stop offset="0.31" stop-color="#C0429F"/><stop offset="0.67" stop-color="#FF7584"/><stop offset="1" stop-color="#FFB98C"/></linearGradient>
+                <linearGradient id="static-sparkle-2" x1="1.125" y1="2.064" x2="24.77" y2="23.882" gradientUnits="userSpaceOnUse"><stop stop-color="#E082C0"/><stop offset="0.31" stop-color="#C0429F"/><stop offset="0.67" stop-color="#FF7584"/><stop offset="1" stop-color="#FFB98C"/></linearGradient>
+            </defs>
+        </svg>
+
+        <!-- ===== Interactive Playground ===== -->
+        <section id="playground" class="section">
+            <h2 class="heading-2">Interactive Playground</h2>
+
+            <div class="vision-header" id="visionHeader">
+                <h3 class="vision-header__title">Beyond the Dash: Elevating Intelligence</h3>
+                <p class="vision-header__body">While our core platform is built on the stability and seriousness of Rosewood Blue, the introduction of Glow marks a new era of proactive partnership. We've chosen Ruby Berry to represent this intelligence &mdash; a warm, vibrant, and high-energy tone that contrasts with our subdued product environment.</p>
+            </div>
+
+            <div class="demo-controls" id="demoControls">
+                <div class="demo-controls__group">
+                    <span class="demo-controls__label">Theme</span>
+                    <div class="demo-controls__buttons">
+                        <button class="demo-btn demo-btn--active" data-control="theme" data-value="ruby">Ruby Berry</button>
+                    </div>
+                </div>
+                <div class="demo-controls__group">
+                    <span class="demo-controls__label">Layout</span>
+                    <div class="demo-controls__buttons">
+                        <button class="demo-btn demo-btn--active" data-control="layout" data-value="full">Full Page</button>
+                        <button class="demo-btn" data-control="layout" data-value="sidebar">Sidebar</button>
+                        <button class="demo-btn" data-control="layout" data-value="overlay">Overlay</button>
+                    </div>
+                </div>
+                <div class="demo-controls__group">
+                    <span class="demo-controls__label">Whisper</span>
+                    <div class="demo-controls__buttons">
+                        <button class="demo-btn demo-btn--active" data-control="whisper" data-value="true">Enabled</button>
+                        <button class="demo-btn" data-control="whisper" data-value="false">Disabled</button>
+                    </div>
+                </div>
+                <div class="demo-controls__group">
+                    <span class="demo-controls__label">State</span>
+                    <div class="demo-controls__buttons">
+                        <button class="demo-btn demo-btn--active" data-control="state" data-value="idle">Idle</button>
+                        <button class="demo-btn" data-control="state" data-value="typing">Typing</button>
+                        <button class="demo-btn" data-control="state" data-value="generating">Generating</button>
+                        <button class="demo-btn" data-control="state" data-value="listening">Listening</button>
+                    </div>
+                </div>
+                <div class="demo-controls__group">
+                    <span class="demo-controls__label">Errors</span>
+                    <div class="demo-controls__buttons">
+                        <button class="demo-btn" data-control="error" data-value="validation">Validation</button>
+                        <button class="demo-btn" data-control="error" data-value="system">System Error</button>
+                        <button class="demo-btn" data-control="error" data-value="clear">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-playground" id="demoPlayground" style="flex-direction:column;">
+                <div class="glow-thread-bubble" id="threadBubble"></div>
+                <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--idle" id="mainPromptBox" data-theme="ruby" data-whisper="true" style="width:100%;">
+                    <div class="glow-prompt-box__border-ring">
+                        <div class="glow-prompt-box__inner">
+                            <div class="glow-prompt-box__input-row">
+                                <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.1939 3.45122L15.2665 6.34122C15.6774 7.44122 16.5495 8.31122 17.6521 8.72122L20.5489 9.79122C21.1504 10.0112 21.1504 10.8612 20.5489 11.0812L17.6521 12.1512C16.5495 12.5612 15.6774 13.4312 15.2665 14.5312L14.1939 17.4212C13.9734 18.0212 13.1214 18.0212 12.9009 17.4212L11.8283 14.5312C11.4174 13.4312 10.5453 12.5612 9.44271 12.1512L6.54587 11.0812C5.94445 10.8612 5.94445 10.0112 6.54587 9.79122L9.44271 8.72122C10.5453 8.31122 11.4174 7.44122 11.8283 6.34122L12.9009 3.45122C13.1214 2.85122 13.9734 2.85122 14.1939 3.45122Z" fill="url(#sparkle-grad-main)"/><path d="M6.7263 14.9812L7.05708 15.8712C7.23751 16.3712 7.63845 16.7612 8.13964 16.9512L9.03174 17.2812C9.5229 17.4612 9.5229 18.1512 9.03174 18.3312L8.13964 18.6612C7.63845 18.8412 7.24753 19.2412 7.05708 19.7412L6.7263 20.6312C6.54587 21.1212 5.85424 21.1212 5.67381 20.6312L5.34303 19.7412C5.16261 19.2412 4.76166 18.8512 4.26048 18.6612L3.36837 18.3312C2.87721 18.1512 2.87721 17.4612 3.36837 17.2812L4.26048 16.9512C4.76166 16.7712 5.15258 16.3712 5.34303 15.8712L5.67381 14.9812C5.85424 14.4912 6.54587 14.4912 6.7263 14.9812Z" fill="url(#sparkle-grad-sub)"/><defs><linearGradient id="sparkle-grad-main" x1="1.125" y1="2.064" x2="24.77" y2="23.882" gradientUnits="userSpaceOnUse"><stop stop-color="#E082C0"/><stop offset="0.31" stop-color="#C0429F"/><stop offset="0.67" stop-color="#FF7584"/><stop offset="1" stop-color="#FFB98C"/></linearGradient><linearGradient id="sparkle-grad-sub" x1="1.125" y1="2.064" x2="24.77" y2="23.882" gradientUnits="userSpaceOnUse"><stop stop-color="#E082C0"/><stop offset="0.31" stop-color="#C0429F"/><stop offset="0.67" stop-color="#FF7584"/><stop offset="1" stop-color="#FFB98C"/></linearGradient></defs></svg></span>
+                                <textarea class="glow-prompt-box__textarea" id="mainTextarea" placeholder="Ask Glow a question..." rows="1"></textarea>
+                                <span class="glow-prompt-box__ghost-transcript" id="ghostTranscript"></span>
+                                <div class="glow-prompt-box__stream-area" id="streamArea"></div>
+                            </div>
+                            <div class="glow-prompt-box__helper" id="helperText"></div>
+                            <div class="glow-prompt-box__new-prompt">
+                                <input id="newPromptInput" type="text" placeholder="Type a follow-up...">
+                            </div>
+                            <div class="glow-prompt-box__toolbar">
+                                <button class="glow-prompt-box__plus-btn" aria-label="Add context"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button>
+                                <div class="glow-prompt-box__toolbar-right">
+                                    <div class="glow-prompt-box__waveform"><span></span><span></span><span></span><span></span><span></span></div>
+                                    <button class="glow-prompt-box__mic-btn" id="micBtn" aria-label="Voice input">
+                                        <svg viewBox="0 0 24 24" fill="none"><path d="M4 10.93C4 15.32 7.58 18.88 12 18.88C15.8 18.88 18.99 16.24 19.8 12.7C19.93 12.13 20 11.54 20 10.93M12 19.01V21.81M7.1 22H16.9M12 14.57C9.97864 14.57 8.34 12.9314 8.34 10.91V5.66C8.34 3.63864 9.97864 2 12 2C14.0214 2 15.66 3.63864 15.66 5.66V10.91C15.66 12.9314 14.0214 14.57 12 14.57Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </button>
+                                    <button class="glow-prompt-box__action-btn" id="actionBtn" aria-label="Send">
+                                        <svg class="glow-prompt-box__icon-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg>
+                                        <svg class="glow-prompt-box__icon-stop" viewBox="0 0 24 24" fill="none"><path d="M8 4.75H16C17.7949 4.75 19.25 6.20507 19.25 8V16C19.25 17.7949 17.7949 19.25 16 19.25H8C6.20507 19.25 4.75 17.7949 4.75 16V8C4.75 6.20507 6.20507 4.75 8 4.75Z" stroke="currentColor" stroke-width="1.5"/></svg>
+                                        <svg class="glow-prompt-box__icon-retry" viewBox="0 0 24 24" fill="none"><path d="M4.95112 8.28726C5.78848 6.70072 7.12033 5.44151 8.73778 4.70713C10.3552 3.97276 12.1668 3.80476 13.8883 4.22948C15.6099 4.65421 17.144 5.64763 18.2501 7.05394C19.3562 8.46026 19.9716 10.1999 20 12M4.4889 4.82744V8.46793H8.08001M18.9867 15.8302C18.1233 17.4033 16.7703 18.6405 15.1401 19.3475C13.5099 20.0545 11.6949 20.1914 9.97987 19.7365C8.26488 19.2817 6.74709 18.2609 5.66476 16.8345C4.58244 15.4081 3.99688 13.6567 4.00001 11.8555M19.3956 19.29L19.4578 15.6405L15.8667 15.5863" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== Glow in Action ===== -->
+        <section id="copilot-demo" class="section">
+            <h2 class="heading-2">Glow in Action</h2>
+            <p class="text-body">Five layout modes showing how Glow integrates into the Rosewood product. Toggle between views to see the collapsed bubble, expanded sidebar, full-page canvas, overlay command palette, and persistent panel.</p>
+
+            <div class="copilot-tabs" id="copilotTabs">
+                <button class="copilot-tab" data-copilot="collapsed">Collapsed</button>
+                <button class="copilot-tab copilot-tab--active" data-copilot="expanded">Expanded</button>
+                <button class="copilot-tab" data-copilot="fullpage">Full Page</button>
+                <button class="copilot-tab" data-copilot="overlay">Overlay</button>
+                <button class="copilot-tab" data-copilot="panel">Panel</button>
+            </div>
+
+            <!-- ===== Layout A: Collapsed (FAB) ===== -->
+            <div class="copilot-layout copilot-layout--collapsed" id="copilotCollapsed">
+                <div class="copilot-layout__app">
+                    <div class="copilot-layout__topbar">
+                        <span>Sample Salon &ndash; Example City</span>
+                        <div class="copilot-layout__topbar-icons"><div class="copilot-layout__topbar-icon"></div><div class="copilot-layout__topbar-icon"></div><div class="copilot-layout__topbar-icon" style="width:24px;height:24px;border-radius:50%;background:#edeff5;"></div></div>
+                    </div>
+                    <div class="copilot-layout__breadcrumb">&larr; Campaign builder<br><strong>Who are you sending this campaign to?</strong></div>
+                    <div class="copilot-layout__body">
+                        <div class="copilot-layout__nav">
+                            <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot copilot-layout__nav-dot--done"></div> Channel</div>
+                            <div class="copilot-layout__nav-item copilot-layout__nav-item--active"><div class="copilot-layout__nav-dot copilot-layout__nav-dot--active"></div> Audience</div>
+                            <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Offer</div>
+                            <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Content</div>
+                            <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Schedule</div>
+                            <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Launch</div>
+                        </div>
+                        <div class="copilot-layout__content">
+                            <div class="copilot-layout__content-title">Cart abandoners</div>
+                            <div class="copilot-layout__content-meta">Shoppers who added items to their cart but didn't complete the purchase.</div>
+                            <div class="copilot-layout__segment-list">
+                                <div class="copilot-layout__segment copilot-layout__segment--active">&#10003; Cart abandoners</div>
+                                <div class="copilot-layout__segment">Newsletter subscribers</div>
+                                <div class="copilot-layout__segment">Serene Dreamers</div>
+                                <div class="copilot-layout__segment">Zen Seekers Community</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="copilot-fab" id="copilotFab" aria-label="Open Glow">
+                    <svg viewBox="0 0 32 32" width="28" height="28" fill="none"><path d="M22.63 5.25287C23.3631 5.30621 24.1895 5.81287 24.856 6.67954C25.9889 8.13287 26.8553 8.83954 28.015 9.02621C28.5481 9.13287 29.1879 9.07954 29.6678 8.79954C30.2009 8.50621 30.5075 8.05287 30.6275 7.54621C30.7607 6.86621 30.5875 5.79954 29.5745 5.34621C28.6148 4.93287 28.0683 5.69287 28.0683 5.69287C28.0683 5.69287 28.7747 5.50621 29.2012 5.94621C29.4145 6.17287 29.5078 6.46621 29.4412 6.78621C29.3612 7.18621 28.9747 7.47954 28.4815 7.39954C27.775 7.29287 27.4551 6.73287 26.9353 5.89287C26.4954 5.22621 25.7623 3.85287 24.656 2.75954C23.4431 1.59954 20.2308 0.51954 18.2314 2.21287C16.5919 3.57287 16.352 5.38621 16.312 5.78621H16.2721C10.9671 4.82621 5.7954 7.87954 3.98265 12.7462C2.10325 12.7462 1.61008 13.7062 1.39681 14.8929C1.18355 16.0529 1.45013 17.1062 3.07627 17.7595C3.20957 20.5329 4.08928 23.1329 5.67544 25.2395C5.98201 25.6129 6.83507 26.5329 6.83507 27.0129L6.03533 29.9595C6.03533 30.4262 6.47519 30.7595 6.91505 30.6395L11.7535 29.4395C12.2333 29.3195 12.6199 29.3329 13.1131 29.4129L15.2324 29.7729C20.8839 30.7995 25.9623 27.1195 27.8417 22.3729C29.6678 22.3329 30.2143 21.3862 30.4409 20.1995C30.6541 19.0262 30.4808 17.9462 28.7747 17.2795C28.8414 12.6129 25.829 8.37287 21.3638 6.82621C21.1505 6.27954 21.3238 5.89287 21.537 5.65287C21.8036 5.34621 22.2168 5.21287 22.63 5.23954V5.25287ZM22.3901 14.3462L23.0299 14.5195C23.8963 14.7862 24.5094 15.4795 24.5494 16.2929C24.5894 17.5729 24.1895 20.0529 23.7363 21.3995L23.4831 22.0262C23.1898 22.7862 22.3768 23.2662 21.4304 23.1729L20.8173 23.1195C17.0185 22.7995 13.233 22.1329 9.5542 21.0662L8.79445 20.8529C7.91473 20.5862 7.30159 19.8395 7.28826 19.0529V18.3729C7.46154 16.5462 7.56817 15.3329 8.28794 13.2929C8.59451 12.5729 9.43424 12.1195 10.3273 12.1862L11.1537 12.2662C11.5935 12.2929 12.0467 12.3462 12.4866 12.3729C12.9531 12.4262 13.3263 12.7595 13.4196 13.2129L13.4729 13.3462C13.6196 13.9462 14.0994 14.4129 14.7126 14.5329L17.8715 15.1595C18.4847 15.2529 19.1245 14.9995 19.471 14.4929L19.591 14.3329C19.8442 13.9595 20.3241 13.7862 20.7773 13.8929C21.3104 14.0395 21.8569 14.1862 22.3901 14.3329V14.3462Z" fill="white"/><path d="M18.2181 18.1995C18.0182 19.2929 18.7379 20.3329 19.8309 20.5329C20.9372 20.7329 21.9636 20.0129 22.1768 18.9195C22.3768 17.8262 21.657 16.7862 20.564 16.5862C19.471 16.3862 18.4314 17.1062 18.2181 18.1995Z" fill="white"/><path d="M12.0734 15.8662C10.9671 15.6529 9.94074 16.3862 9.72748 17.4662L10.9004 17.6795C10.9804 17.2395 11.4069 16.9462 11.8601 17.0262C12.3 17.1062 12.5932 17.5329 12.5266 17.9729L13.6995 18.1995C13.8995 17.1062 13.1797 16.0662 12.0867 15.8662H12.0734Z" fill="white"/></svg>
+                </button>
+            </div>
+
+            <!-- ===== Layout B: Expanded Sidebar ===== -->
+            <div class="copilot-layout copilot-layout--visible" id="copilotExpanded" style="display:flex;">
+                <div class="copilot-layout__app" style="flex:1;">
+                    <div class="copilot-layout__topbar">
+                        <span>Sample Salon &ndash; Example City</span>
+                        <div class="copilot-layout__topbar-icons"><div class="copilot-layout__topbar-icon"></div><div class="copilot-layout__topbar-icon"></div></div>
+                    </div>
+                    <div class="copilot-layout__breadcrumb">&larr; Campaign builder<br><strong>Who are you sending this campaign to?</strong></div>
+                    <div class="copilot-layout__body">
+                        <div class="copilot-layout__nav">
+                            <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot copilot-layout__nav-dot--done"></div> Channel</div>
+                            <div class="copilot-layout__nav-item copilot-layout__nav-item--active"><div class="copilot-layout__nav-dot copilot-layout__nav-dot--active"></div> Audience</div>
+                            <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Offer</div>
+                            <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Content</div>
+                            <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Schedule</div>
+                            <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Launch</div>
+                        </div>
+                        <div class="copilot-layout__content">
+                            <div class="copilot-layout__content-title">Cart abandoners</div>
+                            <div class="copilot-layout__content-meta">Shoppers who didn't complete purchase.</div>
+                            <div class="copilot-layout__segment-list">
+                                <div class="copilot-layout__segment copilot-layout__segment--active">&#10003; Cart abandoners</div>
+                                <div class="copilot-layout__segment">Newsletter subscribers</div>
+                                <div class="copilot-layout__segment">Serene Dreamers</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Copilot Sidebar (Ruby) -->
+                <div class="copilot-demo__sidebar">
+                    <div class="copilot-demo__sidebar-header">
+                        <div class="copilot-demo__avatar">Z</div>
+                        <div>
+                            <div class="copilot-demo__greeting">Hi <span>Stella</span>!</div>
+                            <div style="font-size:12px; color:#5f5f5f; line-height:1.4; margin-top:2px;">I'm your campaign co-pilot. I can help you choose channels, build audiences, and more.</div>
+                        </div>
+                    </div>
+
+                    <div class="copilot-demo__chips" id="copilotChips">
+                        <button class="copilot-demo__chip" data-chip-prompt="What's the best channel for this campaign?"><span class="copilot-demo__chip-sparkle">&#10024;</span> Best channel</button>
+                        <button class="copilot-demo__chip" data-chip-prompt="Suggest the ideal audience segment"><span class="copilot-demo__chip-sparkle">&#10024;</span> Suggest audience</button>
+                        <button class="copilot-demo__chip" data-chip-prompt="Create a compelling offer for this audience"><span class="copilot-demo__chip-sparkle">&#10024;</span> Create offer</button>
+                        <button class="copilot-demo__chip" data-chip-prompt="What's the optimal send time?"><span class="copilot-demo__chip-sparkle">&#10024;</span> Best send time</button>
+                    </div>
+
+                    <div class="copilot-demo__thread" id="copilotThread">
+                        <div class="copilot-demo__msg copilot-demo__msg--user">Write a compelling subject line for our Summer Spa Launch campaign</div>
+                        <div class="copilot-demo__msg copilot-demo__msg--ai">
+                            <span class="ai-tag">&#10024; Glow</span>
+                            Here are 3 options optimized for open rates:<br><br>
+                            1. "Your Summer Glow Starts Here &mdash; 20% Off Zen-Glow"<br>
+                            2. "Exclusive: The Spa Experience Everyone's Talking About"<br>
+                            3. "Limited Spots: Transform Your Summer Wellness Routine"
+                        </div>
+                        <div class="copilot-demo__msg copilot-demo__msg--user">Go with option 1. Now suggest the best send time.</div>
+                    </div>
+
+                    <div class="copilot-demo__prompt-area">
+                        <div class="glow-prompt-box glow-prompt-box--sidebar glow-prompt-box--idle" data-theme="ruby" style="max-width:100%; padding:0;">
+                            <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                <div class="glow-prompt-box__input-row" style="padding:10px 12px 0 12px; gap:6px;">
+                                    <span class="glow-prompt-box__sparkle" style="margin-top:0;"><svg class="glow-sparkle-svg" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#static-sparkle-1)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#static-sparkle-2)"/></svg></span>
+                                    <textarea class="glow-prompt-box__textarea" id="sidebarTextarea" placeholder="Ask Glow a question..." rows="1" style="font-size:13px; line-height:20px;"></textarea>
+                                </div>
+                                <div class="glow-prompt-box__toolbar" style="padding:4px 12px 8px 12px;">
+                                    <button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button>
+                                    <button class="glow-prompt-box__action-btn" id="sidebarActionBtn" style="color:#9E9E9E;"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button>
+                                </div>
+                            </div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== Layout C: Canvas (Full Page) ===== -->
+            <div class="copilot-layout copilot-canvas" id="copilotFullpage">
+                <div class="copilot-canvas__topbar">
+                    <span>Analytics</span>
+                    <div class="copilot-canvas__topbar-right">
+                        <svg class="glow-head-breath" width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M22.63 5.25287C23.3631 5.30621 24.1895 5.81287 24.856 6.67954C25.9889 8.13287 26.8553 8.83954 28.015 9.02621C28.5481 9.13287 29.1879 9.07954 29.6678 8.79954C30.2009 8.50621 30.5075 8.05287 30.6275 7.54621C30.7607 6.86621 30.5875 5.79954 29.5745 5.34621C28.6148 4.93287 28.0683 5.69287 28.0683 5.69287C28.0683 5.69287 28.7747 5.50621 29.2012 5.94621C29.4145 6.17287 29.5078 6.46621 29.4412 6.78621C29.3612 7.18621 28.9747 7.47954 28.4815 7.39954C27.775 7.29287 27.4551 6.73287 26.9353 5.89287C26.4954 5.22621 25.7623 3.85287 24.656 2.75954C23.4431 1.59954 20.2308 0.51954 18.2314 2.21287C16.5919 3.57287 16.352 5.38621 16.312 5.78621H16.2721C10.9671 4.82621 5.7954 7.87954 3.98265 12.7462C2.10325 12.7462 1.61008 13.7062 1.39681 14.8929C1.18355 16.0529 1.45013 17.1062 3.07627 17.7595C3.20957 20.5329 4.08928 23.1329 5.67544 25.2395C5.98201 25.6129 6.83507 26.5329 6.83507 27.0129L6.03533 29.9595C6.03533 30.4262 6.47519 30.7595 6.91505 30.6395L11.7535 29.4395C12.2333 29.3195 12.6199 29.3329 13.1131 29.4129L15.2324 29.7729C20.8839 30.7995 25.9623 27.1195 27.8417 22.3729C29.6678 22.3329 30.2143 21.3862 30.4409 20.1995C30.6541 19.0262 30.4808 17.9462 28.7747 17.2795C28.8414 12.6129 25.829 8.37287 21.3638 6.82621C21.1505 6.27954 21.3238 5.89287 21.537 5.65287C21.8036 5.34621 22.2168 5.21287 22.63 5.23954V5.25287Z" fill="#C0429F"/><path d="M18.2181 18.1995C18.0182 19.2929 18.7379 20.3329 19.8309 20.5329C20.9372 20.7329 21.9636 20.0129 22.1768 18.9195C22.3768 17.8262 21.657 16.7862 20.564 16.5862C19.471 16.3862 18.4314 17.1062 18.2181 18.1995Z" fill="white"/><path d="M12.0734 15.8662C10.9671 15.6529 9.94074 16.3862 9.72748 17.4662L10.9004 17.6795C10.9804 17.2395 11.4069 16.9462 11.8601 17.0262C12.3 17.1062 12.5932 17.5329 12.5266 17.9729L13.6995 18.1995C13.8995 17.1062 13.1797 16.0662 12.0867 15.8662H12.0734Z" fill="white"/></svg>
+                    </div>
+                </div>
+
+                <!-- Fresh state: centered prompt + watermark -->
+                <div class="copilot-canvas__fresh" id="canvasFresh">
+                    <div class="copilot-canvas__watermark">
+                        <svg width="80" height="80" viewBox="0 0 32 32" fill="none"><path d="M22.63 5.25287C23.3631 5.30621 24.1895 5.81287 24.856 6.67954C25.9889 8.13287 26.8553 8.83954 28.015 9.02621C28.5481 9.13287 29.1879 9.07954 29.6678 8.79954C30.2009 8.50621 30.5075 8.05287 30.6275 7.54621C30.7607 6.86621 30.5875 5.79954 29.5745 5.34621C28.6148 4.93287 28.0683 5.69287 28.0683 5.69287C28.0683 5.69287 28.7747 5.50621 29.2012 5.94621C29.4145 6.17287 29.5078 6.46621 29.4412 6.78621C29.3612 7.18621 28.9747 7.47954 28.4815 7.39954C27.775 7.29287 27.4551 6.73287 26.9353 5.89287C26.4954 5.22621 25.7623 3.85287 24.656 2.75954C23.4431 1.59954 20.2308 0.51954 18.2314 2.21287C16.5919 3.57287 16.352 5.38621 16.312 5.78621H16.2721C10.9671 4.82621 5.7954 7.87954 3.98265 12.7462C2.10325 12.7462 1.61008 13.7062 1.39681 14.8929C1.18355 16.0529 1.45013 17.1062 3.07627 17.7595C3.20957 20.5329 4.08928 23.1329 5.67544 25.2395C5.98201 25.6129 6.83507 26.5329 6.83507 27.0129L6.03533 29.9595C6.03533 30.4262 6.47519 30.7595 6.91505 30.6395L11.7535 29.4395C12.2333 29.3195 12.6199 29.3329 13.1131 29.4129L15.2324 29.7729C20.8839 30.7995 25.9623 27.1195 27.8417 22.3729C29.6678 22.3329 30.2143 21.3862 30.4409 20.1995C30.6541 19.0262 30.4808 17.9462 28.7747 17.2795C28.8414 12.6129 25.829 8.37287 21.3638 6.82621C21.1505 6.27954 21.3238 5.89287 21.537 5.65287C21.8036 5.34621 22.2168 5.21287 22.63 5.23954V5.25287Z" fill="#C0429F"/><path d="M18.2181 18.1995C18.0182 19.2929 18.7379 20.3329 19.8309 20.5329C20.9372 20.7329 21.9636 20.0129 22.1768 18.9195C22.3768 17.8262 21.657 16.7862 20.564 16.5862C19.471 16.3862 18.4314 17.1062 18.2181 18.1995Z" fill="white"/><path d="M12.0734 15.8662C10.9671 15.6529 9.94074 16.3862 9.72748 17.4662L10.9004 17.6795C10.9804 17.2395 11.4069 16.9462 11.8601 17.0262C12.3 17.1062 12.5932 17.5329 12.5266 17.9729L13.6995 18.1995C13.8995 17.1062 13.1797 16.0662 12.0867 15.8662H12.0734Z" fill="white"/></svg>
+                    </div>
+                    <h3 class="copilot-canvas__fresh-title">Your business intelligence agent</h3>
+                    <p class="copilot-canvas__fresh-desc">Ask Glow to analyze data, build strategies, or generate content. Your artifacts will appear alongside the conversation.</p>
+                    <div class="copilot-canvas__fresh-chips" id="canvasChips">
+                        <button class="copilot-canvas__fresh-chip" data-canvas-prompt="Build a marketing strategy for our summer launch">&#10024; Marketing strategy</button>
+                        <button class="copilot-canvas__fresh-chip" data-canvas-prompt="What were the total sales for each month in 2025?">&#10024; Revenue report</button>
+                        <button class="copilot-canvas__fresh-chip" data-canvas-prompt="Compare appointments in 2024 vs 2025">&#10024; Year comparison</button>
+                        <button class="copilot-canvas__fresh-chip" data-canvas-prompt="Write 3 subject lines for our loyalty campaign">&#10024; Email copy</button>
+                    </div>
+                    <div class="copilot-canvas__fresh-prompt">
+                        <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--idle" data-theme="ruby" style="max-width:100%;">
+                            <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                <div class="glow-prompt-box__input-row">
+                                    <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#static-sparkle-1)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#static-sparkle-2)"/></svg></span>
+                                    <textarea class="glow-prompt-box__textarea" placeholder="Ask Glow anything..." rows="1" disabled></textarea>
+                                </div>
+                                <div class="glow-prompt-box__toolbar"><button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button><button class="glow-prompt-box__action-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button></div>
+                            </div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Split view: thread + artifact -->
+                <div class="copilot-canvas__split" id="canvasSplit">
+                    <div class="copilot-canvas__thread-pane">
+                        <div class="copilot-canvas__thread-list" id="canvasThread">
+                            <div class="copilot-demo__msg copilot-demo__msg--user">Build a marketing strategy for our summer launch</div>
+                            <div class="copilot-demo__msg copilot-demo__msg--ai">
+                                <span class="ai-tag">&#10024; Glow</span>
+                                I've created a comprehensive marketing strategy for your Summer Spa Launch. The plan includes an email campaign, SMS follow-ups, and a social media calendar. You can review each artifact in the panel on the right.
+                            </div>
+                            <div class="copilot-demo__msg copilot-demo__msg--user">Can you also write 3 subject line options?</div>
+                            <div class="copilot-demo__msg copilot-demo__msg--ai">
+                                <span class="ai-tag">&#10024; Glow</span>
+                                Done! I've added the subject lines to your artifacts. Here are the options:<br><br>
+                                1. "Your Summer Glow Starts Here &mdash; 20% Off"<br>
+                                2. "Exclusive: The Spa Experience Everyone's Talking About"<br>
+                                3. "Limited Spots: Transform Your Wellness Routine"
+                            </div>
+                        </div>
+                        <div class="copilot-canvas__thread-prompt">
+                            <div class="glow-prompt-box glow-prompt-box--sidebar glow-prompt-box--idle" data-theme="ruby" style="max-width:100%;padding:0;">
+                                <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                    <div class="glow-prompt-box__input-row" style="padding:8px 12px 0;gap:6px;">
+                                        <span class="glow-prompt-box__sparkle" style="margin-top:0;"><svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#static-sparkle-1)"/></svg></span>
+                                        <textarea class="glow-prompt-box__textarea" placeholder="Continue the conversation..." rows="1" disabled style="font-size:13px;"></textarea>
+                                    </div>
+                                    <div class="glow-prompt-box__toolbar" style="padding:4px 12px 8px;"><button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button><button class="glow-prompt-box__action-btn" style="color:#9E9E9E;"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button></div>
+                                </div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="copilot-canvas__artifact-pane">
+                        <div class="copilot-canvas__artifact-header">
+                            <button class="copilot-canvas__artifact-dropdown">Subject Lines</button>
+                            <span style="font-size:11px; color:#5f5f5f;">3 artifacts</span>
+                        </div>
+                        <div class="copilot-canvas__artifact-body">
+                            <div class="copilot-canvas__artifact-card">
+                                <div class="copilot-canvas__artifact-label">&#10024; Subject Line &mdash; Option 1</div>
+                                <div class="copilot-canvas__artifact-text">"Your Summer Glow Starts Here &mdash; 20% Off Zen-Glow"</div>
+                            </div>
+                            <div class="copilot-canvas__artifact-card">
+                                <div class="copilot-canvas__artifact-label">&#10024; Subject Line &mdash; Option 2</div>
+                                <div class="copilot-canvas__artifact-text">"Exclusive: The Spa Experience Everyone's Talking About"</div>
+                            </div>
+                            <div class="copilot-canvas__artifact-card">
+                                <div class="copilot-canvas__artifact-label">&#10024; Subject Line &mdash; Option 3</div>
+                                <div class="copilot-canvas__artifact-text">"Limited Spots: Transform Your Summer Wellness Routine"</div>
+                            </div>
+                        </div>
+                        <div class="copilot-canvas__recent">
+                            <div class="copilot-canvas__recent-title">Recent Artifacts</div>
+                            <div class="copilot-canvas__recent-item"><span class="copilot-canvas__recent-item-sparkle">&#10024;</span> Summer Launch Strategy <span class="copilot-canvas__recent-item-time">10:15 AM</span></div>
+                            <div class="copilot-canvas__recent-item"><span class="copilot-canvas__recent-item-sparkle">&#10024;</span> Subject Lines (3) <span class="copilot-canvas__recent-item-time">10:18 AM</span></div>
+                            <div class="copilot-canvas__recent-item"><span class="copilot-canvas__recent-item-sparkle">&#10024;</span> Social Media Calendar <span class="copilot-canvas__recent-item-time">10:22 AM</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== Layout D: Overlay (Command Center) ===== -->
+            <div class="copilot-layout copilot-layout--overlay-mode" id="copilotOverlay">
+                <div class="copilot-overlay__backdrop">
+                    <div class="copilot-overlay__backdrop-header">
+                        <span>Sample Salon &ndash; Example City</span>
+                        <span style="display:flex; gap:8px; align-items:center;">
+                            <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><path d="M22.63 5.25287C23.3631 5.30621 24.1895 5.81287 24.856 6.67954C25.9889 8.13287 26.8553 8.83954 28.015 9.02621C28.5481 9.13287 29.1879 9.07954 29.6678 8.79954C30.2009 8.50621 30.5075 8.05287 30.6275 7.54621C30.7607 6.86621 30.5875 5.79954 29.5745 5.34621C28.6148 4.93287 28.0683 5.69287 28.0683 5.69287C28.0683 5.69287 28.7747 5.50621 29.2012 5.94621C29.4145 6.17287 29.5078 6.46621 29.4412 6.78621C29.3612 7.18621 28.9747 7.47954 28.4815 7.39954C27.775 7.29287 27.4551 6.73287 26.9353 5.89287C26.4954 5.22621 25.7623 3.85287 24.656 2.75954C23.4431 1.59954 20.2308 0.51954 18.2314 2.21287C16.5919 3.57287 16.352 5.38621 16.312 5.78621H16.2721C10.9671 4.82621 5.7954 7.87954 3.98265 12.7462C2.10325 12.7462 1.61008 13.7062 1.39681 14.8929C1.18355 16.0529 1.45013 17.1062 3.07627 17.7595C3.20957 20.5329 4.08928 23.1329 5.67544 25.2395C5.98201 25.6129 6.83507 26.5329 6.83507 27.0129L6.03533 29.9595C6.03533 30.4262 6.47519 30.7595 6.91505 30.6395L11.7535 29.4395C12.2333 29.3195 12.6199 29.3329 13.1131 29.4129L15.2324 29.7729C20.8839 30.7995 25.9623 27.1195 27.8417 22.3729C29.6678 22.3329 30.2143 21.3862 30.4409 20.1995C30.6541 19.0262 30.4808 17.9462 28.7747 17.2795C28.8414 12.6129 25.829 8.37287 21.3638 6.82621C21.1505 6.27954 21.3238 5.89287 21.537 5.65287C21.8036 5.34621 22.2168 5.21287 22.63 5.23954V5.25287ZM22.3901 14.3462L23.0299 14.5195C23.8963 14.7862 24.5094 15.4795 24.5494 16.2929C24.5894 17.5729 24.1895 20.0529 23.7363 21.3995L23.4831 22.0262C23.1898 22.7862 22.3768 23.2662 21.4304 23.1729L20.8173 23.1195C17.0185 22.7995 13.233 22.1329 9.5542 21.0662L8.79445 20.8529C7.91473 20.5862 7.30159 19.8395 7.28826 19.0529V18.3729C7.46154 16.5462 7.56817 15.3329 8.28794 13.2929C8.59451 12.5729 9.43424 12.1195 10.3273 12.1862L11.1537 12.2662C11.5935 12.2929 12.0467 12.3462 12.4866 12.3729C12.9531 12.4262 13.3263 12.7595 13.4196 13.2129L13.4729 13.3462C13.6196 13.9462 14.0994 14.4129 14.7126 14.5329L17.8715 15.1595C18.4847 15.2529 19.1245 14.9995 19.471 14.4929L19.591 14.3329C19.8442 13.9595 20.3241 13.7862 20.7773 13.8929C21.3104 14.0395 21.8569 14.1862 22.3901 14.3329V14.3462Z" fill="#C0429F"/><path d="M18.2181 18.1995C18.0182 19.2929 18.7379 20.3329 19.8309 20.5329C20.9372 20.7329 21.9636 20.0129 22.1768 18.9195C22.3768 17.8262 21.657 16.7862 20.564 16.5862C19.471 16.3862 18.4314 17.1062 18.2181 18.1995Z" fill="white"/><path d="M12.0734 15.8662C10.9671 15.6529 9.94074 16.3862 9.72748 17.4662L10.9004 17.6795C10.9804 17.2395 11.4069 16.9462 11.8601 17.0262C12.3 17.1062 12.5932 17.5329 12.5266 17.9729L13.6995 18.1995C13.8995 17.1062 13.1797 16.0662 12.0867 15.8662H12.0734Z" fill="white"/></svg>
+                        </span>
+                    </div>
+                    <div class="copilot-overlay__backdrop-body">
+                        <div class="copilot-overlay__backdrop-nav"></div>
+                        <div class="copilot-overlay__backdrop-content">
+                            <div class="copilot-overlay__backdrop-card"></div>
+                            <div class="copilot-overlay__backdrop-card"></div>
+                            <div class="copilot-overlay__backdrop-card" style="height:100px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="copilot-overlay__center">
+                    <div class="copilot-overlay__prompt-wrap">
+                        <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--idle" data-theme="ruby" style="max-width:100%;">
+                            <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                <div class="glow-prompt-box__input-row">
+                                    <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#static-sparkle-1)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#static-sparkle-2)"/></svg></span>
+                                    <textarea class="glow-prompt-box__textarea" placeholder="Ask Glow anything..." rows="1" disabled style="color:white;"></textarea>
+                                </div>
+                                <div class="glow-prompt-box__toolbar">
+                                    <button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button>
+                                    <button class="glow-prompt-box__action-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button>
+                                </div>
+                            </div></div>
+                        </div>
+                        <div style="text-align:center; margin-top:12px; font-size:12px; color:rgba(255,255,255,0.5); font-family:Lato,sans-serif;">Press <kbd style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:3px; font-size:11px;">Esc</kbd> to close</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== Layout E: Panel Mode ===== -->
+            <div class="copilot-layout copilot-layout--panel" id="copilotPanel">
+                <div class="copilot-layout__app" style="flex:1;">
+                    <div class="copilot-layout__topbar">
+                        <span>Sample Salon &ndash; Example City</span>
+                        <div class="copilot-layout__topbar-icons">
+                            <svg class="glow-head-breath" width="20" height="20" viewBox="0 0 32 32" fill="none"><path d="M22.63 5.25287C23.3631 5.30621 24.1895 5.81287 24.856 6.67954C25.9889 8.13287 26.8553 8.83954 28.015 9.02621C28.5481 9.13287 29.1879 9.07954 29.6678 8.79954C30.2009 8.50621 30.5075 8.05287 30.6275 7.54621C30.7607 6.86621 30.5875 5.79954 29.5745 5.34621C28.6148 4.93287 28.0683 5.69287 28.0683 5.69287C28.0683 5.69287 28.7747 5.50621 29.2012 5.94621C29.4145 6.17287 29.5078 6.46621 29.4412 6.78621C29.3612 7.18621 28.9747 7.47954 28.4815 7.39954C27.775 7.29287 27.4551 6.73287 26.9353 5.89287C26.4954 5.22621 25.7623 3.85287 24.656 2.75954C23.4431 1.59954 20.2308 0.51954 18.2314 2.21287C16.5919 3.57287 16.352 5.38621 16.312 5.78621H16.2721C10.9671 4.82621 5.7954 7.87954 3.98265 12.7462C2.10325 12.7462 1.61008 13.7062 1.39681 14.8929C1.18355 16.0529 1.45013 17.1062 3.07627 17.7595C3.20957 20.5329 4.08928 23.1329 5.67544 25.2395C5.98201 25.6129 6.83507 26.5329 6.83507 27.0129L6.03533 29.9595C6.03533 30.4262 6.47519 30.7595 6.91505 30.6395L11.7535 29.4395C12.2333 29.3195 12.6199 29.3329 13.1131 29.4129L15.2324 29.7729C20.8839 30.7995 25.9623 27.1195 27.8417 22.3729C29.6678 22.3329 30.2143 21.3862 30.4409 20.1995C30.6541 19.0262 30.4808 17.9462 28.7747 17.2795C28.8414 12.6129 25.829 8.37287 21.3638 6.82621C21.1505 6.27954 21.3238 5.89287 21.537 5.65287C21.8036 5.34621 22.2168 5.21287 22.63 5.23954V5.25287Z" fill="#C0429F"/><path d="M18.2181 18.1995C18.0182 19.2929 18.7379 20.3329 19.8309 20.5329C20.9372 20.7329 21.9636 20.0129 22.1768 18.9195C22.3768 17.8262 21.657 16.7862 20.564 16.5862C19.471 16.3862 18.4314 17.1062 18.2181 18.1995Z" fill="white"/><path d="M12.0734 15.8662C10.9671 15.6529 9.94074 16.3862 9.72748 17.4662L10.9004 17.6795C10.9804 17.2395 11.4069 16.9462 11.8601 17.0262C12.3 17.1062 12.5932 17.5329 12.5266 17.9729L13.6995 18.1995C13.8995 17.1062 13.1797 16.0662 12.0867 15.8662H12.0734Z" fill="white"/></svg>
+                        </div>
+                    </div>
+                    <div class="copilot-layout__breadcrumb">Analytics<br><strong>Revenue Dashboard</strong></div>
+                    <div class="copilot-layout__body">
+                        <div class="copilot-layout__content" style="flex:1;">
+                            <div class="copilot-layout__content-title">Monthly Revenue</div>
+                            <div class="copilot-layout__content-meta">Jan 2025 &mdash; Dec 2025</div>
+                            <div style="height:80px; margin-top:12px; background:linear-gradient(to right, #e8f3fc 10%, #1a78c1 50%, #e8f3fc 90%); border-radius:4px; opacity:0.3;"></div>
+                            <div style="height:40px; margin-top:12px; background:#f5f6fa; border-radius:4px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="copilot-panel">
+                    <div class="copilot-panel__header">
+                        <div class="copilot-demo__avatar" style="width:28px;height:28px;font-size:12px;">Z</div>
+                        <div style="font-size:14px; font-weight:600; color:#0a0a0a;">Glow</div>
+                    </div>
+                    <div class="copilot-panel__thread">
+                        <div class="copilot-demo__msg copilot-demo__msg--user" style="font-size:12px;">What's our best performing service this quarter?</div>
+                        <div class="copilot-demo__msg copilot-demo__msg--ai" style="font-size:12px;">
+                            <span class="ai-tag">&#10024; Glow</span>
+                            Facials are your top performer at $40K revenue (+31% QoQ). Massage follows at $20K (+18%).
+                        </div>
+                    </div>
+                    <div class="copilot-panel__prompt">
+                        <div class="glow-prompt-box glow-prompt-box--sidebar glow-prompt-box--idle" data-theme="ruby" style="max-width:100%;padding:0;">
+                            <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                <div class="glow-prompt-box__input-row" style="padding:8px 12px 0;gap:6px;">
+                                    <span class="glow-prompt-box__sparkle" style="margin-top:0;"><svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#static-sparkle-1)"/></svg></span>
+                                    <textarea class="glow-prompt-box__textarea" placeholder="Ask Glow..." rows="1" disabled style="font-size:12px;line-height:18px;"></textarea>
+                                </div>
+                                <div class="glow-prompt-box__toolbar" style="padding:4px 12px 8px;">
+                                    <button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button>
+                                    <button class="glow-prompt-box__action-btn" style="color:#9E9E9E;"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button>
+                                </div>
+                            </div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="heading-3">Design Hierarchy</h3>
+            <table class="properties-table">
+                <thead><tr><th>Layout</th><th>Left Zone</th><th>Right Zone</th><th>AI Entry Point</th></tr></thead>
+                <tbody>
+                    <tr><td>Collapsed</td><td>Full product UI</td><td>&mdash;</td><td>FAB bubble (bottom-right)</td></tr>
+                    <tr><td>Expanded</td><td>Compressed product UI</td><td>330px Ruby sidebar</td><td>Sidebar prompt box</td></tr>
+                    <tr><td>Full Page</td><td>&mdash;</td><td>&mdash;</td><td>Centered prompt + suggestion cards</td></tr>
+                    <tr><td>Overlay</td><td>Dimmed dashboard (blur)</td><td>&mdash;</td><td>Centered "Command Palette" prompt</td></tr>
+                    <tr><td>Panel</td><td>Dashboard visible</td><td>360px persistent panel</td><td>Sidebar prompt + thread</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <!-- ===== Hub Theme Toggle ===== -->
+    <script>
+    function setHubTheme(theme) {
+        document.body.setAttribute('data-hub-theme', '');
+        document.querySelectorAll('.ai-hub__theme-btn').forEach(function(btn) {
+            btn.classList.toggle('ai-hub__theme-btn--active', btn.getAttribute('data-hub-theme') === theme);
+        });
+    }
+    </script>
+
+    <!-- ===== Main Playground State Machine ===== -->
+    <script>
+    (function() {
+        var box = document.getElementById('mainPromptBox');
+        var textarea = document.getElementById('mainTextarea');
+        var actionBtn = document.getElementById('actionBtn');
+        var streamArea = document.getElementById('streamArea');
+        var ghostTranscript = document.getElementById('ghostTranscript');
+        var playground = document.getElementById('demoPlayground');
+        var micBtn = document.getElementById('micBtn');
+        var threadBubble = document.getElementById('threadBubble');
+        var helperText = document.getElementById('helperText');
+
+        var currentState = 'idle';
+        var streamInterval = null;
+        var transcriptInterval = null;
+        var bufferTimeout = null;
+        var autoStopTimeout = null;
+
+        var STREAM_TEXT = "Revenue grew 12.4% quarter-over-quarter, driven primarily by a 23% increase in service bookings during December. The top performing services were Facials (+31%), Massage (+18%), and Hair Color (+15%). Facials also had the highest repeat booking rate at 42%.";
+        var TRANSCRIPT_PHRASES = ["I'm listening...", "Find all guests who haven't...", "Find all guests who haven't visited in 6 months...", "Find all guests who haven't visited in 6 months and live within..."];
+
+        document.getElementById('demoControls').addEventListener('click', function(e) {
+            var btn = e.target.closest('.demo-btn');
+            if (!btn) return;
+            var control = btn.dataset.control;
+            var value = btn.dataset.value;
+            btn.parentElement.querySelectorAll('.demo-btn').forEach(function(b) { b.classList.remove('demo-btn--active'); });
+            btn.classList.add('demo-btn--active');
+            if (control === 'state') { clearError(); setState(value); }
+            if (control === 'layout') setLayout(value);
+            if (control === 'theme') setTheme(value);
+            if (control === 'whisper') {
+                box.setAttribute('data-whisper', value);
+                if (value === 'false') micBtn.classList.add('glow-prompt-box__mic-btn--blocked');
+                else micBtn.classList.remove('glow-prompt-box__mic-btn--blocked');
+            }
+            if (control === 'error') triggerError(value);
+        });
+
+        function setState(state) {
+            clearInterval(streamInterval);
+            clearInterval(transcriptInterval);
+            clearTimeout(bufferTimeout);
+            clearTimeout(autoStopTimeout);
+            streamArea.innerHTML = '';
+            ghostTranscript.textContent = '';
+            box.className = box.className.replace(/glow-prompt-box--(idle|typing|generating|listening|activating)/g, '');
+            currentState = state;
+
+            if (state !== 'generating') {
+                threadBubble.classList.remove('glow-thread-bubble--visible');
+                threadBubble.textContent = '';
+            }
+
+            if (state === 'idle') {
+                box.classList.add('glow-prompt-box--idle');
+                textarea.value = '';
+                textarea.style.height = 'auto';
+                textarea.readOnly = false;
+                textarea.style.display = '';
+            }
+            if (state === 'typing') {
+                box.classList.add('glow-prompt-box--typing');
+                textarea.readOnly = false;
+                textarea.style.display = '';
+                textarea.focus();
+            }
+            if (state === 'generating') {
+                var promptText = textarea.value.trim();
+                if (promptText) {
+                    threadBubble.textContent = promptText;
+                    threadBubble.classList.add('glow-thread-bubble--visible');
+                }
+                textarea.value = '';
+                textarea.style.height = 'auto';
+                box.classList.add('glow-prompt-box--activating');
+                textarea.readOnly = true;
+                textarea.style.display = 'none';
+                bufferTimeout = setTimeout(function() {
+                    box.classList.remove('glow-prompt-box--activating');
+                    box.classList.add('glow-prompt-box--generating');
+                    startStreamingSimulation();
+                }, 150);
+            }
+            if (state === 'listening') {
+                box.classList.add('glow-prompt-box--activating');
+                textarea.style.display = 'none';
+                bufferTimeout = setTimeout(function() {
+                    box.classList.remove('glow-prompt-box--activating');
+                    box.classList.add('glow-prompt-box--listening');
+                    startTranscriptSimulation();
+                }, 150);
+            }
+        }
+
+        function setLayout(layout) {
+            box.className = box.className.replace(/glow-prompt-box--(full|sidebar|overlay)/g, '');
+            box.classList.add('glow-prompt-box--' + layout);
+            playground.className = 'demo-playground';
+            if (layout === 'sidebar') playground.classList.add('demo-playground--sidebar');
+            if (layout === 'overlay') playground.classList.add('demo-playground--overlay');
+        }
+
+        function setTheme(theme) {
+            box.setAttribute('data-theme', theme);
+            var gradientColors = {
+                ruby:   ['#C0429F', '#E082C0', '#FBECD6', '#E082C0']
+            };
+            var colors = gradientColors[theme] || gradientColors.ruby;
+            box.querySelectorAll('linearGradient stop').forEach(function(stop, i) {
+                var idx = i % 4;
+                stop.setAttribute('stop-color', colors[idx]);
+            });
+
+            var accentColors = { ruby: '#C0429F' };
+            var bgColors = { ruby: 'rgba(192, 66, 159, 0.06)' };
+            var bodyTextColors = { ruby: '#4a4a4a' };
+            var accent = accentColors[theme] || accentColors.ruby;
+            var visionTitle = document.querySelector('.vision-header__title');
+            var visionBody = document.querySelector('.vision-header__body');
+            var visionBorder = document.querySelector('.vision-header');
+            if (visionTitle) visionTitle.style.color = accent;
+            if (visionBody) visionBody.style.color = bodyTextColors[theme] || bodyTextColors.ruby;
+            if (visionBorder) {
+                visionBorder.style.borderLeftColor = accent;
+                visionBorder.style.background = bgColors[theme] || bgColors.ruby;
+            }
+        }
+
+        textarea.addEventListener('input', function() {
+            if (currentState === 'idle' && this.value.length > 0) {
+                setState('typing');
+                var typingBtn = document.querySelector('[data-control="state"][data-value="typing"]');
+                if (typingBtn) typingBtn.click();
+            }
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 320) + 'px';
+            this.style.overflowY = this.scrollHeight > 320 ? 'auto' : 'hidden';
+        });
+
+        textarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey && currentState === 'typing') {
+                e.preventDefault();
+                setState('generating');
+                var genBtn = document.querySelector('[data-control="state"][data-value="generating"]');
+                if (genBtn) {
+                    genBtn.parentElement.querySelectorAll('.demo-btn').forEach(function(b) { b.classList.remove('demo-btn--active'); });
+                    genBtn.classList.add('demo-btn--active');
+                }
+            }
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                textarea.value = '';
+                textarea.style.height = 'auto';
+                setState('idle');
+                var idleBtn = document.querySelector('[data-control="state"][data-value="idle"]');
+                if (idleBtn) {
+                    idleBtn.parentElement.querySelectorAll('.demo-btn').forEach(function(b) { b.classList.remove('demo-btn--active'); });
+                    idleBtn.classList.add('demo-btn--active');
+                }
+            }
+        });
+
+        micBtn.addEventListener('click', function() {
+            if (currentState === 'idle') {
+                setState('listening');
+                var listenBtn = document.querySelector('[data-control="state"][data-value="listening"]');
+                if (listenBtn) {
+                    listenBtn.parentElement.querySelectorAll('.demo-btn').forEach(function(b) { b.classList.remove('demo-btn--active'); });
+                    listenBtn.classList.add('demo-btn--active');
+                }
+            }
+        });
+
+        actionBtn.addEventListener('click', function() {
+            if (currentState === 'idle') {
+                if (textarea.value.trim()) {
+                    setState('generating');
+                    syncStateButton('generating');
+                }
+            } else if (currentState === 'typing') {
+                setState('generating');
+                syncStateButton('generating');
+            } else if (currentState === 'generating') {
+                setState('idle');
+                syncStateButton('idle');
+            } else if (currentState === 'listening') {
+                setState('typing');
+                textarea.value = ghostTranscript.textContent;
+                syncStateButton('typing');
+            }
+        });
+
+        function syncStateButton(val) {
+            var btn = document.querySelector('[data-control="state"][data-value="' + val + '"]');
+            if (btn) {
+                btn.parentElement.querySelectorAll('.demo-btn').forEach(function(b) { b.classList.remove('demo-btn--active'); });
+                btn.classList.add('demo-btn--active');
+            }
+        }
+
+        function startStreamingSimulation() {
+            var words = STREAM_TEXT.split(' ');
+            var idx = 0;
+            streamArea.innerHTML = '';
+            streamInterval = setInterval(function() {
+                if (idx >= words.length) { clearInterval(streamInterval); return; }
+                var span = document.createElement('span');
+                span.className = 'glow-prompt-box__stream-word';
+                span.textContent = words[idx] + ' ';
+                streamArea.appendChild(span);
+                streamArea.scrollTop = streamArea.scrollHeight;
+                idx++;
+            }, 60);
+        }
+
+        function triggerError(type) {
+            clearError();
+            if (type === 'validation') {
+                box.classList.add('glow-prompt-box--validation-error');
+                helperText.innerHTML = 'Please enter a prompt to begin.';
+                setTimeout(function() {
+                    box.classList.remove('glow-prompt-box--validation-error');
+                }, 2000);
+            }
+            if (type === 'system') {
+                clearInterval(streamInterval);
+                box.className = box.className.replace(/glow-prompt-box--(idle|typing|generating|listening|activating)/g, '');
+                box.classList.add('glow-prompt-box--system-error');
+                textarea.style.display = '';
+                textarea.readOnly = false;
+                if (!textarea.value && streamArea.textContent) {
+                    textarea.value = streamArea.textContent;
+                }
+                helperText.innerHTML = 'Glow is having a moment. <a onclick="triggerRetry()">Retry?</a>';
+                currentState = 'system-error';
+            }
+            if (type === 'clear') {
+                clearError();
+            }
+        }
+
+        function clearError() {
+            box.classList.remove('glow-prompt-box--validation-error');
+            box.classList.remove('glow-prompt-box--system-error');
+            helperText.innerHTML = '';
+        }
+
+        window.triggerRetry = function() {
+            clearError();
+            setState('generating');
+            syncStateButton('generating');
+        };
+
+        function startTranscriptSimulation() {
+            var idx = 0;
+            clearTimeout(autoStopTimeout);
+            transcriptInterval = setInterval(function() {
+                if (idx >= TRANSCRIPT_PHRASES.length) {
+                    clearInterval(transcriptInterval);
+                    autoStopTimeout = setTimeout(function() {
+                        if (currentState === 'listening') {
+                            textarea.value = ghostTranscript.textContent;
+                            setState('typing');
+                            syncStateButton('typing');
+                        }
+                    }, 2000);
+                    return;
+                }
+                ghostTranscript.textContent = TRANSCRIPT_PHRASES[idx];
+                idx++;
+            }, 1200);
+        }
+
+        // ===== Copilot Layout Tabs =====
+        var copilotLayouts = {
+            collapsed: document.getElementById('copilotCollapsed'),
+            expanded: document.getElementById('copilotExpanded'),
+            fullpage: document.getElementById('copilotFullpage'),
+            overlay: document.getElementById('copilotOverlay'),
+            panel: document.getElementById('copilotPanel')
+        };
+
+        document.getElementById('copilotTabs').addEventListener('click', function(e) {
+            var tab = e.target.closest('.copilot-tab');
+            if (!tab) return;
+            var layout = tab.dataset.copilot;
+            this.querySelectorAll('.copilot-tab').forEach(function(t) { t.classList.remove('copilot-tab--active'); });
+            tab.classList.add('copilot-tab--active');
+            Object.keys(copilotLayouts).forEach(function(k) {
+                if (copilotLayouts[k]) {
+                    copilotLayouts[k].style.display = k === layout ? 'flex' : 'none';
+                    if (k === layout) copilotLayouts[k].classList.add('copilot-layout--visible');
+                    else copilotLayouts[k].classList.remove('copilot-layout--visible');
+                }
+            });
+        });
+
+        // FAB click -> switch to Expanded
+        document.getElementById('copilotFab').addEventListener('click', function() {
+            document.querySelector('[data-copilot="expanded"]').click();
+        });
+
+        // Chip click -> populate sidebar thread
+        var sidebarThread = document.getElementById('copilotThread');
+        document.getElementById('copilotChips').addEventListener('click', function(e) {
+            var chip = e.target.closest('.copilot-demo__chip');
+            if (!chip) return;
+            var prompt = chip.dataset.chipPrompt;
+            if (!prompt) return;
+
+            var userMsg = document.createElement('div');
+            userMsg.className = 'copilot-demo__msg copilot-demo__msg--user';
+            userMsg.textContent = prompt;
+            sidebarThread.appendChild(userMsg);
+            sidebarThread.scrollTop = sidebarThread.scrollHeight;
+
+            setTimeout(function() {
+                var aiMsg = document.createElement('div');
+                aiMsg.className = 'copilot-demo__msg copilot-demo__msg--ai';
+                aiMsg.innerHTML = '<span class="ai-tag">&#10024; Glow</span>Based on your campaign data and audience segments, I recommend focusing on email as the primary channel with SMS follow-ups for high-value segments.';
+                sidebarThread.appendChild(aiMsg);
+                sidebarThread.scrollTop = sidebarThread.scrollHeight;
+            }, 1500);
+        });
+
+        // Canvas chip click -> transition from fresh to split view
+        var canvasChips = document.getElementById('canvasChips');
+        var canvasFresh = document.getElementById('canvasFresh');
+        var canvasSplit = document.getElementById('canvasSplit');
+        if (canvasChips) {
+            canvasChips.addEventListener('click', function(e) {
+                var chip = e.target.closest('.copilot-canvas__fresh-chip');
+                if (!chip) return;
+                canvasFresh.style.display = 'none';
+                canvasSplit.classList.add('copilot-canvas__split--active');
+            });
+        }
+
+    })();
+
+    // Scroll spy for jump links
+    (function() {
+        var links = document.querySelectorAll('.ai-hub__jump-links a[href^="#"]');
+        var sections = [];
+        links.forEach(function(a) {
+            var id = a.getAttribute('href').slice(1);
+            var el = document.getElementById(id);
+            if (el) sections.push({ el: el, link: a });
+        });
+        window.addEventListener('scroll', function() {
+            var scrollPos = window.scrollY + 160;
+            var active = null;
+            sections.forEach(function(s) {
+                if (s.el.offsetTop <= scrollPos) active = s;
+            });
+            links.forEach(function(a) { a.classList.remove('active'); });
+            if (active) active.link.classList.add('active');
+        }, { passive: true });
+    })();
+    </script>
+</body>
+</html>

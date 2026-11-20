@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust &amp; Governance - AI Design Hub</title>
+    <link rel="stylesheet" href="./styles/ai-hub.css" />
+    <style>
+        /* ===== Trust & Governance — visual showcase components ===== */
+        .tg-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 20px 0; }
+        .tg-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+
+        /* --- Confidence Scale cards --- */
+        .tg-conf-card {
+            border-radius: 12px; border: 1px solid rgba(40, 30, 20, 0.08);
+            background: white; padding: 20px; display: flex; flex-direction: column;
+        }
+        .tg-conf-card__swatch { width: 100%; height: 6px; border-radius: 4px; margin-bottom: 16px; }
+        .tg-conf-card__badge {
+            display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+            padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 14px;
+        }
+        .tg-conf-card__badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .tg-conf-card__score { font-size: 26px; font-weight: 700; color: #1C1917; line-height: 1; }
+        .tg-conf-card__threshold { font-size: 12px; color: #78716C; margin: 4px 0 16px; }
+        .tg-conf-card__snippet {
+            background: #FAF8F6; border: 1px solid rgba(40, 30, 20, 0.06); border-radius: 8px;
+            padding: 12px 14px; font-size: 13px; color: #44403C; line-height: 1.55;
+        }
+        .tg-conf-card__snippet-label {
+            font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            color: #A8A29E; margin-bottom: 6px; display: block;
+        }
+
+        /* --- Visual Indicators grid --- */
+        .tg-ind-card {
+            border-radius: 12px; border: 1px solid rgba(40, 30, 20, 0.07);
+            background: rgba(250, 248, 246, 0.6); padding: 20px;
+        }
+        .tg-ind-card__label {
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+            color: #78716C; margin-bottom: 4px;
+        }
+        .tg-ind-card__desc { font-size: 12px; color: #8A8580; margin-bottom: 16px; }
+        .tg-ind-card__preview {
+            display: flex; align-items: center; justify-content: center; min-height: 72px;
+            background: white; border-radius: 8px; border: 1px solid rgba(40, 30, 20, 0.06); padding: 16px;
+        }
+        .tg-badge-pill {
+            display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600; background: #E7F4E8; color: #1E6421;
+        }
+        .tg-progress-track {
+            width: 100%; height: 10px; border-radius: 6px; overflow: hidden; display: flex; position: relative;
+        }
+        .tg-progress-seg { height: 100%; }
+        .tg-progress-marker {
+            position: absolute; top: -4px; width: 2px; height: 18px; background: #1C1917;
+        }
+        .tg-inline-label-demo { font-size: 13px; color: #44403C; line-height: 1.6; }
+        .tg-inline-label-demo sup {
+            font-size: 10px; font-weight: 700; color: #B8860B; background: #FFF1BF;
+            padding: 1px 5px; border-radius: 4px; margin-left: 4px; vertical-align: middle;
+        }
+        .tg-tooltip-trigger {
+            display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+            color: var(--hub-accent); cursor: pointer; list-style: none;
+        }
+        .tg-tooltip-trigger::-webkit-details-marker { display: none; }
+        .tg-tooltip-body {
+            margin-top: 10px; font-size: 12px; color: #57534E; background: white;
+            border: 1px solid rgba(40, 30, 20, 0.08); border-radius: 8px; padding: 10px 12px; line-height: 1.55;
+        }
+
+        /* --- Error Patterns: live states --- */
+        .tg-error-card {
+            border-radius: 12px; padding: 20px; border: 1px solid;
+        }
+        .tg-error-card--validation { background: rgba(197, 93, 39, 0.05); border-color: rgba(197, 93, 39, 0.25); }
+        .tg-error-card--connection { background: rgba(159, 18, 57, 0.05); border-color: rgba(159, 18, 57, 0.2); }
+        .tg-error-card--permission { background: rgba(87, 83, 78, 0.05); border-color: rgba(87, 83, 78, 0.18); }
+        .tg-error-card--ratelimit { background: rgba(184, 134, 11, 0.06); border-color: rgba(184, 134, 11, 0.22); }
+        .tg-error-card__label {
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;
+        }
+        .tg-error-card--validation .tg-error-card__label { color: #C55D27; }
+        .tg-error-card--connection .tg-error-card__label { color: #9F1239; }
+        .tg-error-card--permission .tg-error-card__label { color: #57534E; }
+        .tg-error-card--ratelimit .tg-error-card__label { color: #B8860B; }
+        .tg-error-input {
+            width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 8px;
+            font-size: 13px; font-family: Lato, sans-serif; background: white; color: #44403C;
+        }
+        .tg-error-card--validation .tg-error-input {
+            border: 1.5px solid #C55D27; box-shadow: 0 0 0 3px rgba(197, 93, 39, 0.12);
+            animation: tg-shake 400ms ease;
+        }
+        @keyframes tg-shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-4px); }
+            40% { transform: translateX(4px); }
+            60% { transform: translateX(-3px); }
+            80% { transform: translateX(3px); }
+        }
+        .tg-error-hint { font-size: 12px; margin-top: 8px; display: flex; align-items: center; gap: 6px; }
+        .tg-error-card--validation .tg-error-hint { color: #C55D27; }
+        .tg-error-card--connection .tg-error-hint { color: #9F1239; }
+        .tg-error-timer-dot {
+            width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+            animation: tg-pulse 1.4s ease-in-out infinite;
+        }
+        @keyframes tg-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        .tg-error-card__body {
+            font-size: 13px; color: #44403C; background: white; border-radius: 8px;
+            padding: 10px 12px; border: 1px solid rgba(40, 30, 20, 0.06); margin-bottom: 10px;
+        }
+        .tg-retry-btn {
+            display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700;
+            color: #9F1239; background: none; border: none; cursor: pointer; padding: 0;
+            text-decoration: underline; text-underline-offset: 2px;
+        }
+        .tg-cooldown-track {
+            width: 100%; height: 6px; border-radius: 4px; background: rgba(184, 134, 11, 0.15);
+            overflow: hidden; margin: 10px 0 8px;
+        }
+        .tg-cooldown-fill {
+            height: 100%; width: 35%; background: #B8860B; border-radius: 4px;
+        }
+
+        /* --- Anti-Patterns: Do / Don't pairs --- */
+        .tg-antipattern { margin-bottom: 28px; }
+        .tg-antipattern:last-child { margin-bottom: 0; }
+        .tg-antipattern__title { font-size: 15px; font-weight: 700; color: #1C1917; margin: 0 0 10px; }
+        .tg-antipattern__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .tg-ap-card { border-radius: 12px; padding: 20px; border: 1px solid; }
+        .tg-ap-card--dont { background: rgba(155, 44, 44, 0.045); border-color: rgba(155, 44, 44, 0.18); }
+        .tg-ap-card--do { background: rgba(30, 100, 33, 0.045); border-color: rgba(30, 100, 33, 0.18); }
+        .tg-ap-card__tag {
+            display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px;
+        }
+        .tg-ap-card--dont .tg-ap-card__tag { color: #9B2C2C; }
+        .tg-ap-card--do .tg-ap-card__tag { color: #1E6421; }
+        .tg-ap-card__body { font-size: 13px; color: #44403C; line-height: 1.55; margin: 0; }
+
+        /* --- Feature Checklist --- */
+        .tg-checklist-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin: 16px 0 12px; flex-wrap: wrap; gap: 8px;
+        }
+        .tg-checklist__counter {
+            font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 20px;
+            background: rgba(184, 134, 11, 0.12); color: #8A6512; transition: all 200ms ease;
+        }
+        .tg-checklist__counter--complete { background: #E7F4E8; color: #1E6421; }
+        .tg-checklist { display: flex; flex-direction: column; gap: 6px; }
+        .tg-checklist__item {
+            display: flex; align-items: center; justify-content: space-between; gap: 16px;
+            padding: 14px 16px; border-radius: 8px; border: 1px solid rgba(40, 30, 20, 0.07);
+            background: white; transition: border-color 150ms ease, background 150ms ease;
+        }
+        .tg-checklist__item--checked { border-color: rgba(30, 100, 33, 0.25); background: rgba(30, 100, 33, 0.03); }
+        .tg-checklist__item-title { font-size: 13px; font-weight: 600; color: #1C1917; margin: 0 0 2px; }
+        .tg-checklist__item-desc { font-size: 12px; color: #78716C; margin: 0; }
+        .tg-switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; cursor: pointer; }
+        .tg-switch__input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+        .tg-switch__track { position: absolute; inset: 0; background: #D6D3D1; border-radius: 999px; transition: background 150ms ease; }
+        .tg-switch__thumb {
+            position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%;
+            background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.15); transition: transform 150ms ease;
+        }
+        .tg-switch__input:checked + .tg-switch__track { background: #1E6421; }
+        .tg-switch__input:checked + .tg-switch__track .tg-switch__thumb { transform: translateX(18px); }
+        .tg-switch__input:focus-visible + .tg-switch__track { outline: 2px solid var(--hub-accent); outline-offset: 2px; }
+    </style>
+</head>
+<body class="ai-hub">
+    <nav class="ai-hub__nav">
+        <div class="ai-hub__nav-inner">
+        <div class="ai-hub__nav-links">
+            <a href="index.html">Hub</a>
+            <a href="ai-foundations.html">Foundations</a>
+            <a href="ai-visual-language.html">Visual Language</a>
+            <a href="ai-components.html">Components</a>
+            <a href="ai-trust.html" class="active">Trust &amp; Governance</a>
+        </div>
+        </div>
+    </nav>
+    <main class="ai-hub__content">
+        <div class="ai-hub__jump-links">
+            <a href="#confidence">Confidence Scale</a>
+            <a href="#indicators">Visual Indicators</a>
+            <a href="#processing">Processing States</a>
+            <a href="#errors">Error Patterns</a>
+            <a href="#anti-patterns">Anti-Patterns</a>
+            <a href="#checklist">Checklist</a>
+        </div>
+        <div class="ai-hub__header">
+            <h1 class="ai-hub__title">Trust &amp; Governance</h1>
+            <p class="ai-hub__subtitle">Confidence indicators, processing state logic, error handling, and anti-patterns that ensure AI interactions are transparent and trustworthy.</p>
+        </div>
+
+        <section id="confidence" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Confidence Scale</h2>
+            <p class="ai-hub__section-desc">AI outputs communicate their reliability through a 3-tier confidence system mapped to the design system's semantic color families.</p>
+
+            <div class="tg-grid-3">
+                <div class="tg-conf-card">
+                    <div class="tg-conf-card__swatch" style="background:#1E6421;"></div>
+                    <span class="tg-conf-card__badge" style="background:#E7F4E8; color:#1E6421;"><span class="tg-conf-card__badge-dot"></span>Confident</span>
+                    <div class="tg-conf-card__score">90%+</div>
+                    <div class="tg-conf-card__threshold">Emerald &middot; #1E6421 / #E7F4E8</div>
+                    <div class="tg-conf-card__snippet">
+                        <span class="tg-conf-card__snippet-label">Glow</span>
+                        Revenue grew 12.4% quarter-over-quarter, driven primarily by service bookings.
+                    </div>
+                </div>
+                <div class="tg-conf-card">
+                    <div class="tg-conf-card__swatch" style="background:#B8860B;"></div>
+                    <span class="tg-conf-card__badge" style="background:#FFF1BF; color:#8A6512;"><span class="tg-conf-card__badge-dot"></span>Likely</span>
+                    <div class="tg-conf-card__score">60&ndash;89%</div>
+                    <div class="tg-conf-card__threshold">Goldenrod &middot; #B8860B / #FFF1BF</div>
+                    <div class="tg-conf-card__snippet">
+                        <span class="tg-conf-card__snippet-label">Glow</span>
+                        This client is likely to rebook within 2 weeks based on past visit patterns.
+                    </div>
+                </div>
+                <div class="tg-conf-card">
+                    <div class="tg-conf-card__swatch" style="background:#C55D27;"></div>
+                    <span class="tg-conf-card__badge" style="background:#FFEEE3; color:#C55D27;"><span class="tg-conf-card__badge-dot"></span>Uncertain</span>
+                    <div class="tg-conf-card__score">&lt;60%</div>
+                    <div class="tg-conf-card__threshold">Terracotta &middot; #C55D27 / #FFEEE3</div>
+                    <div class="tg-conf-card__snippet">
+                        <span class="tg-conf-card__snippet-label">Glow</span>
+                        I found a possible match, but the data is limited &mdash; please verify before acting.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="indicators" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Visual Indicators</h2>
+            <p class="ai-hub__section-desc">Confidence is communicated through color-coded badges, progress bars, and inline labels adjacent to AI outputs.</p>
+
+            <div class="tg-grid-2">
+                <div class="tg-ind-card">
+                    <div class="tg-ind-card__label">Badge</div>
+                    <div class="tg-ind-card__desc">Single AI-generated items &mdash; suggestions, summaries.</div>
+                    <div class="tg-ind-card__preview">
+                        <span class="tg-badge-pill"><span class="tg-conf-card__badge-dot"></span>92% Confident</span>
+                    </div>
+                </div>
+                <div class="tg-ind-card">
+                    <div class="tg-ind-card__label">Progress Bar</div>
+                    <div class="tg-ind-card__desc">Batch results with varying confidence across a set.</div>
+                    <div class="tg-ind-card__preview" style="flex-direction:column; align-items:stretch; gap:8px;">
+                        <div class="tg-progress-track">
+                            <div class="tg-progress-seg" style="width:55%; background:#1E6421;"></div>
+                            <div class="tg-progress-seg" style="width:30%; background:#B8860B;"></div>
+                            <div class="tg-progress-seg" style="width:15%; background:#C55D27;"></div>
+                        </div>
+                        <div style="font-size:11px; color:#78716C;">55% confident &middot; 30% likely &middot; 15% uncertain</div>
+                    </div>
+                </div>
+                <div class="tg-ind-card">
+                    <div class="tg-ind-card__label">Inline Label</div>
+                    <div class="tg-ind-card__desc">AI-generated text within mixed, human-authored content.</div>
+                    <div class="tg-ind-card__preview">
+                        <p class="tg-inline-label-demo">Best time to post: Thursday, 2&ndash;4 PM<sup>Likely</sup></p>
+                    </div>
+                </div>
+                <div class="tg-ind-card">
+                    <div class="tg-ind-card__label">Tooltip</div>
+                    <div class="tg-ind-card__desc">Additional context on hover or tap.</div>
+                    <div class="tg-ind-card__preview">
+                        <details>
+                            <summary class="tg-tooltip-trigger">&#9432; Why this confidence?</summary>
+                            <div class="tg-tooltip-body">Based on 128 similar bookings over the last 90 days, with a 94% historical accuracy rate for this prediction type.</div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="processing" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Processing States</h2>
+            <p class="ai-hub__section-desc">Every AI interaction follows a state lifecycle. Each state has specific visual and behavioral rules.</p>
+            <table class="ai-hub__table">
+                <thead><tr><th>State</th><th>Duration</th><th>Visual</th><th>User Action</th></tr></thead>
+                <tbody>
+                    <tr><td>Loading / Thinking</td><td>0-3s</td><td>Shimmer animation, "Analyzing..." text</td><td>Wait or cancel</td></tr>
+                    <tr><td>Streaming / Progressive</td><td>3-30s</td><td>Text appears word-by-word with fade-in</td><td>Read as it generates, stop early</td></tr>
+                    <tr><td>Success</td><td>Instant</td><td>Content appears, confidence badge shown</td><td>Accept, edit, or dismiss</td></tr>
+                    <tr><td>Error</td><td>Instant</td><td>Orange stroke (#C55D27), helper text</td><td>Retry, edit prompt, or dismiss</td></tr>
+                    <tr><td>Timeout</td><td>After 30s</td><td>Desaturated border, retry icon</td><td>Retry or try different approach</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="errors" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Error Patterns</h2>
+            <p class="ai-hub__section-desc">Error handling follows the "Amber Standard" &mdash; a universal caution language that overrides theme colors.</p>
+
+            <div class="tg-grid-2">
+                <div class="tg-error-card tg-error-card--validation">
+                    <div class="tg-error-card__label">Validation &middot; Empty prompt submitted</div>
+                    <input class="tg-error-input" type="text" value="" placeholder="Ask Glow a question...">
+                    <div class="tg-error-hint"><span class="tg-error-timer-dot"></span>Please enter a prompt to begin &mdash; auto-clears in 2s</div>
+                </div>
+                <div class="tg-error-card tg-error-card--connection">
+                    <div class="tg-error-card__label">System / Connection &middot; API failure, timeout</div>
+                    <div class="tg-error-card__body">Summarize my top 5 customers from last month.</div>
+                    <button class="tg-retry-btn" type="button">&#8635; Glow is having a moment. Retry?</button>
+                </div>
+                <div class="tg-error-card tg-error-card--permission">
+                    <div class="tg-error-card__label">Permission &middot; Mic blocked, feature disabled</div>
+                    <div class="tg-error-card__body" style="display:flex; align-items:center; gap:8px; color:#78716C;">&#128683; Microphone access is blocked</div>
+                    <button class="tg-retry-btn" style="color:#57534E;" type="button">Open Settings &rarr;</button>
+                </div>
+                <div class="tg-error-card tg-error-card--ratelimit">
+                    <div class="tg-error-card__label">Rate Limit &middot; Too many requests</div>
+                    <div class="tg-cooldown-track"><div class="tg-cooldown-fill"></div></div>
+                    <div class="tg-error-hint" style="color:#8A6512;">Cooling down &mdash; submit re-enables in 8s</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="anti-patterns" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Anti-Patterns</h2>
+            <p class="ai-hub__section-desc">Documented mistakes to avoid when designing AI interactions &mdash; paired with the approved fix.</p>
+
+            <div class="tg-antipattern">
+                <h3 class="tg-antipattern__title">Overconfident AI</h3>
+                <div class="tg-antipattern__pair">
+                    <div class="tg-ap-card tg-ap-card--dont">
+                        <div class="tg-ap-card__tag">&#10007; Don't</div>
+                        <p class="tg-ap-card__body">Present AI outputs without confidence indicators, making users assume 100% accuracy.</p>
+                    </div>
+                    <div class="tg-ap-card tg-ap-card--do">
+                        <div class="tg-ap-card__tag">&#10003; Do</div>
+                        <p class="tg-ap-card__body">Always show confidence level. Use the 3-tier scale. Never hide uncertainty.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tg-antipattern">
+                <h3 class="tg-antipattern__title">Black Box Responses</h3>
+                <div class="tg-antipattern__pair">
+                    <div class="tg-ap-card tg-ap-card--dont">
+                        <div class="tg-ap-card__tag">&#10007; Don't</div>
+                        <p class="tg-ap-card__body">Provide answers without explaining reasoning or data sources.</p>
+                    </div>
+                    <div class="tg-ap-card tg-ap-card--do">
+                        <div class="tg-ap-card__tag">&#10003; Do</div>
+                        <p class="tg-ap-card__body">Include "Why?" expandable sections. Link to source data. Show the reasoning chain.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tg-antipattern">
+                <h3 class="tg-antipattern__title">Unrecoverable Actions</h3>
+                <div class="tg-antipattern__pair">
+                    <div class="tg-ap-card tg-ap-card--dont">
+                        <div class="tg-ap-card__tag">&#10007; Don't</div>
+                        <p class="tg-ap-card__body">Execute irreversible actions (sending emails, deleting records) without confirmation.</p>
+                    </div>
+                    <div class="tg-ap-card tg-ap-card--do">
+                        <div class="tg-ap-card__tag">&#10003; Do</div>
+                        <p class="tg-ap-card__body">Always require explicit confirmation for destructive actions. Use "Review before sending" patterns.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tg-antipattern">
+                <h3 class="tg-antipattern__title">Notification Overload</h3>
+                <div class="tg-antipattern__pair">
+                    <div class="tg-ap-card tg-ap-card--dont">
+                        <div class="tg-ap-card__tag">&#10007; Don't</div>
+                        <p class="tg-ap-card__body">Generate too many suggestions at once, overwhelming the user.</p>
+                    </div>
+                    <div class="tg-ap-card tg-ap-card--do">
+                        <div class="tg-ap-card__tag">&#10003; Do</div>
+                        <p class="tg-ap-card__body">Use progressive disclosure. Show the top 1&ndash;3 suggestions, hide the rest behind "Show more."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="checklist" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">AI Feature Checklist</h2>
+            <p class="ai-hub__section-desc">Before shipping any AI feature, verify these requirements.</p>
+
+            <div class="tg-checklist-header">
+                <span style="font-size:12px; color:#78716C;">Governance sign-off</span>
+                <span class="tg-checklist__counter" id="checklistCounter">0 of 7 standards verified</span>
+            </div>
+
+            <div class="tg-checklist" id="checklistList">
+                <label class="tg-checklist__item" data-checklist-row>
+                    <span>
+                        <span class="tg-checklist__item-title">Attribution</span>
+                        <span class="tg-checklist__item-desc">AI-generated content is clearly labeled</span>
+                    </span>
+                    <span class="tg-switch"><input class="tg-switch__input" type="checkbox" data-checklist-item="attribution"><span class="tg-switch__track"><span class="tg-switch__thumb"></span></span></span>
+                </label>
+                <label class="tg-checklist__item" data-checklist-row>
+                    <span>
+                        <span class="tg-checklist__item-title">Confidence</span>
+                        <span class="tg-checklist__item-desc">Outputs show appropriate confidence level</span>
+                    </span>
+                    <span class="tg-switch"><input class="tg-switch__input" type="checkbox" data-checklist-item="confidence"><span class="tg-switch__track"><span class="tg-switch__thumb"></span></span></span>
+                </label>
+                <label class="tg-checklist__item" data-checklist-row>
+                    <span>
+                        <span class="tg-checklist__item-title">Control</span>
+                        <span class="tg-checklist__item-desc">Users can edit, dismiss, or override AI outputs</span>
+                    </span>
+                    <span class="tg-switch"><input class="tg-switch__input" type="checkbox" data-checklist-item="control"><span class="tg-switch__track"><span class="tg-switch__thumb"></span></span></span>
+                </label>
+                <label class="tg-checklist__item" data-checklist-row>
+                    <span>
+                        <span class="tg-checklist__item-title">Error Recovery</span>
+                        <span class="tg-checklist__item-desc">Failures preserve user context and offer retry</span>
+                    </span>
+                    <span class="tg-switch"><input class="tg-switch__input" type="checkbox" data-checklist-item="error-recovery"><span class="tg-switch__track"><span class="tg-switch__thumb"></span></span></span>
+                </label>
+                <label class="tg-checklist__item" data-checklist-row>
+                    <span>
+                        <span class="tg-checklist__item-title">Accessibility</span>
+                        <span class="tg-checklist__item-desc">AI interactions are keyboard-navigable and screen-reader friendly</span>
+                    </span>
+                    <span class="tg-switch"><input class="tg-switch__input" type="checkbox" data-checklist-item="accessibility"><span class="tg-switch__track"><span class="tg-switch__thumb"></span></span></span>
+                </label>
+                <label class="tg-checklist__item" data-checklist-row>
+                    <span>
+                        <span class="tg-checklist__item-title">Performance</span>
+                        <span class="tg-checklist__item-desc">Loading states appear within 200ms of action</span>
+                    </span>
+                    <span class="tg-switch"><input class="tg-switch__input" type="checkbox" data-checklist-item="performance"><span class="tg-switch__track"><span class="tg-switch__thumb"></span></span></span>
+                </label>
+                <label class="tg-checklist__item" data-checklist-row>
+                    <span>
+                        <span class="tg-checklist__item-title">Privacy</span>
+                        <span class="tg-checklist__item-desc">No PII is sent to AI without user consent</span>
+                    </span>
+                    <span class="tg-switch"><input class="tg-switch__input" type="checkbox" data-checklist-item="privacy"><span class="tg-switch__track"><span class="tg-switch__thumb"></span></span></span>
+                </label>
+            </div>
+        </section>
+    </main>
+    <script>
+    // Continuous scroll + sticky anchor nav with scroll-spy
+    (function() {
+        var links = document.querySelectorAll('.ai-hub__jump-links a[href^="#"]');
+        var sections = [];
+        links.forEach(function(a) {
+            var id = a.getAttribute('href').slice(1);
+            var el = document.getElementById(id);
+            if (el) sections.push(el);
+        });
+        if (!sections.length) return;
+
+        function setActive(id) {
+            links.forEach(function(a) {
+                a.classList.toggle('active', a.getAttribute('href').slice(1) === id);
+            });
+        }
+
+        var navEl = document.querySelector('.ai-hub__nav');
+        var jumpEl = document.querySelector('.ai-hub__jump-links');
+        var stickyOffset = (navEl ? navEl.offsetHeight : 0) + (jumpEl ? jumpEl.offsetHeight : 0);
+
+        links.forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                var id = a.getAttribute('href').slice(1);
+                var el = document.getElementById(id);
+                if (!el) return;
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                if (window.history && history.replaceState) history.replaceState(null, '', '#' + id);
+                setActive(id);
+            });
+        });
+
+        var spyLocked = false;
+        var observer = new IntersectionObserver(function(entries) {
+            if (spyLocked) return;
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) setActive(entry.target.id);
+            });
+        }, { rootMargin: '-' + (stickyOffset + 1) + 'px 0px -70% 0px', threshold: 0 });
+        sections.forEach(function(el) { observer.observe(el); });
+
+        // Smooth-scroll clicks can briefly cross multiple sections — ignore the
+        // spy mid-flight so the clicked link stays highlighted until it settles.
+        links.forEach(function(a) {
+            a.addEventListener('click', function() {
+                spyLocked = true;
+                clearTimeout(links._unlockTimer);
+                links._unlockTimer = setTimeout(function() { spyLocked = false; }, 600);
+            });
+        });
+
+        if (window.location.hash) {
+            var initialEl = document.getElementById(window.location.hash.slice(1));
+            if (initialEl) {
+                setActive(window.location.hash.slice(1));
+                requestAnimationFrame(function() {
+                    initialEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+                });
+            } else {
+                setActive(sections[0].id);
+            }
+        } else {
+            setActive(sections[0].id);
+        }
+    })();
+
+    // Interactive governance checklist — persisted per-browser via localStorage
+    (function() {
+        var STORAGE_KEY = 'glow-trust-checklist';
+        var inputs = document.querySelectorAll('[data-checklist-item]');
+        var rows = document.querySelectorAll('[data-checklist-row]');
+        var counterEl = document.getElementById('checklistCounter');
+        var saved = {};
+        try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) {}
+
+        inputs.forEach(function(input) {
+            if (saved[input.dataset.checklistItem]) input.checked = true;
+        });
+
+        function sync() {
+            var checked = 0;
+            inputs.forEach(function(input) {
+                if (input.checked) checked++;
+                var row = input.closest('[data-checklist-row]');
+                if (row) row.classList.toggle('tg-checklist__item--checked', input.checked);
+            });
+            counterEl.textContent = checked + ' of ' + inputs.length + ' standards verified';
+            counterEl.classList.toggle('tg-checklist__counter--complete', checked === inputs.length);
+        }
+
+        inputs.forEach(function(input) {
+            input.addEventListener('change', function() {
+                var state = {};
+                inputs.forEach(function(i) { state[i.dataset.checklistItem] = i.checked; });
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+                sync();
+            });
+        });
+
+        sync();
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Prompt Box Demo - Rosewood Design System</title>
+    <link rel="stylesheet" href="../dist/styles/rosewood-base.css" />
+    <link rel="stylesheet" href="./styles/documentation.css" />
+    <style>
+        /* ===== CSS Houdini for smooth conic rotation ===== */
+        @property --glow-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        /* ===== Theme Variables ===== */
+        [data-theme="ruby"], .glow-prompt-box {
+            --glow-accent: #C0429F;
+            --glow-accent-light: #FBECD6;
+            --glow-accent-rgb: 192, 66, 159;
+            --glow-gradient-1: #C0429F;
+            --glow-gradient-2: #FA7E3F;
+            --glow-gradient-3: #FFEEE3;
+            --glow-gradient-4: #C55D27;
+            --glow-text: #0a0a0a;
+        }
+
+        /* ===== Keyframes ===== */
+        @keyframes glow-rainbow-spin {
+            from { --glow-angle: 0deg; }
+            to { --glow-angle: 360deg; }
+        }
+        @keyframes glow-pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; filter: drop-shadow(0 0 4px rgba(var(--glow-accent-rgb), 0.3)); }
+        }
+        @keyframes glow-waveform {
+            0%, 100% { transform: scaleY(0.2); }
+            50% { transform: scaleY(1.0); }
+        }
+        @keyframes glow-fade-in-up {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes glow-shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-4px); }
+            40% { transform: translateX(4px); }
+            60% { transform: translateX(-3px); }
+            80% { transform: translateX(2px); }
+        }
+        @keyframes glow-warmth-shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ===== Sparkle SVG icon (inline, matches Figma) ===== */
+        /* Large (default): 24px */
+        .glow-sparkle-svg {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        /* ===== Prompt Box — matches Figma exactly ===== */
+        .glow-prompt-box {
+            position: relative;
+            width: 100%;
+            font-family: Lato, sans-serif;
+        }
+
+        /* Border — 1px solid, not a thick ring */
+        .glow-prompt-box__border-ring {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            background: #fff;
+            transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Inner container — two-row layout per Figma */
+        .glow-prompt-box__inner {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Row 1: Sparkle + text input */
+        .glow-prompt-box__input-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 16px 16px 0 16px;
+        }
+
+        .glow-prompt-box__sparkle {
+            flex-shrink: 0;
+            margin-top: 2px;
+            animation: glow-pulse-glow 3s ease-in-out infinite;
+            line-height: 1;
+        }
+
+        .glow-prompt-box__textarea {
+            flex: 1;
+            border: none;
+            outline: none;
+            resize: none;
+            font-family: Lato, sans-serif;
+            font-size: 16px;
+            line-height: 24px;
+            letter-spacing: 0.16px;
+            color: var(--glow-text, #0a0a0a);
+            background: transparent;
+            min-height: 24px;
+            max-height: 320px;
+            overflow-y: hidden;
+            transition: height 200ms ease-out;
+        }
+        .glow-prompt-box__textarea::placeholder {
+            color: #9E9E9E;
+        }
+
+        /* Waveform (listening state) */
+        .glow-prompt-box__waveform {
+            display: none;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 2px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        .glow-prompt-box__waveform span {
+            display: block;
+            width: 3px;
+            height: 100%;
+            border-radius: 1.5px;
+            background: var(--glow-accent);
+            transform-origin: center;
+            animation: glow-waveform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite alternate;
+        }
+        .glow-prompt-box__waveform span:nth-child(1) { animation-delay: 0s; }
+        .glow-prompt-box__waveform span:nth-child(2) { animation-delay: 0.1s; }
+        .glow-prompt-box__waveform span:nth-child(3) { animation-delay: 0.2s; }
+        .glow-prompt-box__waveform span:nth-child(4) { animation-delay: 0.1s; }
+        .glow-prompt-box__waveform span:nth-child(5) { animation-delay: 0.15s; }
+
+        /* Ghost transcript */
+        .glow-prompt-box__ghost-transcript {
+            display: none;
+            font-size: 16px;
+            font-family: Lato, sans-serif;
+            font-weight: 400;
+            color: #9E9E9E;
+            line-height: 24px;
+            letter-spacing: 0.16px;
+            word-wrap: break-word;
+            flex: 1;
+        }
+
+        /* Streaming text area */
+        .glow-prompt-box__stream-area {
+            display: none;
+            font-size: 16px;
+            line-height: 24px;
+            letter-spacing: 0.16px;
+            color: var(--glow-text, #0a0a0a);
+            max-height: 280px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .glow-prompt-box__stream-word {
+            display: inline;
+            animation: glow-fade-in-up 200ms ease-out both;
+        }
+
+        /* Row 2: Plus + action button */
+        .glow-prompt-box__toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px 12px 16px;
+        }
+
+        .glow-prompt-box__plus-btn {
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #9E9E9E;
+            font-size: 20px;
+            font-weight: 300;
+            line-height: 1;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 200ms ease;
+        }
+        .glow-prompt-box__plus-btn:hover { color: var(--glow-accent); background: rgba(0,0,0,0.04); border-radius: 6px; }
+        .glow-prompt-box__plus-btn svg { width: 24px; height: 24px; }
+
+        .glow-prompt-box__action-btn {
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #9E9E9E;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 200ms ease-out, background 200ms ease;
+        }
+        .glow-prompt-box__action-btn:hover { background: rgba(0,0,0,0.04); border-radius: 6px; }
+        .glow-prompt-box__action-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+        .glow-prompt-box__icon-arrow { display: block; }
+        .glow-prompt-box__icon-stop { display: none; }
+
+        /* Mic button — visible in idle when whisper is enabled */
+        .glow-prompt-box__mic-btn {
+            display: none;
+            border: none; background: none; cursor: pointer; padding: 0;
+            color: #9E9E9E;
+            width: 24px; height: 24px;
+            align-items: center; justify-content: center;
+            transition: color 200ms ease;
+        }
+        .glow-prompt-box__mic-btn:hover { color: var(--glow-accent); }
+        .glow-prompt-box__mic-btn svg { width: 20px; height: 20px; }
+        .glow-prompt-box--idle .glow-prompt-box__mic-btn { display: flex; }
+        .glow-prompt-box--typing .glow-prompt-box__mic-btn { display: none; }
+        .glow-prompt-box[data-whisper="false"] .glow-prompt-box__mic-btn { display: none !important; }
+
+        /* New prompt input during generation (dual action) */
+        .glow-prompt-box__new-prompt {
+            display: none;
+            padding: 6px 16px 0 40px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+        .glow-prompt-box__new-prompt input {
+            width: 100%; border: none; outline: none; background: transparent;
+            font-family: Lato, sans-serif; font-size: 13px; line-height: 20px;
+            color: var(--glow-text, #0a0a0a); letter-spacing: 0.16px;
+        }
+        .glow-prompt-box__new-prompt input::placeholder { color: #9E9E9E; }
+        .glow-prompt-box--generating .glow-prompt-box__new-prompt { display: block; }
+
+        /* ===== STATE: idle ===== */
+        .glow-prompt-box--idle .glow-prompt-box__border-ring {
+            border-color: rgba(0, 0, 0, 0.12);
+        }
+        .glow-prompt-box--idle .glow-prompt-box__action-btn { color: #9E9E9E; }
+
+        /* ===== STATE: typing (focus) ===== */
+        .glow-prompt-box--typing .glow-prompt-box__border-ring {
+            border-color: var(--glow-accent);
+        }
+        .glow-prompt-box--typing .glow-prompt-box__action-btn {
+            color: var(--glow-accent);
+        }
+        .glow-prompt-box--typing .glow-prompt-box__sparkle { animation: none; opacity: 1; }
+        .glow-prompt-box--typing .glow-prompt-box__textarea { overflow-y: auto; }
+
+        /* ===== STATE: generating (processing) ===== */
+        .glow-prompt-box--generating .glow-prompt-box__border-ring {
+            border-color: transparent;
+            background:
+                linear-gradient(#fff, #fff) padding-box,
+                conic-gradient(
+                    from var(--glow-angle, 0deg),
+                    var(--glow-gradient-1),
+                    var(--glow-gradient-2),
+                    var(--glow-gradient-3),
+                    var(--glow-gradient-4),
+                    var(--glow-gradient-1)
+                ) border-box;
+            border: 2px solid transparent;
+            animation: glow-rainbow-spin 2s linear infinite;
+        }
+        .glow-prompt-box--generating .glow-prompt-box__action-btn { color: var(--glow-accent); }
+        .glow-prompt-box--generating .glow-prompt-box__icon-arrow { display: none; }
+        .glow-prompt-box--generating .glow-prompt-box__icon-stop { display: block; }
+        .glow-prompt-box--generating .glow-prompt-box__textarea { display: none; }
+        .glow-prompt-box--generating .glow-prompt-box__stream-area { display: block; }
+        .glow-prompt-box--generating .glow-prompt-box__sparkle { animation: none; opacity: 1; }
+
+        /* ===== STATE: listening ===== */
+        .glow-prompt-box--listening .glow-prompt-box__border-ring {
+            border-color: transparent;
+            background:
+                linear-gradient(#fff, #fff) padding-box,
+                conic-gradient(
+                    from var(--glow-angle, 0deg),
+                    var(--glow-gradient-1),
+                    var(--glow-gradient-2),
+                    var(--glow-gradient-3),
+                    var(--glow-gradient-4),
+                    var(--glow-gradient-1)
+                ) border-box;
+            border: 2px solid transparent;
+            animation: glow-rainbow-spin 2s linear infinite;
+        }
+        .glow-prompt-box--listening .glow-prompt-box__action-btn { color: var(--glow-accent); }
+        .glow-prompt-box--listening .glow-prompt-box__icon-arrow { display: none; }
+        .glow-prompt-box--listening .glow-prompt-box__icon-stop { display: block; }
+        .glow-prompt-box--listening .glow-prompt-box__textarea { display: none; }
+        .glow-prompt-box--listening .glow-prompt-box__waveform { display: flex; }
+        .glow-prompt-box--listening .glow-prompt-box__ghost-transcript { display: block; }
+        .glow-prompt-box--listening .glow-prompt-box__sparkle { animation: none; opacity: 1; }
+        /* Toolbar right group: waveform + action button together */
+        .glow-prompt-box__toolbar-right {
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* ===== STATE: activating (Buffer — 150ms solid accent before rainbow) ===== */
+        .glow-prompt-box--activating .glow-prompt-box__border-ring {
+            border-color: var(--glow-accent);
+            transition: border-color 100ms ease-out;
+        }
+        .glow-prompt-box--activating .glow-prompt-box__action-btn { color: var(--glow-accent); }
+        .glow-prompt-box--activating .glow-prompt-box__icon-arrow { display: none; }
+        .glow-prompt-box--activating .glow-prompt-box__icon-stop { display: block; }
+        .glow-prompt-box--activating .glow-prompt-box__sparkle { animation: none; opacity: 1; }
+
+        /* ===== STATE: validation-error ===== */
+        .glow-prompt-box--validation-error .glow-prompt-box__border-ring {
+            border-color: #C55D27;
+            background: rgba(255, 238, 227, 0.5);
+            animation: glow-shake 300ms ease-in-out;
+        }
+        .glow-prompt-box--validation-error .glow-prompt-box__action-btn { color: #C55D27; }
+
+        /* ===== STATE: system-error ===== */
+        .glow-prompt-box--system-error .glow-prompt-box__border-ring {
+            border-color: rgba(192, 66, 159, 0.4);
+        }
+        .glow-prompt-box--system-error .glow-prompt-box__action-btn { color: var(--glow-accent); }
+        .glow-prompt-box--system-error .glow-prompt-box__icon-arrow { display: none; }
+        .glow-prompt-box--system-error .glow-prompt-box__icon-stop { display: none; }
+        .glow-prompt-box--system-error .glow-prompt-box__icon-retry { display: block; }
+        .glow-prompt-box--system-error .glow-prompt-box__sparkle { animation: none; opacity: 1; }
+
+        /* Retry icon — hidden by default */
+        .glow-prompt-box__icon-retry { display: none; }
+
+        /* Helper text — validation & system error messages */
+        .glow-prompt-box__helper {
+            display: none;
+            padding: 0 16px 8px 48px;
+            font-size: 12px;
+            font-family: Lato, sans-serif;
+            line-height: 16px;
+        }
+        .glow-prompt-box--validation-error .glow-prompt-box__helper {
+            display: block;
+            color: #C55D27;
+        }
+        .glow-prompt-box--system-error .glow-prompt-box__helper {
+            display: block;
+            color: #5f5f5f;
+        }
+        .glow-prompt-box__helper a {
+            color: var(--glow-accent);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* Mic blocked slash */
+        .glow-prompt-box__mic-btn--blocked { position: relative; }
+        .glow-prompt-box__mic-btn--blocked::after {
+            content: '';
+            position: absolute;
+            top: 3px; left: 3px;
+            width: 18px; height: 18px;
+            border-top: 2px solid #9E9E9E;
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        /* ===== Generating/Listening inner background is always white ===== */
+        /* System error overrides warmth back to white — needs #id for specificity */
+        #mainPromptBox.glow-prompt-box--system-error .glow-prompt-box__inner,
+        .glow-prompt-box--system-error .glow-prompt-box__inner {
+            background: #fff !important;
+            background-image: none !important;
+            animation: none !important;
+        }
+
+        /* ===== LAYOUT: full (Large — 92px min, 800px max) ===== */
+        .glow-prompt-box--full { max-width: 800px; margin: 0 auto; }
+        .glow-prompt-box--full .glow-prompt-box__border-ring {
+            box-shadow: 0 0 15px rgba(var(--glow-accent-rgb), 0.25);
+        }
+
+        /* ===== LAYOUT: sidebar (Small — 74px min) ===== */
+        .glow-prompt-box--sidebar { max-width: 100%; }
+        .glow-prompt-box--sidebar .glow-prompt-box__border-ring {
+            box-shadow: 0 2px 12px rgba(var(--glow-accent-rgb), 0.08);
+        }
+        .glow-prompt-box--sidebar .glow-prompt-box__input-row { padding: 12px 12px 0 12px; gap: 6px; }
+        .glow-prompt-box--sidebar .glow-prompt-box__textarea { font-size: 14px; line-height: 22px; }
+        .glow-prompt-box--sidebar .glow-prompt-box__sparkle svg { width: 20px; height: 20px; }
+        .glow-prompt-box--sidebar .glow-prompt-box__action-btn svg { width: 20px; height: 20px; }
+        .glow-prompt-box--sidebar .glow-prompt-box__toolbar { padding: 6px 12px 10px 12px; }
+
+        /* ===== LAYOUT: overlay ===== */
+        .glow-prompt-box--overlay { width: clamp(320px, 100%, 400px); margin: 12px; }
+        .glow-prompt-box--overlay .glow-prompt-box__border-ring {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+        .glow-prompt-box--overlay .glow-prompt-box__input-row { padding: 12px 12px 0 12px; gap: 6px; }
+        .glow-prompt-box--overlay .glow-prompt-box__textarea { font-size: 14px; line-height: 22px; }
+        .glow-prompt-box--overlay .glow-prompt-box__sparkle svg { width: 20px; height: 20px; }
+        .glow-prompt-box--overlay .glow-prompt-box__action-btn svg { width: 20px; height: 20px; }
+        .glow-prompt-box--overlay .glow-prompt-box__toolbar { padding: 6px 12px 10px 12px; }
+
+        /* ===== Demo Controls ===== */
+        .demo-controls {
+            display: flex; flex-wrap: wrap; gap: 16px; margin: 1.5rem 0; padding: 16px;
+            background: #f5f6fa; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);
+        }
+        .demo-controls__group { display: flex; flex-direction: column; gap: 6px; }
+        .demo-controls__label {
+            font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.5px; color: #5f5f5f;
+        }
+        .demo-controls__buttons { display: flex; gap: 4px; }
+        .demo-btn {
+            padding: 6px 12px; border: 1px solid rgba(0,0,0,0.12); border-radius: 6px;
+            background: white; font-size: 12px; font-weight: 600; font-family: Lato, sans-serif;
+            cursor: pointer; color: #4a4a4a; transition: all 150ms ease;
+        }
+        .demo-btn:hover { border-color: #1a78c1; color: #1a78c1; }
+        .demo-btn--active { background: #1a78c1; color: white; border-color: #1a78c1; }
+
+        .demo-playground {
+            padding: 32px; background: #fafafa; border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 12px; margin: 1rem 0; min-height: 140px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .demo-playground--sidebar { max-width: 360px; background: white; }
+        .demo-playground--overlay { background: rgba(0,0,0,0.04); }
+
+        .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 1.5rem 0; }
+        .demo-grid__item { padding: 20px; background: #fafafa; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06); }
+        .demo-grid__item-label {
+            font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.5px; color: #5f5f5f; margin-bottom: 12px;
+        }
+
+        .theme-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 1.5rem 0; }
+        .theme-card { padding: 20px; background: #fafafa; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06); }
+        .theme-card__label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+        .theme-card__label--ruby { color: #C0429F; }
+
+        .color-chip {
+            display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px;
+            border-radius: 4px; font-size: 11px; font-family: Consolas, Monaco, monospace; background: rgba(0,0,0,0.04);
+        }
+        .color-chip__dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        /* Thread bubble — shows user prompt above the box during generating */
+        .glow-thread-bubble {
+            display: none;
+            max-width: 80%;
+            margin-left: auto;
+            margin-bottom: 12px;
+            padding: 10px 16px;
+            background: var(--glow-accent, #C0429F);
+            color: white;
+            border-radius: 12px 12px 4px 12px;
+            font-family: Lato, sans-serif;
+            font-size: 14px;
+            line-height: 20px;
+            letter-spacing: 0.16px;
+        }
+        .glow-thread-bubble--visible { display: block; }
+
+        /* ===== Copilot Sidebar Demo ===== */
+        .copilot-demo {
+            display: flex;
+            gap: 0;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.08);
+            min-height: 520px;
+        }
+        .copilot-demo__main {
+            flex: 1;
+            background: #f0f4f8;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .copilot-demo__main-header {
+            font-size: 13px;
+            font-weight: 600;
+            color: #435773;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .copilot-demo__card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+        .copilot-demo__card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0a0a0a;
+            margin: 0 0 8px;
+        }
+        .copilot-demo__card-meta {
+            font-size: 12px;
+            color: #9E9E9E;
+        }
+        .copilot-demo__card-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: #e8f3fc;
+            margin-top: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .copilot-demo__card-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: #1a78c1;
+        }
+        .copilot-demo__sidebar {
+            width: 340px;
+            background: white;
+            border-left: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -4px 0 20px rgba(192, 66, 159, 0.06);
+        }
+        .copilot-demo__sidebar-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .copilot-demo__avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #C0429F, #FF7584);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .copilot-demo__greeting {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0a0a0a;
+        }
+        .copilot-demo__greeting span {
+            color: #C0429F;
+        }
+        .copilot-demo__chips {
+            padding: 12px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .copilot-demo__chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border: 1px solid #C0429F;
+            border-radius: 20px;
+            background: transparent;
+            color: #C0429F;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: Lato, sans-serif;
+            cursor: pointer;
+            transition: background 150ms ease;
+        }
+        .copilot-demo__chip:hover {
+            background: rgba(192, 66, 159, 0.1);
+        }
+        .copilot-demo__chip-sparkle {
+            font-size: 10px;
+        }
+        .copilot-demo__thread {
+            flex: 1;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+        .copilot-demo__msg {
+            max-width: 90%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+            font-family: Lato, sans-serif;
+        }
+        .copilot-demo__msg--user {
+            background: #C0429F;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .copilot-demo__msg--ai {
+            background: #fafafa;
+            color: #0a0a0a;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border-left: 3px solid #C0429F;
+        }
+        .copilot-demo__msg--ai .ai-tag {
+            font-size: 10px;
+            font-weight: 600;
+            color: #C0429F;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .copilot-demo__prompt-area {
+            padding: 12px 20px 16px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        /* Layout tabs */
+        .copilot-tabs {
+            display: flex; gap: 4px; margin: 1rem 0;
+        }
+        .copilot-tab {
+            padding: 8px 16px; border: 1px solid rgba(0,0,0,0.12); border-radius: 6px;
+            background: white; font-size: 13px; font-weight: 600; font-family: Lato, sans-serif;
+            cursor: pointer; color: #4a4a4a; transition: all 150ms ease;
+        }
+        .copilot-tab:hover { border-color: #C0429F; color: #C0429F; }
+        .copilot-tab--active { background: #C0429F; color: white; border-color: #C0429F; }
+
+        /* Layout containers */
+        .copilot-layout { display: none; position: relative; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08); min-height: 480px; background: #f0f4f8; }
+        .copilot-layout--visible { display: flex; }
+
+        /* ===== Collapsed: FAB ===== */
+        .copilot-layout--collapsed { flex-direction: column; }
+        .copilot-layout__app {
+            flex: 1; padding: 0; display: flex; flex-direction: column;
+        }
+        .copilot-layout__topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 16px; background: white; border-bottom: 1px solid rgba(0,0,0,0.08);
+            font-size: 12px; font-weight: 600; color: #435773; font-family: Lato, sans-serif;
+        }
+        .copilot-layout__topbar-icons { display: flex; gap: 12px; align-items: center; }
+        .copilot-layout__topbar-icon { width: 20px; height: 20px; border-radius: 50%; background: #edeff5; }
+        .copilot-layout__breadcrumb {
+            padding: 12px 16px 4px; font-size: 11px; color: #9E9E9E; font-family: Lato, sans-serif;
+        }
+        .copilot-layout__breadcrumb strong { color: #0a0a0a; font-size: 14px; display: block; margin-top: 2px; }
+        .copilot-layout__body { flex: 1; display: flex; padding: 12px 16px; gap: 12px; }
+        .copilot-layout__nav {
+            width: 120px; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0;
+        }
+        .copilot-layout__nav-item {
+            padding: 6px 10px; border-radius: 4px; font-size: 11px; font-family: Lato, sans-serif;
+            color: #5f5f5f; display: flex; align-items: center; gap: 6px;
+        }
+        .copilot-layout__nav-item--active { color: #1a78c1; font-weight: 600; }
+        .copilot-layout__nav-dot {
+            width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #C7C7C7; flex-shrink: 0;
+        }
+        .copilot-layout__nav-dot--done { background: #418A44; border-color: #418A44; }
+        .copilot-layout__nav-dot--active { border-color: #1a78c1; background: #1a78c1; }
+        .copilot-layout__content { flex: 1; background: white; border-radius: 8px; padding: 16px; border: 1px solid rgba(0,0,0,0.06); overflow: hidden; }
+        .copilot-layout__content-title { font-size: 13px; font-weight: 700; color: #0a0a0a; margin: 0 0 4px; }
+        .copilot-layout__content-meta { font-size: 11px; color: #9E9E9E; }
+        .copilot-layout__segment-list {
+            margin-top: 10px; display: flex; flex-direction: column; gap: 4px;
+        }
+        .copilot-layout__segment {
+            padding: 4px 0; font-size: 11px; color: #4a4a4a; font-family: Lato, sans-serif;
+        }
+        .copilot-layout__segment--active { font-weight: 600; color: #0a0a0a; }
+
+        /* FAB */
+        .copilot-fab {
+            position: absolute; bottom: 16px; right: 16px; z-index: 10;
+            width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer;
+            background: linear-gradient(135deg, #C0429F, #FF7584);
+            box-shadow: 0 4px 16px rgba(192, 66, 159, 0.35);
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 200ms ease, box-shadow 200ms ease;
+            color: white;
+        }
+        .copilot-fab:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(192, 66, 159, 0.45); }
+        .copilot-fab svg { width: 24px; height: 24px; }
+
+        /* ===== Full Page Chat ===== */
+        .copilot-fullpage {
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 32px; background: white;
+        }
+        .copilot-fullpage__topbar {
+            align-self: stretch; padding: 8px 16px; font-size: 12px; font-weight: 600;
+            color: #435773; border-bottom: 1px solid rgba(0,0,0,0.06); margin: -32px -32px 24px;
+            font-family: Lato, sans-serif;
+        }
+        .copilot-fullpage__hero {
+            text-align: center; max-width: 600px; margin-bottom: 24px;
+        }
+        .copilot-fullpage__avatar {
+            width: 48px; height: 48px; margin: 0 auto 12px;
+        }
+        .copilot-fullpage__title {
+            font-size: 20px; font-weight: 700; color: #0a0a0a; margin: 0 0 6px;
+            font-family: Lato, sans-serif;
+        }
+        .copilot-fullpage__desc {
+            font-size: 14px; color: #5f5f5f; line-height: 1.5; font-family: Lato, sans-serif;
+        }
+        .copilot-fullpage__cards {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+            max-width: 600px; width: 100%; margin-bottom: 32px;
+        }
+        .copilot-fullpage__card {
+            border: 1px solid #00A3A3; border-radius: 12px; padding: 14px 16px;
+            background: white; cursor: pointer; transition: background 150ms ease, box-shadow 150ms ease;
+            font-family: Lato, sans-serif; position: relative;
+        }
+        .copilot-fullpage__card:hover { background: rgba(0, 163, 163, 0.04); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .copilot-fullpage__card-title {
+            font-size: 13px; font-weight: 600; color: #0a0a0a; margin: 0 0 4px;
+        }
+        .copilot-fullpage__card-desc {
+            font-size: 12px; color: #5f5f5f; line-height: 1.4;
+        }
+        .copilot-fullpage__card-sparkle {
+            position: absolute; top: 12px; right: 12px; color: #00A3A3; font-size: 14px;
+        }
+        .copilot-fullpage__prompt {
+            max-width: 600px; width: 100%;
+        }
+
+        /* Vision Header — large intro copy with ruby-tinted background */
+        .vision-header {
+            padding: 24px 28px;
+            border-radius: 12px;
+            background: rgba(192, 66, 159, 0.06);
+            border-left: 4px solid var(--glow-accent, #C0429F);
+            margin: 1.5rem 0;
+        }
+        .vision-header__title {
+            font-size: 20px;
+            font-weight: 700;
+            font-family: Lato, sans-serif;
+            color: var(--glow-accent, #C0429F);
+            margin: 0 0 12px 0;
+            transition: color 300ms ease;
+        }
+        .vision-header__body {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #4a4a4a;
+            font-family: Lato, sans-serif;
+            margin: 0;
+        }
+
+        /* Technical Spec — accordion-style collapsible spec items */
+        .tech-spec {
+            margin: 1.5rem 0;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .tech-spec__header {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: Lato, sans-serif;
+            color: var(--glow-accent, #C0429F);
+            padding: 20px 24px 12px;
+            margin: 0;
+            transition: color 300ms ease;
+        }
+        .tech-spec__item {
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+        .tech-spec__item summary {
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: Lato, sans-serif;
+            color: #0a0a0a;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 150ms ease;
+        }
+        .tech-spec__item summary:hover {
+            background: rgba(0,0,0,0.02);
+        }
+        .tech-spec__item summary::before {
+            content: '>';
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            color: var(--glow-accent, #C0429F);
+            transition: transform 200ms ease, color 300ms ease;
+            display: inline-block;
+        }
+        .tech-spec__item[open] summary::before {
+            transform: rotate(90deg);
+        }
+        .tech-spec__item-body {
+            padding: 0 24px 16px 40px;
+            font-size: 14px;
+            line-height: 1.65;
+            color: #4a4a4a;
+            font-family: Lato, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page__container">
+            <div class="page__content">
+                <div class="content">
+                    <header class="component-header">
+                        <h1 class="heading-1">Glow Prompt Box</h1>
+                        <p class="text-body">Interactive AI input component with animated states, multiple layouts, and swappable color themes. The primary interface for all Glow AI interactions across Rosewood products.</p>
+                    </header>
+
+                    <!-- ===== Interactive Playground ===== -->
+                    <section id="playground" class="section">
+                        <h2 class="heading-2">Interactive Playground</h2>
+
+                        <div class="vision-header" id="visionHeader">
+                            <h3 class="vision-header__title">Ruby Berry theme</h3>
+                            <p class="vision-header__body">While our core platform is built on the stability and seriousness of Rosewood Blue, the introduction of Glow marks a new era of proactive partnership. We've chosen Ruby Berry to represent this intelligence &mdash; a warm, vibrant, and high-energy tone that contrasts with our subdued product environment. This shift signifies that Glow isn't just another tool in the dashboard; she is a premium, transformative force designed to bring "the magic" to your daily workflow.</p>
+                        </div>
+
+                        <div class="demo-controls" id="demoControls">
+                            <div class="demo-controls__group">
+                                <span class="demo-controls__label">Layout</span>
+                                <div class="demo-controls__buttons">
+                                    <button class="demo-btn demo-btn--active" data-control="layout" data-value="full">Full Page</button>
+                                    <button class="demo-btn" data-control="layout" data-value="sidebar">Sidebar</button>
+                                    <button class="demo-btn" data-control="layout" data-value="overlay">Overlay</button>
+                                </div>
+                            </div>
+                            <div class="demo-controls__group">
+                                <span class="demo-controls__label">Whisper</span>
+                                <div class="demo-controls__buttons">
+                                    <button class="demo-btn demo-btn--active" data-control="whisper" data-value="true">Enabled</button>
+                                    <button class="demo-btn" data-control="whisper" data-value="false">Disabled</button>
+                                </div>
+                            </div>
+                            <div class="demo-controls__group">
+                                <span class="demo-controls__label">State</span>
+                                <div class="demo-controls__buttons">
+                                    <button class="demo-btn demo-btn--active" data-control="state" data-value="idle">Idle</button>
+                                    <button class="demo-btn" data-control="state" data-value="typing">Typing</button>
+                                    <button class="demo-btn" data-control="state" data-value="generating">Generating</button>
+                                    <button class="demo-btn" data-control="state" data-value="listening">Listening</button>
+                                </div>
+                            </div>
+                            <div class="demo-controls__group">
+                                <span class="demo-controls__label">Errors</span>
+                                <div class="demo-controls__buttons">
+                                    <button class="demo-btn" data-control="error" data-value="validation">Validation</button>
+                                    <button class="demo-btn" data-control="error" data-value="system">System Error</button>
+                                    <button class="demo-btn" data-control="error" data-value="clear">Clear</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="demo-playground" id="demoPlayground" style="flex-direction:column;">
+                            <div class="glow-thread-bubble" id="threadBubble"></div>
+                            <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--idle" id="mainPromptBox" data-theme="ruby" data-whisper="true" style="width:100%;">
+                                <div class="glow-prompt-box__border-ring">
+                                    <div class="glow-prompt-box__inner">
+                                        <div class="glow-prompt-box__input-row">
+                                            <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.1939 3.45122L15.2665 6.34122C15.6774 7.44122 16.5495 8.31122 17.6521 8.72122L20.5489 9.79122C21.1504 10.0112 21.1504 10.8612 20.5489 11.0812L17.6521 12.1512C16.5495 12.5612 15.6774 13.4312 15.2665 14.5312L14.1939 17.4212C13.9734 18.0212 13.1214 18.0212 12.9009 17.4212L11.8283 14.5312C11.4174 13.4312 10.5453 12.5612 9.44271 12.1512L6.54587 11.0812C5.94445 10.8612 5.94445 10.0112 6.54587 9.79122L9.44271 8.72122C10.5453 8.31122 11.4174 7.44122 11.8283 6.34122L12.9009 3.45122C13.1214 2.85122 13.9734 2.85122 14.1939 3.45122Z" fill="url(#sparkle-grad-main)"/><path d="M6.7263 14.9812L7.05708 15.8712C7.23751 16.3712 7.63845 16.7612 8.13964 16.9512L9.03174 17.2812C9.5229 17.4612 9.5229 18.1512 9.03174 18.3312L8.13964 18.6612C7.63845 18.8412 7.24753 19.2412 7.05708 19.7412L6.7263 20.6312C6.54587 21.1212 5.85424 21.1212 5.67381 20.6312L5.34303 19.7412C5.16261 19.2412 4.76166 18.8512 4.26048 18.6612L3.36837 18.3312C2.87721 18.1512 2.87721 17.4612 3.36837 17.2812L4.26048 16.9512C4.76166 16.7712 5.15258 16.3712 5.34303 15.8712L5.67381 14.9812C5.85424 14.4912 6.54587 14.4912 6.7263 14.9812Z" fill="url(#sparkle-grad-sub)"/><defs><linearGradient id="sparkle-grad-main" x1="1.125" y1="2.064" x2="24.77" y2="23.882" gradientUnits="userSpaceOnUse"><stop stop-color="#E082C0"/><stop offset="0.31" stop-color="#C0429F"/><stop offset="0.67" stop-color="#FF7584"/><stop offset="1" stop-color="#FFB98C"/></linearGradient><linearGradient id="sparkle-grad-sub" x1="1.125" y1="2.064" x2="24.77" y2="23.882" gradientUnits="userSpaceOnUse"><stop stop-color="#E082C0"/><stop offset="0.31" stop-color="#C0429F"/><stop offset="0.67" stop-color="#FF7584"/><stop offset="1" stop-color="#FFB98C"/></linearGradient></defs></svg></span>
+                                            <textarea class="glow-prompt-box__textarea" id="mainTextarea" placeholder="Ask Glow a question..." rows="1"></textarea>
+                                            <span class="glow-prompt-box__ghost-transcript" id="ghostTranscript"></span>
+                                            <div class="glow-prompt-box__stream-area" id="streamArea"></div>
+                                        </div>
+                                        <div class="glow-prompt-box__helper" id="helperText"></div>
+                                        <div class="glow-prompt-box__new-prompt">
+                                            <input id="newPromptInput" type="text" placeholder="Type a follow-up...">
+                                        </div>
+                                        <div class="glow-prompt-box__toolbar">
+                                            <button class="glow-prompt-box__plus-btn" aria-label="Add context"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button>
+                                            <div class="glow-prompt-box__toolbar-right">
+                                                <div class="glow-prompt-box__waveform"><span></span><span></span><span></span><span></span><span></span></div>
+                                                <button class="glow-prompt-box__mic-btn" id="micBtn" aria-label="Voice input">
+                                                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="6" height="10" rx="3"/><path d="M4 10v0a6 6 0 0 0 12 0v0"/><line x1="10" y1="16" x2="10" y2="19"/></svg>
+                                                </button>
+                                                <button class="glow-prompt-box__action-btn" id="actionBtn" aria-label="Send">
+                                                    <svg class="glow-prompt-box__icon-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg>
+                                                    <svg class="glow-prompt-box__icon-stop" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="10" height="10" rx="2"/></svg>
+                                                    <svg class="glow-prompt-box__icon-retry" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10a7 7 0 0 1 12.9-3.7M17 10a7 7 0 0 1-12.9 3.7"/><polyline points="3 4 3 10 9 10"/><polyline points="17 16 17 10 11 10"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===== States Reference ===== -->
+                    <section id="states" class="section">
+                        <h2 class="heading-2">States Reference</h2>
+                        <p class="text-body">The prompt box has four distinct states, each with specific visual and behavioral rules.</p>
+
+                        <!-- Static sparkle helper: uses image reference to avoid SVG gradient ID conflicts -->
+                        <svg style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="static-sparkle-1" x1="1.125" y1="2.064" x2="24.77" y2="23.882" gradientUnits="userSpaceOnUse"><stop stop-color="#E082C0"/><stop offset="0.31" stop-color="#C0429F"/><stop offset="0.67" stop-color="#FF7584"/><stop offset="1" stop-color="#FFB98C"/></linearGradient>
+                                <linearGradient id="static-sparkle-2" x1="1.125" y1="2.064" x2="24.77" y2="23.882" gradientUnits="userSpaceOnUse"><stop stop-color="#E082C0"/><stop offset="0.31" stop-color="#C0429F"/><stop offset="0.67" stop-color="#FF7584"/><stop offset="1" stop-color="#FFB98C"/></linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="demo-grid">
+                            <div class="demo-grid__item">
+                                <div class="demo-grid__item-label">Enabled — Awaiting input</div>
+                                <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--idle" data-theme="ruby" style="max-width:100%;">
+                                    <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                        <div class="glow-prompt-box__input-row">
+                                            <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none"><path d="M14.1939 3.45122L15.2665 6.34122C15.6774 7.44122 16.5495 8.31122 17.6521 8.72122L20.5489 9.79122C21.1504 10.0112 21.1504 10.8612 20.5489 11.0812L17.6521 12.1512C16.5495 12.5612 15.6774 13.4312 15.2665 14.5312L14.1939 17.4212C13.9734 18.0212 13.1214 18.0212 12.9009 17.4212L11.8283 14.5312C11.4174 13.4312 10.5453 12.5612 9.44271 12.1512L6.54587 11.0812C5.94445 10.8612 5.94445 10.0112 6.54587 9.79122L9.44271 8.72122C10.5453 8.31122 11.4174 7.44122 11.8283 6.34122L12.9009 3.45122C13.1214 2.85122 13.9734 2.85122 14.1939 3.45122Z" fill="url(#static-sparkle-1)"/><path d="M6.7263 14.9812L7.05708 15.8712C7.23751 16.3712 7.63845 16.7612 8.13964 16.9512L9.03174 17.2812C9.5229 17.4612 9.5229 18.1512 9.03174 18.3312L8.13964 18.6612C7.63845 18.8412 7.24753 19.2412 7.05708 19.7412L6.7263 20.6312C6.54587 21.1212 5.85424 21.1212 5.67381 20.6312L5.34303 19.7412C5.16261 19.2412 4.76166 18.8512 4.26048 18.6612L3.36837 18.3312C2.87721 18.1512 2.87721 17.4612 3.36837 17.2812L4.26048 16.9512C4.76166 16.7712 5.15258 16.3712 5.34303 15.8712L5.67381 14.9812C5.85424 14.4912 6.54587 14.4912 6.7263 14.9812Z" fill="url(#static-sparkle-2)"/></svg></span>
+                                            <textarea class="glow-prompt-box__textarea" placeholder="Ask Glow a question..." rows="1" disabled></textarea>
+                                        </div>
+                                        <div class="glow-prompt-box__toolbar"><button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button><button class="glow-prompt-box__action-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button></div>
+                                    </div></div>
+                                </div>
+                                <p class="text-body" style="margin-top:8px; font-size:0.8rem;">Light gray border. Sparkle pulses. Arrow icon in ghost gray.</p>
+                            </div>
+
+                            <div class="demo-grid__item">
+                                <div class="demo-grid__item-label">Focus with Prompt — User is composing</div>
+                                <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--typing" data-theme="ruby" style="max-width:100%;">
+                                    <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                        <div class="glow-prompt-box__input-row">
+                                            <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none"><path d="M14.1939 3.45122L15.2665 6.34122C15.6774 7.44122 16.5495 8.31122 17.6521 8.72122L20.5489 9.79122C21.1504 10.0112 21.1504 10.8612 20.5489 11.0812L17.6521 12.1512C16.5495 12.5612 15.6774 13.4312 15.2665 14.5312L14.1939 17.4212C13.9734 18.0212 13.1214 18.0212 12.9009 17.4212L11.8283 14.5312C11.4174 13.4312 10.5453 12.5612 9.44271 12.1512L6.54587 11.0812C5.94445 10.8612 5.94445 10.0112 6.54587 9.79122L9.44271 8.72122C10.5453 8.31122 11.4174 7.44122 11.8283 6.34122L12.9009 3.45122C13.1214 2.85122 13.9734 2.85122 14.1939 3.45122Z" fill="url(#static-sparkle-1)"/><path d="M6.7263 14.9812L7.05708 15.8712C7.23751 16.3712 7.63845 16.7612 8.13964 16.9512L9.03174 17.2812C9.5229 17.4612 9.5229 18.1512 9.03174 18.3312L8.13964 18.6612C7.63845 18.8412 7.24753 19.2412 7.05708 19.7412L6.7263 20.6312C6.54587 21.1212 5.85424 21.1212 5.67381 20.6312L5.34303 19.7412C5.16261 19.2412 4.76166 18.8512 4.26048 18.6612L3.36837 18.3312C2.87721 18.1512 2.87721 17.4612 3.36837 17.2812L4.26048 16.9512C4.76166 16.7712 5.15258 16.3712 5.34303 15.8712L5.67381 14.9812C5.85424 14.4912 6.54587 14.4912 6.7263 14.9812Z" fill="url(#static-sparkle-2)"/></svg></span>
+                                            <textarea class="glow-prompt-box__textarea" rows="1" disabled>Summarize my top 5 customers from last month.</textarea>
+                                        </div>
+                                        <div class="glow-prompt-box__toolbar"><button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button><button class="glow-prompt-box__action-btn" style="color:var(--glow-accent);"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button></div>
+                                    </div></div>
+                                </div>
+                                <p class="text-body" style="margin-top:8px; font-size:0.8rem;">Ruby accent border. Arrow turns CTA color. Auto-expands up to 320px.</p>
+                            </div>
+
+                            <div class="demo-grid__item">
+                                <div class="demo-grid__item-label">Processing — AI is responding</div>
+                                <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--generating" data-theme="ruby" style="max-width:100%;">
+                                    <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                        <div class="glow-prompt-box__input-row">
+                                            <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none"><path d="M14.1939 3.45122L15.2665 6.34122C15.6774 7.44122 16.5495 8.31122 17.6521 8.72122L20.5489 9.79122C21.1504 10.0112 21.1504 10.8612 20.5489 11.0812L17.6521 12.1512C16.5495 12.5612 15.6774 13.4312 15.2665 14.5312L14.1939 17.4212C13.9734 18.0212 13.1214 18.0212 12.9009 17.4212L11.8283 14.5312C11.4174 13.4312 10.5453 12.5612 9.44271 12.1512L6.54587 11.0812C5.94445 10.8612 5.94445 10.0112 6.54587 9.79122L9.44271 8.72122C10.5453 8.31122 11.4174 7.44122 11.8283 6.34122L12.9009 3.45122C13.1214 2.85122 13.9734 2.85122 14.1939 3.45122Z" fill="url(#static-sparkle-1)"/><path d="M6.7263 14.9812L7.05708 15.8712C7.23751 16.3712 7.63845 16.7612 8.13964 16.9512L9.03174 17.2812C9.5229 17.4612 9.5229 18.1512 9.03174 18.3312L8.13964 18.6612C7.63845 18.8412 7.24753 19.2412 7.05708 19.7412L6.7263 20.6312C6.54587 21.1212 5.85424 21.1212 5.67381 20.6312L5.34303 19.7412C5.16261 19.2412 4.76166 18.8512 4.26048 18.6612L3.36837 18.3312C2.87721 18.1512 2.87721 17.4612 3.36837 17.2812L4.26048 16.9512C4.76166 16.7712 5.15258 16.3712 5.34303 15.8712L5.67381 14.9812C5.85424 14.4912 6.54587 14.4912 6.7263 14.9812Z" fill="url(#static-sparkle-2)"/></svg></span>
+                                            <div class="glow-prompt-box__stream-area" style="display:block;">Ask Glow a question...</div>
+                                        </div>
+                                        <div class="glow-prompt-box__toolbar"><button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button><button class="glow-prompt-box__action-btn" style="color:var(--glow-accent);"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" style="display:block;"><rect x="5" y="5" width="10" height="10" rx="2"/></svg></button></div>
+                                    </div></div>
+                                </div>
+                                <p class="text-body" style="margin-top:8px; font-size:0.8rem;">Rainbow gradient border rotates (2s). Ruby stop square. Text streams in.</p>
+                            </div>
+
+                            <div class="demo-grid__item">
+                                <div class="demo-grid__item-label">Listening — Voice input</div>
+                                <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--listening" data-theme="ruby" style="max-width:100%;">
+                                    <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                        <div class="glow-prompt-box__input-row">
+                                            <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none"><path d="M14.1939 3.45122L15.2665 6.34122C15.6774 7.44122 16.5495 8.31122 17.6521 8.72122L20.5489 9.79122C21.1504 10.0112 21.1504 10.8612 20.5489 11.0812L17.6521 12.1512C16.5495 12.5612 15.6774 13.4312 15.2665 14.5312L14.1939 17.4212C13.9734 18.0212 13.1214 18.0212 12.9009 17.4212L11.8283 14.5312C11.4174 13.4312 10.5453 12.5612 9.44271 12.1512L6.54587 11.0812C5.94445 10.8612 5.94445 10.0112 6.54587 9.79122L9.44271 8.72122C10.5453 8.31122 11.4174 7.44122 11.8283 6.34122L12.9009 3.45122C13.1214 2.85122 13.9734 2.85122 14.1939 3.45122Z" fill="url(#static-sparkle-1)"/><path d="M6.7263 14.9812L7.05708 15.8712C7.23751 16.3712 7.63845 16.7612 8.13964 16.9512L9.03174 17.2812C9.5229 17.4612 9.5229 18.1512 9.03174 18.3312L8.13964 18.6612C7.63845 18.8412 7.24753 19.2412 7.05708 19.7412L6.7263 20.6312C6.54587 21.1212 5.85424 21.1212 5.67381 20.6312L5.34303 19.7412C5.16261 19.2412 4.76166 18.8512 4.26048 18.6612L3.36837 18.3312C2.87721 18.1512 2.87721 17.4612 3.36837 17.2812L4.26048 16.9512C4.76166 16.7712 5.15258 16.3712 5.34303 15.8712L5.67381 14.9812C5.85424 14.4912 6.54587 14.4912 6.7263 14.9812Z" fill="url(#static-sparkle-2)"/></svg></span>
+                                            <span class="glow-prompt-box__ghost-transcript" style="display:block;">I'm listening...</span>
+                                        </div>
+                                        <div class="glow-prompt-box__toolbar"><button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button><div class="glow-prompt-box__toolbar-right"><div class="glow-prompt-box__waveform" style="display:flex;"><span></span><span></span><span></span><span></span><span></span></div><button class="glow-prompt-box__action-btn" style="color:var(--glow-accent);"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" style="display:block;"><rect x="5" y="5" width="10" height="10" rx="2"/></svg></button></div></div>
+                                    </div></div>
+                                </div>
+                                <p class="text-body" style="margin-top:8px; font-size:0.8rem;">Rainbow border. "I'm listening..." ghost text. Waveform + Ruby Stop in toolbar.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===== Scaling & Auto-Expand ===== -->
+                    <section id="scaling" class="section">
+                        <h2 class="heading-2">Scaling &amp; Auto-Expand</h2>
+                        <p class="text-body">The prompt box auto-expands from its minimum height to a hard stop at 320px, then triggers internal scroll.</p>
+
+                        <div style="display: flex; flex-direction: column; gap: 20px; margin: 1.5rem 0;">
+                            <div style="padding: 24px 32px; background: #fafafa; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08);">
+                                <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #5f5f5f; margin-bottom: 10px;">Small (1-line)</div>
+                                <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--typing" data-theme="ruby" style="max-width:100%;">
+                                    <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                        <div class="glow-prompt-box__input-row">
+                                            <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#static-sparkle-1)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#static-sparkle-2)"/></svg></span>
+                                            <textarea class="glow-prompt-box__textarea" rows="1" disabled>Prompt...</textarea>
+                                        </div>
+                                        <div class="glow-prompt-box__toolbar"><button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button><button class="glow-prompt-box__action-btn" style="color:var(--glow-accent);"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button></div>
+                                    </div></div>
+                                </div>
+                            </div>
+                            <div style="padding: 24px 32px; background: #fafafa; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08);">
+                                <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #5f5f5f; margin-bottom: 10px;">Medium (3-line)</div>
+                                <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--typing" data-theme="ruby" style="max-width:100%;">
+                                    <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                        <div class="glow-prompt-box__input-row">
+                                            <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#static-sparkle-1)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#static-sparkle-2)"/></svg></span>
+                                            <textarea class="glow-prompt-box__textarea" rows="3" disabled style="height:auto; min-height:66px;">Write a short welcome email for new members that mentions our upcoming 10th-anniversary celebration in June.</textarea>
+                                        </div>
+                                        <div class="glow-prompt-box__toolbar"><button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button><button class="glow-prompt-box__action-btn" style="color:var(--glow-accent);"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button></div>
+                                    </div></div>
+                                </div>
+                            </div>
+                            <div style="padding: 24px 32px; background: #fafafa; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08);">
+                                <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #5f5f5f; margin-bottom: 10px;">Large (Max 320px + scroll)</div>
+                                <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--typing" data-theme="ruby" style="max-width:100%;">
+                                    <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                        <div class="glow-prompt-box__input-row">
+                                            <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#static-sparkle-1)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#static-sparkle-2)"/></svg></span>
+                                            <textarea class="glow-prompt-box__textarea" rows="6" disabled style="height:144px; max-height:144px; overflow-y:auto;">I need a full marketing strategy for our summer launch. Write a subject line for an announcement email, three follow-up text messages, and a description for a social media post that highlights our new 'Zen-Glow' spa package. Make sure to emphasize the limited-time 20% discount for the first 50 bookings. Also include a tagline suggestion and a brief outline for a landing page hero section with three key selling points.</textarea>
+                                        </div>
+                                        <div class="glow-prompt-box__toolbar"><button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button><button class="glow-prompt-box__action-btn" style="color:var(--glow-accent);"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button></div>
+                                    </div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===== Color Themes ===== -->
+                    <section id="themes" class="section">
+                        <h2 class="heading-2">Color Themes</h2>
+                        <p class="text-body">Swap themes via <code>data-theme</code> attribute. Each theme has its own accent color and rainbow gradient spectrum.</p>
+
+                        <div class="theme-cards">
+                            <div class="theme-card">
+                                <div class="theme-card__label theme-card__label--ruby">Ruby Berry</div>
+                                <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--generating" data-theme="ruby" style="max-width:100%;">
+                                    <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                        <div class="glow-prompt-box__input-row"><span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.1939 3.45122L15.2665 6.34122C15.6774 7.44122 16.5495 8.31122 17.6521 8.72122L20.5489 9.79122C21.1504 10.0112 21.1504 10.8612 20.5489 11.0812L17.6521 12.1512C16.5495 12.5612 15.6774 13.4312 15.2665 14.5312L14.1939 17.4212C13.9734 18.0212 13.1214 18.0212 12.9009 17.4212L11.8283 14.5312C11.4174 13.4312 10.5453 12.5612 9.44271 12.1512L6.54587 11.0812C5.94445 10.8612 5.94445 10.0112 6.54587 9.79122L9.44271 8.72122C10.5453 8.31122 11.4174 7.44122 11.8283 6.34122L12.9009 3.45122C13.1214 2.85122 13.9734 2.85122 14.1939 3.45122Z" fill="url(#sparkle-grad-ruby)"/><path d="M6.7263 14.9812L7.05708 15.8712C7.23751 16.3712 7.63845 16.7612 8.13964 16.9512L9.03174 17.2812C9.5229 17.4612 9.5229 18.1512 9.03174 18.3312L8.13964 18.6612C7.63845 18.8412 7.24753 19.2412 7.05708 19.7412L6.7263 20.6312C6.54587 21.1212 5.85424 21.1212 5.67381 20.6312L5.34303 19.7412C5.16261 19.2412 4.76166 18.8512 4.26048 18.6612L3.36837 18.3312C2.87721 18.1512 2.87721 17.4612 3.36837 17.2812L4.26048 16.9512C4.76166 16.7712 5.15258 16.3712 5.34303 15.8712L5.67381 14.9812C5.85424 14.4912 6.54587 14.4912 6.7263 14.9812Z" fill="url(#sparkle-grad-ruby2)"/><defs><linearGradient id="sparkle-grad-ruby" x1="1.125" y1="2.064" x2="24.77" y2="23.882" gradientUnits="userSpaceOnUse"><stop stop-color="#E082C0"/><stop offset="0.31" stop-color="#C0429F"/><stop offset="0.67" stop-color="#FF7584"/><stop offset="1" stop-color="#FFB98C"/></linearGradient><linearGradient id="sparkle-grad-ruby2" x1="1.125" y1="2.064" x2="24.77" y2="23.882" gradientUnits="userSpaceOnUse"><stop stop-color="#E082C0"/><stop offset="0.31" stop-color="#C0429F"/><stop offset="0.67" stop-color="#FF7584"/><stop offset="1" stop-color="#FFB98C"/></linearGradient></defs></svg></span><div class="glow-prompt-box__stream-area" style="display:block; font-size:14px;">Analyzing...</div></div>
+                                        <div class="glow-prompt-box__toolbar"><button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button><button class="glow-prompt-box__action-btn" style="color:var(--glow-accent);"><svg class="glow-prompt-box__icon-stop" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" style="display:block;"><rect x="5" y="5" width="10" height="10" rx="2"/></svg></button></div>
+                                    </div></div>
+                                </div>
+                                <div style="margin-top:8px;"><span class="color-chip"><span class="color-chip__dot" style="background:#C0429F;"></span>#C0429F</span></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===== Ruby Copilot in Action ===== -->
+                    <section id="copilot-demo" class="section">
+                        <h2 class="heading-2">Ruby Copilot in Action</h2>
+                        <p class="text-body">Three layout modes showing how Glow integrates into the Rosewood product. Toggle between views to see the collapsed bubble, expanded sidebar, and full-page chat.</p>
+
+                        <div class="copilot-tabs" id="copilotTabs">
+                            <button class="copilot-tab" data-copilot="collapsed">Collapsed</button>
+                            <button class="copilot-tab copilot-tab--active" data-copilot="expanded">Expanded</button>
+                            <button class="copilot-tab" data-copilot="fullpage">Full Page</button>
+                        </div>
+
+                        <!-- ===== Layout A: Collapsed (FAB) ===== -->
+                        <div class="copilot-layout copilot-layout--collapsed" id="copilotCollapsed">
+                            <div class="copilot-layout__app">
+                                <div class="copilot-layout__topbar">
+                                    <span>Sample Salon &ndash; Example City</span>
+                                    <div class="copilot-layout__topbar-icons"><div class="copilot-layout__topbar-icon"></div><div class="copilot-layout__topbar-icon"></div><div class="copilot-layout__topbar-icon" style="width:24px;height:24px;border-radius:50%;background:#edeff5;"></div></div>
+                                </div>
+                                <div class="copilot-layout__breadcrumb">&larr; Campaign builder<br><strong>Who are you sending this campaign to?</strong></div>
+                                <div class="copilot-layout__body">
+                                    <div class="copilot-layout__nav">
+                                        <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot copilot-layout__nav-dot--done"></div> Channel</div>
+                                        <div class="copilot-layout__nav-item copilot-layout__nav-item--active"><div class="copilot-layout__nav-dot copilot-layout__nav-dot--active"></div> Audience</div>
+                                        <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Offer</div>
+                                        <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Content</div>
+                                        <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Schedule</div>
+                                        <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Launch</div>
+                                    </div>
+                                    <div class="copilot-layout__content">
+                                        <div class="copilot-layout__content-title">Cart abandoners</div>
+                                        <div class="copilot-layout__content-meta">Shoppers who added items to their cart but didn't complete the purchase.</div>
+                                        <div class="copilot-layout__segment-list">
+                                            <div class="copilot-layout__segment copilot-layout__segment--active">&#10003; Cart abandoners</div>
+                                            <div class="copilot-layout__segment">Newsletter subscribers</div>
+                                            <div class="copilot-layout__segment">Serene Dreamers</div>
+                                            <div class="copilot-layout__segment">Zen Seekers Community</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="copilot-fab" id="copilotFab" aria-label="Open Glow">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- ===== Layout B: Expanded Sidebar ===== -->
+                        <div class="copilot-layout copilot-layout--visible" id="copilotExpanded" style="display:flex;">
+                            <!-- Product area -->
+                            <div class="copilot-layout__app" style="flex:1;">
+                                <div class="copilot-layout__topbar">
+                                    <span>Sample Salon &ndash; Example City</span>
+                                    <div class="copilot-layout__topbar-icons"><div class="copilot-layout__topbar-icon"></div><div class="copilot-layout__topbar-icon"></div></div>
+                                </div>
+                                <div class="copilot-layout__breadcrumb">&larr; Campaign builder<br><strong>Who are you sending this campaign to?</strong></div>
+                                <div class="copilot-layout__body">
+                                    <div class="copilot-layout__nav">
+                                        <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot copilot-layout__nav-dot--done"></div> Channel</div>
+                                        <div class="copilot-layout__nav-item copilot-layout__nav-item--active"><div class="copilot-layout__nav-dot copilot-layout__nav-dot--active"></div> Audience</div>
+                                        <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Offer</div>
+                                        <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Content</div>
+                                        <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Schedule</div>
+                                        <div class="copilot-layout__nav-item"><div class="copilot-layout__nav-dot"></div> Launch</div>
+                                    </div>
+                                    <div class="copilot-layout__content">
+                                        <div class="copilot-layout__content-title">Cart abandoners</div>
+                                        <div class="copilot-layout__content-meta">Shoppers who didn't complete purchase.</div>
+                                        <div class="copilot-layout__segment-list">
+                                            <div class="copilot-layout__segment copilot-layout__segment--active">&#10003; Cart abandoners</div>
+                                            <div class="copilot-layout__segment">Newsletter subscribers</div>
+                                            <div class="copilot-layout__segment">Serene Dreamers</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Copilot Sidebar (Ruby) -->
+                            <div class="copilot-demo__sidebar">
+                                <div class="copilot-demo__sidebar-header">
+                                    <div class="copilot-demo__avatar">Z</div>
+                                    <div>
+                                        <div class="copilot-demo__greeting">Hi <span>Stella</span>!</div>
+                                        <div style="font-size:12px; color:#5f5f5f; line-height:1.4; margin-top:2px;">I'm your campaign co-pilot. I can help you choose channels, build audiences, and more.</div>
+                                    </div>
+                                </div>
+
+                                <div class="copilot-demo__chips" id="copilotChips">
+                                    <button class="copilot-demo__chip" data-chip-prompt="What's the best channel for this campaign?"><span class="copilot-demo__chip-sparkle">&#10024;</span> Best channel</button>
+                                    <button class="copilot-demo__chip" data-chip-prompt="Suggest the ideal audience segment"><span class="copilot-demo__chip-sparkle">&#10024;</span> Suggest audience</button>
+                                    <button class="copilot-demo__chip" data-chip-prompt="Create a compelling offer for this audience"><span class="copilot-demo__chip-sparkle">&#10024;</span> Create offer</button>
+                                    <button class="copilot-demo__chip" data-chip-prompt="What's the optimal send time?"><span class="copilot-demo__chip-sparkle">&#10024;</span> Best send time</button>
+                                </div>
+
+                                <div class="copilot-demo__thread" id="copilotThread">
+                                    <div class="copilot-demo__msg copilot-demo__msg--user">Write a compelling subject line for our Summer Spa Launch campaign</div>
+                                    <div class="copilot-demo__msg copilot-demo__msg--ai">
+                                        <span class="ai-tag">&#10024; Glow</span>
+                                        Here are 3 options optimized for open rates:<br><br>
+                                        1. "Your Summer Glow Starts Here &mdash; 20% Off Zen-Glow"<br>
+                                        2. "Exclusive: The Spa Experience Everyone's Talking About"<br>
+                                        3. "Limited Spots: Transform Your Summer Wellness Routine"
+                                    </div>
+                                    <div class="copilot-demo__msg copilot-demo__msg--user">Go with option 1. Now suggest the best send time.</div>
+                                </div>
+
+                                <div class="copilot-demo__prompt-area">
+                                    <div class="glow-prompt-box glow-prompt-box--sidebar glow-prompt-box--idle" data-theme="ruby" style="max-width:100%; padding:0;">
+                                        <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                            <div class="glow-prompt-box__input-row" style="padding:10px 12px 0 12px; gap:6px;">
+                                                <span class="glow-prompt-box__sparkle" style="margin-top:0;"><svg class="glow-sparkle-svg" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#static-sparkle-1)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#static-sparkle-2)"/></svg></span>
+                                                <textarea class="glow-prompt-box__textarea" id="sidebarTextarea" placeholder="Ask Glow a question..." rows="1" style="font-size:13px; line-height:20px;"></textarea>
+                                            </div>
+                                            <div class="glow-prompt-box__toolbar" style="padding:4px 12px 8px 12px;">
+                                                <button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button>
+                                                <button class="glow-prompt-box__action-btn" id="sidebarActionBtn" style="color:#9E9E9E;"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button>
+                                            </div>
+                                        </div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== Layout C: Full Page Chat ===== -->
+                        <div class="copilot-layout copilot-fullpage" id="copilotFullpage">
+                            <div class="copilot-fullpage__topbar">Analytics</div>
+                            <div class="copilot-fullpage__hero">
+                                <div class="copilot-fullpage__avatar"><img src="images/glow-assistant.svg" alt="Glow" style="width:48px; height:48px;"></div>
+                                <h3 class="copilot-fullpage__title">Your business intelligence agent</h3>
+                                <p class="copilot-fullpage__desc">Begin building with unmatched power, and go from concept to conversion faster than ever.</p>
+                            </div>
+                            <div class="copilot-fullpage__cards" id="fullpageCards">
+                                <div class="copilot-fullpage__card" data-card-prompt="What were the total sales for each month in 2025?">
+                                    <div class="copilot-fullpage__card-title">Total sales</div>
+                                    <div class="copilot-fullpage__card-desc">What were the total sales for each month in 2025?</div>
+                                    <span class="copilot-fullpage__card-sparkle">&#10024;</span>
+                                </div>
+                                <div class="copilot-fullpage__card" data-card-prompt="How do the appointments in 2024 compare to those in 2025?">
+                                    <div class="copilot-fullpage__card-title">Compare year to year</div>
+                                    <div class="copilot-fullpage__card-desc">How do the appointments in 2024 compare to those in 2025?</div>
+                                    <span class="copilot-fullpage__card-sparkle">&#10024;</span>
+                                </div>
+                                <div class="copilot-fullpage__card" data-card-prompt="What was the monthly trend of total sales in 2024?">
+                                    <div class="copilot-fullpage__card-title">Monthly trend</div>
+                                    <div class="copilot-fullpage__card-desc">What was the monthly trend of total sales in 2024?</div>
+                                    <span class="copilot-fullpage__card-sparkle">&#10024;</span>
+                                </div>
+                                <div class="copilot-fullpage__card" data-card-prompt="What was the utilization rate for this month?">
+                                    <div class="copilot-fullpage__card-title">Utilization rate</div>
+                                    <div class="copilot-fullpage__card-desc">What was the utilization rate for this month?</div>
+                                    <span class="copilot-fullpage__card-sparkle">&#10024;</span>
+                                </div>
+                            </div>
+                            <div class="copilot-fullpage__prompt">
+                                <div class="glow-prompt-box glow-prompt-box--full glow-prompt-box--idle" data-theme="ruby" style="max-width:100%;">
+                                    <div class="glow-prompt-box__border-ring"><div class="glow-prompt-box__inner">
+                                        <div class="glow-prompt-box__input-row">
+                                            <span class="glow-prompt-box__sparkle"><svg class="glow-sparkle-svg" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#static-sparkle-1)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#static-sparkle-2)"/></svg></span>
+                                            <textarea class="glow-prompt-box__textarea" placeholder="Ask Glow a question..." rows="1" disabled></textarea>
+                                        </div>
+                                        <div class="glow-prompt-box__toolbar"><button class="glow-prompt-box__plus-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></button><button class="glow-prompt-box__action-btn"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button></div>
+                                    </div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="heading-3">Design Hierarchy</h3>
+                        <table class="properties-table">
+                            <thead><tr><th>Layout</th><th>Left Zone</th><th>Right Zone</th><th>AI Entry Point</th></tr></thead>
+                            <tbody>
+                                <tr><td>Collapsed</td><td>Full product UI</td><td>&mdash;</td><td>FAB bubble (bottom-right)</td></tr>
+                                <tr><td>Expanded</td><td>Compressed product UI</td><td>330px Ruby sidebar</td><td>Sidebar prompt box</td></tr>
+                                <tr><td>Full Page</td><td>&mdash;</td><td>&mdash;</td><td>Centered prompt + suggestion cards</td></tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- ===== AI Color & Spec Guidelines ===== -->
+                    <section id="color-guidelines" class="section">
+                        <h2 class="heading-2">AI Color &amp; Spec Guidelines</h2>
+
+                        <div class="tech-spec" id="techSpec">
+                            <h3 class="tech-spec__header">The Ruby Pivot: A Study in Contrast</h3>
+                            <p style="padding: 0 24px 16px; font-size: 14px; line-height: 1.65; color: #4a4a4a; font-family: Lato, sans-serif; margin: 0;">Ruby Berry was chosen to ensure Glow remains instantly recognizable within the existing Rosewood interface.</p>
+
+                            <details class="tech-spec__item" open>
+                                <summary>High-Visibility Anchoring</summary>
+                                <div class="tech-spec__item-body">Ruby creates a natural visual tension against our primary blues, making AI entry points discoverable without adding UI clutter. The contrast ratio between Ruby Berry (#C0429F) and our dashboard blue ensures WCAG AA compliance while maintaining brand distinction.</div>
+                            </details>
+                            <details class="tech-spec__item">
+                                <summary>Warmth &amp; Human-Centricity</summary>
+                                <div class="tech-spec__item-body">Ruby Berry aligns with the luxury and wellness industries we serve, lending the AI a more sophisticated, approachable persona. This warmth signals that Glow is a partner, not a calculator.</div>
+                            </details>
+                            <details class="tech-spec__item">
+                                <summary>Active Feedback</summary>
+                                <div class="tech-spec__item-body">The rich saturation of Ruby allows for a more dynamic "Generating" state, using warm-spectrum gradients (Sunset Orange to Ruby) to signal that the Glow is at work. The Champagne (#FBECD6) accent provides soft contrast without competing with the primary Ruby stroke.</div>
+                            </details>
+                        </div>
+                    </section>
+
+                    <!-- ===== Animation Specs ===== -->
+                    <section id="animation-specs" class="section">
+                        <h2 class="heading-2">Animation Specs</h2>
+                        <table class="properties-table">
+                            <thead><tr><th>Animation</th><th>Duration</th><th>Easing</th><th>Trigger</th></tr></thead>
+                            <tbody>
+                                <tr><td>State change (all)</td><td>200ms</td><td><code>ease-out</code></td><td>Any state transition</td></tr>
+                                <tr><td>Idle sparkle pulse</td><td>3s</td><td><code>ease-in-out</code></td><td>Idle state active</td></tr>
+                                <tr><td>Textarea expansion</td><td>200ms</td><td><code>ease-out</code></td><td>Text input exceeds line</td></tr>
+                                <tr><td>Rainbow border spin</td><td>2s / rotation</td><td><code>linear</code></td><td>Generating / Listening state</td></tr>
+                                <tr><td>Text stream fade-in</td><td>200ms / word</td><td><code>ease-out</code></td><td>Each word appears</td></tr>
+                                <tr><td>Waveform bars</td><td>600ms</td><td><code>cubic-bezier(0.34, 1.56, 0.64, 1)</code></td><td>Listening state</td></tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- ===== Keyboard Shortcuts ===== -->
+                    <section id="keyboard" class="section">
+                        <h2 class="heading-2">Keyboard Shortcuts</h2>
+                        <table class="properties-table">
+                            <thead><tr><th>Key</th><th>Action</th><th>State</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>Enter</code></td><td>Submit prompt</td><td>typing</td></tr>
+                                <tr><td><code>Shift + Enter</code></td><td>New line</td><td>typing</td></tr>
+                                <tr><td><code>Escape</code></td><td>Clear input, return to idle</td><td>typing / generating</td></tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- ===== Component API ===== -->
+                    <section id="api" class="section">
+                        <h2 class="heading-2">Component API (Proposed)</h2>
+                        <p class="text-body">Production <code>&lt;glow-prompt-box&gt;</code> Web Component attributes and events.</p>
+                        <h3 class="heading-3">Attributes</h3>
+                        <table class="properties-table">
+                            <thead><tr><th>Attribute</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>state</code></td><td>idle | typing | generating | listening</td><td>idle</td><td>Current interaction state</td></tr>
+                                <tr><td><code>layout</code></td><td>full | sidebar | overlay</td><td>full</td><td>Layout mode</td></tr>
+                                <tr><td><code>theme</code></td><td>ruby | purple</td><td>ruby</td><td>Color theme</td></tr>
+                                <tr><td><code>placeholder</code></td><td>string</td><td>"Ask Glow a question..."</td><td>Placeholder text</td></tr>
+                                <tr><td><code>value</code></td><td>string</td><td>""</td><td>Current input value</td></tr>
+                                <tr><td><code>disabled</code></td><td>boolean</td><td>false</td><td>Disable all interaction</td></tr>
+                            </tbody>
+                        </table>
+                        <h3 class="heading-3">Events</h3>
+                        <table class="properties-table">
+                            <thead><tr><th>Event</th><th>Detail</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>glow-prompt-submit</code></td><td>{ value: string }</td><td>User submits prompt</td></tr>
+                                <tr><td><code>glow-prompt-input</code></td><td>{ value: string }</td><td>Text changes</td></tr>
+                                <tr><td><code>glow-prompt-stop</code></td><td>{}</td><td>User stops generation</td></tr>
+                                <tr><td><code>glow-prompt-voice-start</code></td><td>{}</td><td>Voice input begins</td></tr>
+                                <tr><td><code>glow-prompt-voice-end</code></td><td>{ transcript: string }</td><td>Voice input ends</td></tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <div class="related-pages">
+                        <h3 class="heading-3">Related Pages</h3>
+                        <div class="related-pages-list">
+                            <a href="ai-visual-specs.html">AI Visual Specs</a>
+                            <a href="ai-prompt-input.html">Prompt Input Patterns</a>
+                            <a href="ai-processing-states.html">Processing States</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page__nav">
+                <div class="nav-container">
+                    <h3>Contents</h3>
+                    <ul>
+                        <li><a href="#playground">Interactive Playground</a></li>
+                        <li><a href="#states">States Reference</a></li>
+                        <li><a href="#scaling">Scaling &amp; Auto-Expand</a></li>
+                        <li><a href="#themes">Color Themes</a></li>
+                        <li><a href="#copilot-demo">Ruby Copilot in Action</a></li>
+                        <li><a href="#color-guidelines">AI Color &amp; Spec Guidelines</a></li>
+                        <li><a href="#animation-specs">Animation Specs</a></li>
+                        <li><a href="#keyboard">Keyboard Shortcuts</a></li>
+                        <li><a href="#api">Component API</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./scripts/documentation.js"></script>
+    <script>
+    (function() {
+        const box = document.getElementById('mainPromptBox');
+        const textarea = document.getElementById('mainTextarea');
+        const actionBtn = document.getElementById('actionBtn');
+        const streamArea = document.getElementById('streamArea');
+        const ghostTranscript = document.getElementById('ghostTranscript');
+        const playground = document.getElementById('demoPlayground');
+
+        let currentState = 'idle';
+        let streamInterval = null;
+        let transcriptInterval = null;
+
+        const STREAM_TEXT = "Revenue grew 12.4% quarter-over-quarter, driven primarily by a 23% increase in service bookings during December. The top performing services were Facials (+31%), Massage (+18%), and Hair Color (+15%). Facials also had the highest repeat booking rate at 42%.";
+        const TRANSCRIPT_PHRASES = ["I'm listening...", "Find all guests who haven't...", "Find all guests who haven't visited in 6 months...", "Find all guests who haven't visited in 6 months and live within..."];
+
+        var micBtn = document.getElementById('micBtn');
+        var threadBubble = document.getElementById('threadBubble');
+
+        document.getElementById('demoControls').addEventListener('click', function(e) {
+            const btn = e.target.closest('.demo-btn');
+            if (!btn) return;
+            const control = btn.dataset.control;
+            const value = btn.dataset.value;
+            btn.parentElement.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('demo-btn--active'));
+            btn.classList.add('demo-btn--active');
+            if (control === 'state') { clearError(); setState(value); }
+            if (control === 'layout') setLayout(value);
+            if (control === 'theme') setTheme(value);
+            if (control === 'whisper') {
+                box.setAttribute('data-whisper', value);
+                var micB = document.getElementById('micBtn');
+                if (value === 'false') micB.classList.add('glow-prompt-box__mic-btn--blocked');
+                else micB.classList.remove('glow-prompt-box__mic-btn--blocked');
+            }
+            if (control === 'error') triggerError(value);
+        });
+
+        var bufferTimeout = null;
+
+        function setState(state) {
+            clearInterval(streamInterval);
+            clearInterval(transcriptInterval);
+            clearTimeout(bufferTimeout);
+            clearTimeout(autoStopTimeout);
+            streamArea.innerHTML = '';
+            ghostTranscript.textContent = '';
+            box.className = box.className.replace(/glow-prompt-box--(idle|typing|generating|listening|activating)/g, '');
+            currentState = state;
+
+            // Hide thread bubble on state change (except generating)
+            if (state !== 'generating') {
+                threadBubble.classList.remove('glow-thread-bubble--visible');
+                threadBubble.textContent = '';
+            }
+
+            if (state === 'idle') {
+                box.classList.add('glow-prompt-box--idle');
+                textarea.value = '';
+                textarea.style.height = 'auto';
+                textarea.readOnly = false;
+                textarea.style.display = '';
+            }
+            if (state === 'typing') {
+                box.classList.add('glow-prompt-box--typing');
+                textarea.readOnly = false;
+                textarea.style.display = '';
+                textarea.focus();
+            }
+            if (state === 'generating') {
+                // Thread handoff: move prompt to bubble, clear input
+                var promptText = textarea.value.trim();
+                if (promptText) {
+                    threadBubble.textContent = promptText;
+                    threadBubble.classList.add('glow-thread-bubble--visible');
+                }
+                textarea.value = '';
+                textarea.style.height = 'auto';
+                // Buffer: solid accent for 150ms, then rainbow
+                box.classList.add('glow-prompt-box--activating');
+                textarea.readOnly = true;
+                textarea.style.display = 'none';
+                bufferTimeout = setTimeout(function() {
+                    box.classList.remove('glow-prompt-box--activating');
+                    box.classList.add('glow-prompt-box--generating');
+                    startStreamingSimulation();
+                }, 150);
+            }
+            if (state === 'listening') {
+                // Buffer for listening too
+                box.classList.add('glow-prompt-box--activating');
+                textarea.style.display = 'none';
+                bufferTimeout = setTimeout(function() {
+                    box.classList.remove('glow-prompt-box--activating');
+                    box.classList.add('glow-prompt-box--listening');
+                    startTranscriptSimulation();
+                }, 150);
+            }
+        }
+
+        function setLayout(layout) {
+            box.className = box.className.replace(/glow-prompt-box--(full|sidebar|overlay)/g, '');
+            box.classList.add('glow-prompt-box--' + layout);
+            playground.className = 'demo-playground';
+            if (layout === 'sidebar') playground.classList.add('demo-playground--sidebar');
+            if (layout === 'overlay') playground.classList.add('demo-playground--overlay');
+        }
+
+        function setTheme(theme) {
+            box.setAttribute('data-theme', theme);
+            // Update all sparkle gradient stops in the interactive prompt box
+            var gradientColors = {
+                ruby:   ['#C0429F', '#FA7E3F', '#FFEEE3', '#C55D27']
+            };
+            var colors = gradientColors[theme] || gradientColors.ruby;
+            box.querySelectorAll('linearGradient stop').forEach(function(stop, i) {
+                var idx = i % 4;
+                stop.setAttribute('stop-color', colors[idx]);
+            });
+
+            // Transition headline colors to match theme
+            var accentColors = { ruby: '#C0429F' };
+            var bgColors = { ruby: 'rgba(192, 66, 159, 0.06)' };
+            var bodyTextColors = { ruby: '#4a4a4a' };
+            var accent = accentColors[theme] || accentColors.ruby;
+            var visionTitle = document.querySelector('.vision-header__title');
+            var visionBody = document.querySelector('.vision-header__body');
+            var techHeader = document.querySelector('.tech-spec__header');
+            var visionBorder = document.querySelector('.vision-header');
+            if (visionTitle) visionTitle.style.color = accent;
+            if (visionBody) visionBody.style.color = bodyTextColors[theme] || bodyTextColors.ruby;
+            if (techHeader) techHeader.style.color = accent;
+            if (visionBorder) {
+                visionBorder.style.borderLeftColor = accent;
+                visionBorder.style.background = bgColors[theme] || bgColors.ruby;
+            }
+            document.querySelectorAll('.tech-spec__item summary::before').forEach(function(el) {
+                el.style.color = accent;
+            });
+        }
+
+        textarea.addEventListener('input', function() {
+            if (currentState === 'idle' && this.value.length > 0) {
+                setState('typing');
+                document.querySelector('[data-control="state"][data-value="typing"]').click();
+            }
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 320) + 'px';
+            this.style.overflowY = this.scrollHeight > 320 ? 'auto' : 'hidden';
+        });
+
+        textarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey && currentState === 'typing') {
+                e.preventDefault();
+                setState('generating');
+                document.querySelector('[data-control="state"][data-value="generating"]').click();
+            }
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                textarea.value = '';
+                textarea.style.height = 'auto';
+                setState('idle');
+                document.querySelector('[data-control="state"][data-value="idle"]').click();
+            }
+        });
+
+        // Mic button → trigger listening
+        micBtn.addEventListener('click', function() {
+            if (currentState === 'idle') {
+                setState('listening');
+                document.querySelector('[data-control="state"][data-value="listening"]').click();
+            }
+        });
+
+        actionBtn.addEventListener('click', function() {
+            if (currentState === 'idle') {
+                // In idle, submit starts generating (if text exists)
+                if (textarea.value.trim()) {
+                    setState('generating');
+                    document.querySelector('[data-control="state"][data-value="generating"]').click();
+                }
+            } else if (currentState === 'typing') {
+                setState('generating');
+                document.querySelector('[data-control="state"][data-value="generating"]').click();
+            } else if (currentState === 'generating') {
+                setState('idle');
+                document.querySelector('[data-control="state"][data-value="idle"]').click();
+            } else if (currentState === 'listening') {
+                // Stop listening → populate transcript into textarea
+                setState('typing');
+                textarea.value = ghostTranscript.textContent;
+                document.querySelector('[data-control="state"][data-value="typing"]').click();
+            }
+        });
+
+        function startStreamingSimulation() {
+            var words = STREAM_TEXT.split(' ');
+            var idx = 0;
+            streamArea.innerHTML = '';
+            streamInterval = setInterval(function() {
+                if (idx >= words.length) { clearInterval(streamInterval); return; }
+                var span = document.createElement('span');
+                span.className = 'glow-prompt-box__stream-word';
+                span.textContent = words[idx] + ' ';
+                streamArea.appendChild(span);
+                streamArea.scrollTop = streamArea.scrollHeight;
+                idx++;
+            }, 60);
+        }
+
+        var autoStopTimeout = null;
+        var helperText = document.getElementById('helperText');
+
+        function triggerError(type) {
+            clearError();
+            if (type === 'validation') {
+                box.classList.add('glow-prompt-box--validation-error');
+                helperText.innerHTML = 'Please enter a prompt to begin.';
+                // Auto-clear after shake completes
+                setTimeout(function() {
+                    box.classList.remove('glow-prompt-box--validation-error');
+                }, 2000);
+            }
+            if (type === 'system') {
+                // Keep current text, stop generation, show error state
+                clearInterval(streamInterval);
+                box.className = box.className.replace(/glow-prompt-box--(idle|typing|generating|listening|activating)/g, '');
+                box.classList.add('glow-prompt-box--system-error');
+                textarea.style.display = '';
+                textarea.readOnly = false;
+                if (!textarea.value && streamArea.textContent) {
+                    textarea.value = streamArea.textContent;
+                }
+                helperText.innerHTML = 'Glow is having a moment. <a onclick="triggerRetry()">Retry?</a>';
+                currentState = 'system-error';
+            }
+            if (type === 'clear') {
+                clearError();
+            }
+        }
+
+        function clearError() {
+            box.classList.remove('glow-prompt-box--validation-error');
+            box.classList.remove('glow-prompt-box--system-error');
+            helperText.innerHTML = '';
+        }
+
+        // Expose for inline onclick
+        window.triggerRetry = function() {
+            clearError();
+            setState('generating');
+            document.querySelector('[data-control="state"][data-value="generating"]').click();
+        };
+
+        function startTranscriptSimulation() {
+            var idx = 0;
+            clearTimeout(autoStopTimeout);
+            transcriptInterval = setInterval(function() {
+                if (idx >= TRANSCRIPT_PHRASES.length) {
+                    clearInterval(transcriptInterval);
+                    // Auto-stop after 2s silence
+                    autoStopTimeout = setTimeout(function() {
+                        if (currentState === 'listening') {
+                            textarea.value = ghostTranscript.textContent;
+                            setState('typing');
+                            document.querySelector('[data-control="state"][data-value="typing"]').click();
+                        }
+                    }, 2000);
+                    return;
+                }
+                ghostTranscript.textContent = TRANSCRIPT_PHRASES[idx];
+                idx++;
+            }, 1200);
+        }
+        // ===== Copilot Layout Tabs =====
+        var copilotLayouts = {
+            collapsed: document.getElementById('copilotCollapsed'),
+            expanded: document.getElementById('copilotExpanded'),
+            fullpage: document.getElementById('copilotFullpage')
+        };
+
+        document.getElementById('copilotTabs').addEventListener('click', function(e) {
+            var tab = e.target.closest('.copilot-tab');
+            if (!tab) return;
+            var layout = tab.dataset.copilot;
+            // Update tabs
+            this.querySelectorAll('.copilot-tab').forEach(function(t) { t.classList.remove('copilot-tab--active'); });
+            tab.classList.add('copilot-tab--active');
+            // Show selected layout
+            Object.keys(copilotLayouts).forEach(function(k) {
+                if (copilotLayouts[k]) {
+                    copilotLayouts[k].style.display = k === layout ? 'flex' : 'none';
+                    if (k === layout) copilotLayouts[k].classList.add('copilot-layout--visible');
+                    else copilotLayouts[k].classList.remove('copilot-layout--visible');
+                }
+            });
+        });
+
+        // FAB click → switch to Expanded
+        document.getElementById('copilotFab').addEventListener('click', function() {
+            document.querySelector('[data-copilot="expanded"]').click();
+        });
+
+        // Chip click → populate sidebar prompt, simulate submit
+        var sidebarThread = document.getElementById('copilotThread');
+        document.getElementById('copilotChips').addEventListener('click', function(e) {
+            var chip = e.target.closest('.copilot-demo__chip');
+            if (!chip) return;
+            var prompt = chip.dataset.chipPrompt;
+            if (!prompt) return;
+
+            // Add user message to thread
+            var userMsg = document.createElement('div');
+            userMsg.className = 'copilot-demo__msg copilot-demo__msg--user';
+            userMsg.textContent = prompt;
+            sidebarThread.appendChild(userMsg);
+            sidebarThread.scrollTop = sidebarThread.scrollHeight;
+
+            // Simulate AI response after 1.5s
+            setTimeout(function() {
+                var aiMsg = document.createElement('div');
+                aiMsg.className = 'copilot-demo__msg copilot-demo__msg--ai';
+                aiMsg.innerHTML = '<span class="ai-tag">&#10024; Glow</span>Based on your campaign data and audience segments, I recommend focusing on email as the primary channel with SMS follow-ups for high-value segments.';
+                sidebarThread.appendChild(aiMsg);
+                sidebarThread.scrollTop = sidebarThread.scrollHeight;
+            }, 1500);
+        });
+
+        // Fullpage card click → alert prompt (placeholder for future)
+        document.getElementById('fullpageCards').addEventListener('click', function(e) {
+            var card = e.target.closest('.copilot-fullpage__card');
+            if (!card) return;
+            var prompt = card.dataset.cardPrompt;
+            if (prompt) {
+                card.style.background = 'rgba(0, 163, 163, 0.08)';
+                card.style.boxShadow = '0 0 0 2px #00A3A3';
+                setTimeout(function() {
+                    card.style.background = '';
+                    card.style.boxShadow = '';
+                }, 800);
+            }
+        });
+
+    })();
+    </script>
+</body>
+</html>

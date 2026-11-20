@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Visual Specs - Rosewood Design System</title>
+    <link rel="stylesheet" href="../dist/styles/rosewood-base.css" />
+    <link rel="stylesheet" href="./styles/documentation.css" />
+    <style>
+        .color-swatches {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 1.5rem 0;
+        }
+        .color-swatch {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--stroke-neutral-Light);
+            background: white;
+        }
+        .color-swatch__preview {
+            height: 64px;
+            width: 100%;
+        }
+        .color-swatch__info {
+            padding: 8px 10px;
+        }
+        .color-swatch__name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: block;
+        }
+        .color-swatch__value {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-family: Consolas, Monaco, monospace;
+        }
+        .badge-demo {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 4px;
+        }
+        .badge-demo svg {
+            width: 14px;
+            height: 14px;
+        }
+        .chat-demo {
+            max-width: 480px;
+            border: 1px solid var(--stroke-neutral-Light);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+        }
+        .chat-demo__header {
+            background: var(--accent-dark-lavender, #505382);
+            color: white;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chat-demo__body {
+            padding: 16px;
+            background: var(--bg-light-cool-gray, #f5f6fa);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chat-demo__msg {
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+        .chat-demo__msg--user {
+            background: var(--bg-cta-blue);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-demo__msg--ai {
+            background: var(--bg-lavender, #eff0fd);
+            color: var(--text-primary);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border-left: 3px solid var(--accent-dark-lavender, #505382);
+        }
+        .chat-demo__msg--ai .ai-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--accent-dark-lavender, #505382);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .chat-demo__input {
+            padding: 12px 16px;
+            border-top: 1px solid var(--stroke-neutral-Light);
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chat-demo__input-field {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--stroke-neutral-Light);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-ghost);
+        }
+        .chat-demo__send {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--accent-dark-lavender, #505382);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* AI Suggestion Card — from Figma */
+        .ai-suggestion-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.2);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            max-width: 520px;
+            margin: 1rem 0;
+            font-family: Lato, sans-serif;
+        }
+        .ai-suggestion-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(
+                to bottom,
+                #ffb98c,
+                #eeb8db,
+                #c0c4ff,
+                #99cdf5,
+                #87d5d3,
+                #aed1af,
+                #f3c233,
+                #ffb4bc
+            );
+            border-radius: 4px 0 0 4px;
+        }
+        .ai-suggestion-card__content {
+            flex: 1;
+            min-width: 0;
+        }
+        .ai-suggestion-card__title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary, #0a0a0a);
+            line-height: 22px;
+            margin: 0;
+        }
+        .ai-suggestion-card__desc {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-secondary, #4a4a4a);
+            line-height: 18px;
+            margin: 4px 0 0 0;
+        }
+        .ai-suggestion-card__sparkle {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            opacity: 0.5;
+        }
+        .ai-suggestion-card__action {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            border: 1px solid rgba(0,0,0,0.2);
+            border-radius: 6px;
+            background: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary, #0a0a0a);
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: Lato, sans-serif;
+        }
+        .ai-suggestion-card__action:hover {
+            background: var(--bg-light-cool-gray, #f5f6fa);
+        }
+
+        /* AI Gradient Stroke Swatches */
+        .gradient-preview {
+            height: 64px;
+            width: 100%;
+            border-radius: 8px 8px 0 0;
+        }
+        .gradient-bar-preview {
+            height: 8px;
+            width: 100%;
+            border-radius: 4px;
+            margin: 0.75rem 0;
+        }
+
+        /* Updated chat demo with gradient border option */
+        .chat-demo__msg--ai-gradient {
+            background: var(--bg-white, #ffffff);
+            color: var(--text-primary, #0a0a0a);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.2);
+            padding-left: 18px !important;
+        }
+        .chat-demo__msg--ai-gradient::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(
+                to bottom,
+                #ffb98c,
+                #eeb8db,
+                #c0c4ff,
+                #99cdf5,
+                #87d5d3,
+                #aed1af,
+                #f3c233,
+                #ffb4bc
+            );
+            border-radius: 12px 0 0 12px;
+        }
+        .chat-demo__msg--ai-gradient .ai-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--accent-dark-lavender, #505382);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Powered by Glow attribution */
+        .glow-attribution {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: Lato, sans-serif;
+            font-size: 11px;
+            font-weight: 400;
+            line-height: 16px;
+            color: var(--text-tertiary, #5f5f5f);
+            letter-spacing: 0;
+        }
+        .glow-attribution__icon {
+            width: 24px;
+            height: 14.118px;
+            flex-shrink: 0;
+        }
+
+        .dark-mode-table {
+            margin: 1rem 0;
+        }
+        .dark-mode-table td .swatch-inline {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin-right: 6px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page__container">
+            <div class="page__content">
+                <div class="content">
+                    <header class="component-header">
+                        <h1 class="heading-1">AI Visual Specs</h1>
+                        <p class="text-body">Color, typography, iconography, and layout specifications for AI-generated and AI-assisted interface elements. These specs extend the design system's existing token system with AI-specific additions.</p>
+                    </header>
+
+                    <!-- AI COLOR PALETTE -->
+                    <section id="ai-color-palette" class="section">
+                        <h2 class="heading-2">AI Color Palette</h2>
+                        <p class="text-body">AI elements use the design system's <strong>Lavender family</strong> as the primary AI accent — visually distinct from the Blue CTA colors used for standard actions. This separation helps users immediately recognize AI-involved content. Confidence indicators reuse the design system's semantic Green/Yellow/Red families.</p>
+
+                        <h3 class="heading-3">AI Accent Colors</h3>
+                        <p class="text-body">Derived from the design system's existing Lavender palette. Used for AI attribution badges, borders on AI content, and interactive AI elements.</p>
+                        <div class="color-swatches">
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #505382;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">AI Primary</span>
+                                    <span class="color-swatch__value">#505382</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--accent-dark-lavender</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #a4a4d9;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">AI Secondary</span>
+                                    <span class="color-swatch__value">#a4a4d9</span>
+                                    <span class="color-swatch__value" style="color: var(--accent-dark-lavender); font-size: 0.6rem;">NEW --ai-secondary</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #eff0fd;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">AI Surface</span>
+                                    <span class="color-swatch__value">#eff0fd</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--bg-lavender</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #f8f7ff;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">AI Surface Light</span>
+                                    <span class="color-swatch__value">#f8f7ff</span>
+                                    <span class="color-swatch__value" style="color: var(--accent-dark-lavender); font-size: 0.6rem;">NEW --ai-surface-light</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="heading-3">Confidence Indicator Colors</h3>
+                        <p class="text-body">Mapped from the design system's existing semantic color families. These communicate how certain the AI is about a given output.</p>
+                        <div class="color-swatches">
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #1e6421;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">High Confidence</span>
+                                    <span class="color-swatch__value">#1e6421</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--ai-confidence-high</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #e7f4e8;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">High Conf. BG</span>
+                                    <span class="color-swatch__value">#e7f4e8</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--bg-green</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #9c7506;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Medium Confidence</span>
+                                    <span class="color-swatch__value">#9c7506</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--ai-confidence-med</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #fff1bf;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Med. Conf. BG</span>
+                                    <span class="color-swatch__value">#fff1bf</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--bg-yellow</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #e63447;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Low Confidence</span>
+                                    <span class="color-swatch__value">#e63447</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--ai-confidence-low</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #ffecee;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Low Conf. BG</span>
+                                    <span class="color-swatch__value">#ffecee</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--bg-red</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="heading-3">AI Gradient Stroke Colors</h3>
+                        <p class="text-body">The AI rainbow gradient stroke is used on suggestion cards and AI-originated containers to visually signal AI involvement. The gradient uses eight accent colors from the design system's palette in a top-to-bottom linear gradient.</p>
+                        <div style="max-width:520px; margin: 1rem 0;">
+                            <div class="gradient-bar-preview" style="height:12px; background: linear-gradient(to right, #ffb98c, #eeb8db, #c0c4ff, #99cdf5, #87d5d3, #aed1af, #f3c233, #ffb4bc);"></div>
+                        </div>
+                        <div class="color-swatches">
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #ffb98c;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Orange 200</span>
+                                    <span class="color-swatch__value">#ffb98c</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">accent-orange.200</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #eeb8db;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Pink 200</span>
+                                    <span class="color-swatch__value">#eeb8db</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">accent-pink.200</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #c0c4ff;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Lavender 200</span>
+                                    <span class="color-swatch__value">#c0c4ff</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">accent-lavender.200</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #99cdf5;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Blue 200</span>
+                                    <span class="color-swatch__value">#99cdf5</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">accent-blue.200</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #87d5d3;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Teal 200</span>
+                                    <span class="color-swatch__value">#87d5d3</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">accent-teal.200</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #aed1af;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Green 200</span>
+                                    <span class="color-swatch__value">#aed1af</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">schematic-green.200</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #f3c233;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Yellow 200</span>
+                                    <span class="color-swatch__value">#f3c233</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">schematic-yellow.200</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #ffb4bc;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Red 200</span>
+                                    <span class="color-swatch__value">#ffb4bc</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">schematic-red.200</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 style="margin-top:1.5rem; font-size:0.9rem; font-weight:600;">Token</h4>
+                        <table class="properties-table">
+                            <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>--ai-stroke-gradient</code></td>
+                                    <td><code>linear-gradient(to bottom, #ffb98c, #eeb8db, #c0c4ff, #99cdf5, #87d5d3, #aed1af, #f3c233, #ffb4bc)</code></td>
+                                    <td>Left border on AI suggestion cards, AI containers, chat AI messages</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-stroke-width</code></td>
+                                    <td>4px</td>
+                                    <td>Width of the gradient left-border accent</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h3 class="heading-3">Chat Interface Colors</h3>
+                        <p class="text-body">Specific color assignments for the AI chat interface used in Analytics and other conversational surfaces.</p>
+                        <div class="color-swatches">
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #1a78c1;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">User Bubble</span>
+                                    <span class="color-swatch__value">#1a78c1</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--bg-cta-blue</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #eff0fd;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">AI Bubble</span>
+                                    <span class="color-swatch__value">#eff0fd</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--bg-lavender</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #505382;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">AI Bubble Border</span>
+                                    <span class="color-swatch__value">#505382</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--accent-dark-lavender</span>
+                                </div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="color-swatch__preview" style="background: #f5f6fa;"></div>
+                                <div class="color-swatch__info">
+                                    <span class="color-swatch__name">Chat Background</span>
+                                    <span class="color-swatch__value">#f5f6fa</span>
+                                    <span class="color-swatch__value" style="color: var(--text-tertiary); font-size: 0.6rem;">--bg-light-cool-gray</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="heading-3">Token Reference</h3>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Token</th>
+                                    <th>Light Value</th>
+                                    <th>Source</th>
+                                    <th>Usage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>--ai-primary</code></td>
+                                    <td>#505382</td>
+                                    <td>Design System Lavender 500</td>
+                                    <td>AI badge text, AI border accents, chat header</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-secondary</code></td>
+                                    <td>#a4a4d9</td>
+                                    <td>Design System Lavender 300</td>
+                                    <td>AI hover states, secondary indicators, icons</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-surface</code></td>
+                                    <td>#eff0fd</td>
+                                    <td>Design System Lavender 100</td>
+                                    <td>AI message bubbles, AI card backgrounds</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-surface-light</code></td>
+                                    <td>#f8f7ff</td>
+                                    <td>Lavender 50 (new)</td>
+                                    <td>AI container backgrounds, subtle AI tinting</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-confidence-high</code></td>
+                                    <td>#1e6421</td>
+                                    <td>Design System Green 500</td>
+                                    <td>High confidence text and icons</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-confidence-high-bg</code></td>
+                                    <td>#e7f4e8</td>
+                                    <td>Design System Green 100</td>
+                                    <td>High confidence badge backgrounds</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-confidence-medium</code></td>
+                                    <td>#9c7506</td>
+                                    <td>Design System Yellow 400</td>
+                                    <td>Medium confidence text and icons</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-confidence-medium-bg</code></td>
+                                    <td>#fff1bf</td>
+                                    <td>Design System Yellow 100</td>
+                                    <td>Medium confidence badge backgrounds</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-confidence-low</code></td>
+                                    <td>#e63447</td>
+                                    <td>Design System Red 400</td>
+                                    <td>Low confidence text and icons</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-confidence-low-bg</code></td>
+                                    <td>#ffecee</td>
+                                    <td>Design System Red 100</td>
+                                    <td>Low confidence badge backgrounds</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-chat-user</code></td>
+                                    <td>#1a78c1</td>
+                                    <td>Design System Blue 400</td>
+                                    <td>User message bubble background</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-chat-bg</code></td>
+                                    <td>#f8f9fc</td>
+                                    <td>Design System bg-default</td>
+                                    <td>Chat conversation area background</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- CHAT INTERFACE PREVIEW -->
+                    <section id="chat-interface" class="section">
+                        <h2 class="heading-2">Chat Interface Preview</h2>
+                        <p class="text-body">Reference implementation of the color system applied to the Analytics chat interface. The AI accent (Lavender) distinguishes AI responses from user messages (Blue). The left border on AI bubbles reinforces AI attribution.</p>
+
+                        <!-- AI Suggestion Card (from Figma) -->
+                        <h3 class="heading-3">AI Suggestion Card</h3>
+                        <p class="text-body">The suggestion card uses the AI rainbow gradient stroke on its left edge. It surfaces proactive AI recommendations with an optional action button. This pattern is sourced from the Figma AI Markers file.</p>
+
+                        <div class="ai-suggestion-card">
+                            <div class="ai-suggestion-card__content">
+                                <p class="ai-suggestion-card__title">Flat 15% off on all services when rebooking.</p>
+                                <p class="ai-suggestion-card__desc">Would you like me to create this promo and send personalized rebooking messages to these guests?</p>
+                            </div>
+                            <svg class="ai-suggestion-card__sparkle" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L13.09 8.26L18 6L14.5 11L20 12L14.5 13L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.5 13L4 12L9.5 11L6 6L10.91 8.26L12 2Z" fill="#c0c4ff" stroke="#a4a4d9" stroke-width="0.5"/>
+                            </svg>
+                            <button class="ai-suggestion-card__action">Create and send</button>
+                        </div>
+
+                        <table class="properties-table" style="margin-top:1rem;">
+                            <thead><tr><th>Property</th><th>Value</th><th>Token</th></tr></thead>
+                            <tbody>
+                                <tr><td>Background</td><td>#ffffff</td><td><code>--bg-white</code></td></tr>
+                                <tr><td>Border</td><td>1px solid rgba(0,0,0,0.2)</td><td><code>--stroke-neutral-dark</code></td></tr>
+                                <tr><td>Border radius</td><td>4px</td><td><code>--radius-sm</code></td></tr>
+                                <tr><td>Left gradient bar</td><td>4px wide, gradient</td><td><code>--ai-stroke-gradient</code></td></tr>
+                                <tr><td>Title</td><td>Lato SemiBold 14/22</td><td>Action Button/Small</td></tr>
+                                <tr><td>Description</td><td>Lato Regular 12/18</td><td>Footnote/Large</td></tr>
+                                <tr><td>Title color</td><td>#0a0a0a</td><td><code>--text-primary</code></td></tr>
+                                <tr><td>Description color</td><td>#4a4a4a</td><td><code>--text-secondary</code></td></tr>
+                                <tr><td>Padding</td><td>12px 16px</td><td><code>--spacing-s12</code> / <code>--spacing-s16</code></td></tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Chat Interface -->
+                        <h3 class="heading-3" style="margin-top:2.5rem;">Chat Interface</h3>
+                        <p class="text-body">The analytics chat interface with the AI gradient stroke applied to AI response bubbles. User messages use the design system's Blue; AI responses use the rainbow left-border for instant recognition.</p>
+
+                        <div class="chat-demo">
+                            <div class="chat-demo__header">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2L13.09 8.26L18 6L14.5 11L20 12L14.5 13L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.5 13L4 12L9.5 11L6 6L10.91 8.26L12 2Z" fill="white" stroke="white" stroke-width="0.5"/>
+                                </svg>
+                                Rosewood AI Analytics
+                            </div>
+                            <div class="chat-demo__body">
+                                <div class="chat-demo__msg chat-demo__msg--user">
+                                    What was my revenue trend last quarter?
+                                </div>
+                                <div class="chat-demo__msg chat-demo__msg--ai-gradient">
+                                    <div class="ai-label">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 2L13.09 8.26L18 6L14.5 11L20 12L14.5 13L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.5 13L4 12L9.5 11L6 6L10.91 8.26L12 2Z" fill="#c0c4ff" stroke="#a4a4d9" stroke-width="0.5"/>
+                                        </svg>
+                                        AI Generated
+                                    </div>
+                                    Revenue grew 12.4% quarter-over-quarter, driven primarily by a 23% increase in service bookings during December.
+                                </div>
+                                <div class="chat-demo__msg chat-demo__msg--user">
+                                    Which services performed best?
+                                </div>
+                                <div class="chat-demo__msg chat-demo__msg--ai-gradient">
+                                    <div class="ai-label">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 2L13.09 8.26L18 6L14.5 11L20 12L14.5 13L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.5 13L4 12L9.5 11L6 6L10.91 8.26L12 2Z" fill="#c0c4ff" stroke="#a4a4d9" stroke-width="0.5"/>
+                                        </svg>
+                                        AI Generated
+                                    </div>
+                                    Top 3 by revenue: Facials (+31%), Massage (+18%), Hair Color (+15%). Facials also had the highest repeat booking rate at 42%.
+                                </div>
+
+                                <!-- AI Suggestion Card inside chat -->
+                                <div class="ai-suggestion-card" style="max-width:100%; margin:4px 0;">
+                                    <div class="ai-suggestion-card__content">
+                                        <p class="ai-suggestion-card__title">Promote Facials with a seasonal campaign?</p>
+                                        <p class="ai-suggestion-card__desc">Based on the high demand, a targeted campaign could increase bookings by an estimated 15–20%.</p>
+                                    </div>
+                                    <svg class="ai-suggestion-card__sparkle" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2L13.09 8.26L18 6L14.5 11L20 12L14.5 13L18 18L13.09 15.74L12 22L10.91 15.74L6 18L9.5 13L4 12L9.5 11L6 6L10.91 8.26L12 2Z" fill="#c0c4ff" stroke="#a4a4d9" stroke-width="0.5"/>
+                                    </svg>
+                                    <button class="ai-suggestion-card__action">Create campaign</button>
+                                </div>
+                            </div>
+                            <div class="chat-demo__input">
+                                <div class="chat-demo__input-field">Ask about your analytics...</div>
+                                <div class="chat-demo__send">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"/></svg>
+                                </div>
+                            </div>
+                            <div style="padding: 6px 16px 10px; background: white; display:flex; justify-content:flex-end;">
+                                <span class="glow-attribution">
+                                    Powered by Glow
+                                    <svg class="glow-attribution__icon" viewBox="0 0 24.0001 14.1179" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9.47277 6.69898C9.10958 6.93412 9.40958 7.47126 9.78503 7.19722C10.3752 6.88248 11.0629 7.12795 11.323 7.74711C11.3954 7.91907 11.4801 8.0649 11.6917 7.98712C12.3298 7.66752 11.3654 6.65523 11.0335 6.58414C10.7783 6.49239 10.5292 6.44925 10.2997 6.44925C9.96908 6.44925 9.67951 6.53857 9.47277 6.69898Z" fill="url(#glow-grad1)"/>
+                                        <path d="M13.3879 7.9233C12.7529 9.26735 14.5652 10.0585 15.1161 8.6494C15.3676 7.86862 14.8326 7.31204 14.2627 7.31204C13.9357 7.31204 13.5971 7.49554 13.3879 7.9233Z" fill="url(#glow-grad2)"/>
+                                        <path d="M8.7046 9.12092C8.177 8.94471 7.92793 8.58743 7.86474 8.07703C7.72732 6.93958 8.15062 5.73832 8.87822 4.85789C9.33404 4.36086 9.76961 4.07345 10.5273 4.356C12.4401 5.06873 14.364 5.75412 16.2873 6.44012C17.8977 7.05928 16.875 9.78869 16.0376 10.7159C15.6756 11.1674 15.11 11.4706 14.5186 11.2044C13.5456 10.8551 12.5739 10.5039 11.6015 10.1526C11.6015 10.1545 11.6003 10.1557 11.5996 10.1575C10.6352 9.80935 9.67698 9.44538 8.7046 9.12092ZM14.5634 0.169525C13.7309 0.509182 13.1745 1.37868 13.4542 2.22023C8.21504 1.06211 4.14517 7.33453 7.52057 11.4615C7.63836 11.6225 7.66781 11.7622 7.62119 11.9445C7.58867 12.447 6.7439 14.0918 7.84756 13.7449C8.46473 13.6549 9.41073 13.0285 9.95121 13.3712C13.7518 15.1618 18.4971 12.3735 18.4762 8.22165C18.5161 6.0002 17.2621 3.989 15.3793 2.92142C15.2155 2.78653 15.1407 2.5848 15.2198 2.38854C15.4965 1.68613 16.5241 2.19471 17.1897 2.94997C18.6547 4.61302 19.5167 3.75263 19.6136 2.89225C19.686 2.24879 19.3302 1.60532 18.4781 2.01668C18.8842 2.00635 19.0382 2.22387 19.0412 2.44079C19.0468 2.81022 18.6167 3.18026 18.2529 2.42925C17.7241 1.33918 16.6499 0 15.3554 0C15.0996 0 14.8339 0.0522549 14.5634 0.169525Z" fill="url(#glow-grad3)"/>
+                                        <path d="M2.49545 3.51627C2.05313 3.70099 2.30834 4.28491 2.4519 4.58203C2.61018 4.91075 2.86845 5.27714 2.67091 5.64536C2.67766 5.6484 2.70956 5.63867 2.74576 5.62834C2.79913 5.61376 2.86109 5.59857 2.86477 5.62652C2.86477 5.6247 2.64085 5.69579 2.46785 5.84709C2.49177 5.75655 2.5887 5.73772 2.61999 5.66845C2.2703 5.59857 2.1838 5.27107 2.06417 4.98549C1.98933 4.80563 1.88749 4.63368 1.7654 4.48177C1.51019 4.16338 1.00714 4.02545 0.790574 4.36025C0.555609 4.723 0.981369 5.10033 1.22615 5.30509C1.38566 5.43816 1.55989 5.56029 1.69301 5.72131C1.77461 5.82035 1.83411 5.93397 1.8562 6.06036C1.8697 6.13692 1.88994 6.20436 1.8654 6.29247C1.8378 6.3909 1.79792 6.51303 1.72982 6.52397C1.72491 6.52579 1.71939 6.5264 1.71448 6.52579C1.72001 6.52579 1.72491 6.52458 1.72982 6.52397C1.80099 6.49845 1.82246 6.25237 1.82614 6.21287C1.30713 6.36356 1.02247 5.80941 0.550088 5.74197C0.126782 5.68181 -0.1499 6.0555 0.087519 6.42067C0.452543 6.98211 1.39915 6.58473 1.77031 7.16865C1.73289 7.08662 1.70467 6.99973 1.69056 6.91102C1.71448 7.06292 1.86786 7.27194 1.96601 7.40015C2.09178 7.5636 2.24024 7.71004 2.40282 7.83703C2.54269 7.94701 2.67827 8.08372 2.89545 8.16575C3.09912 8.24231 3.25127 8.2338 3.31507 8.22529C3.33593 8.22226 3.34759 8.21983 3.34759 8.21983C3.35065 8.25142 3.19851 8.26297 3.17826 8.26418C3.25434 8.43067 3.04759 8.74784 3.33532 8.79463C3.53102 8.82623 3.75126 8.73204 3.92549 8.65427C4.12978 8.56373 4.30831 8.45254 4.46965 8.29699C4.6948 8.07947 4.83774 7.68998 4.45554 7.5399C4.50094 7.77383 4.24573 8.00169 4.0807 8.12625C3.86844 8.28666 3.64513 8.36505 3.39237 8.38935C3.65003 8.36383 3.90831 8.23623 4.10217 8.06974C4.2488 7.94397 4.48315 7.65839 4.34327 7.47306C4.1169 7.69849 3.80095 7.75075 3.49482 7.68512C3.65924 7.71915 3.91936 7.66811 4.07641 7.60249C4.27763 7.51924 4.39603 7.35337 4.48744 7.1644C4.6764 6.77431 4.77456 6.34229 5.1997 6.13206C5.40154 6.03241 5.6727 5.94005 5.78926 5.73407C5.93895 5.47097 5.56534 5.2018 5.32915 5.19694C4.89418 5.18843 4.78069 5.71949 4.42241 5.86471C4.06843 6.0075 3.69175 5.73954 3.58685 5.40656C3.45556 4.98731 3.50464 4.53281 3.34759 4.12024C3.24268 3.84439 2.9979 3.4786 2.67459 3.4786C2.61692 3.4786 2.55619 3.49015 2.49361 3.51627" fill="url(#glow-grad4)"/>
+                                        <path d="M19.2073 10.0573C19.1711 10.2906 19.3269 10.5294 19.4238 10.7305C19.6275 11.1552 19.4361 11.5557 19.3416 11.9786C19.2962 12.1833 19.2864 12.3863 19.3925 12.5746C19.4753 12.7217 19.6483 12.921 19.7993 12.9951C19.5177 12.8602 19.3017 12.6263 19.2637 12.3103C19.0379 12.3705 19.0447 12.7387 19.0821 12.927C19.1312 13.1768 19.2545 13.435 19.4416 13.6124C19.2576 13.4393 19.1306 13.2412 19.0637 12.9854C19.0116 12.7867 18.9527 12.4507 19.1336 12.2945C18.7398 12.1791 18.6097 12.5734 18.6514 12.8821C18.6815 13.1033 18.7527 13.2995 18.857 13.4958C18.9459 13.6635 19.0606 13.8719 19.2342 13.9667C19.4895 14.1058 19.5238 13.7297 19.6876 13.6452C19.6723 13.6325 19.56 13.5304 19.5821 13.5073C19.5827 13.5061 19.6937 13.655 19.9717 13.7406C20.1937 13.8087 20.3858 13.7838 20.5643 13.7826C20.7716 13.782 20.9796 13.757 21.1802 13.7054C21.3379 13.6647 21.5888 13.5936 21.7017 13.4891C21.6354 13.5505 21.5594 13.6015 21.4784 13.6434C21.8084 13.5262 22.0986 13.6939 22.3863 13.8609C22.6704 14.0262 22.9526 14.1915 23.2691 14.0827C23.6839 13.9405 23.698 13.4769 23.3274 13.2661C22.9133 13.0303 22.344 13.2928 22.0299 12.8572C22.0084 12.8906 21.8716 13.0972 21.9115 13.161C21.9152 13.1646 21.9176 13.1689 21.9225 13.1719C21.9176 13.1689 21.9146 13.1652 21.9115 13.161C21.8649 13.1105 21.9097 12.9902 21.9489 12.8961C21.9839 12.8116 22.0422 12.7709 22.1005 12.7186C22.1968 12.6323 22.3139 12.5795 22.4397 12.5515C22.6446 12.506 22.8581 12.5163 23.0667 12.509C23.3863 12.4975 23.9569 12.4604 23.998 12.0314C24.036 11.6359 23.5544 11.4366 23.155 11.5313C22.9642 11.5769 22.7771 11.6504 22.6066 11.7458C22.3342 11.8977 22.0624 12.1025 21.7434 11.9439C21.725 12.0168 21.79 12.0916 21.752 12.1772C21.7103 11.9524 21.5784 11.7598 21.5772 11.761C21.6109 11.7282 21.6998 11.8898 21.7183 11.8947C21.7925 11.484 22.2238 11.3533 22.5532 11.1911C22.8514 11.0446 23.4164 10.7408 23.1826 10.3258C22.9649 9.93879 22.4342 10.0986 22.1342 10.2791C21.7532 10.5081 21.5091 10.8958 21.1446 11.1455C20.8545 11.3442 20.3907 11.3248 20.2017 10.996C20.0103 10.6631 20.252 10.1758 19.9036 9.91692C19.8232 9.85676 19.6931 9.8197 19.5674 9.8197C19.3974 9.8197 19.2336 9.88714 19.2073 10.0585" fill="url(#glow-grad5)"/>
+                                        <defs>
+                                            <linearGradient id="glow-grad1" x1="0" y1="7.06" x2="24" y2="7.06" gradientUnits="userSpaceOnUse"><stop stop-color="#1AB2E7"/><stop offset="0.37" stop-color="#23AFB4"/><stop offset="0.79" stop-color="#2DAC7E"/><stop offset="1" stop-color="#31AB6A"/></linearGradient>
+                                            <linearGradient id="glow-grad2" x1="0" y1="7.06" x2="24" y2="7.06" gradientUnits="userSpaceOnUse"><stop stop-color="#1AB2E7"/><stop offset="0.37" stop-color="#23AFB4"/><stop offset="0.79" stop-color="#2DAC7E"/><stop offset="1" stop-color="#31AB6A"/></linearGradient>
+                                            <linearGradient id="glow-grad3" x1="0" y1="7.06" x2="24" y2="7.06" gradientUnits="userSpaceOnUse"><stop stop-color="#1AB2E7"/><stop offset="0.37" stop-color="#23AFB4"/><stop offset="0.79" stop-color="#2DAC7E"/><stop offset="1" stop-color="#31AB6A"/></linearGradient>
+                                            <linearGradient id="glow-grad4" x1="0" y1="7.06" x2="24" y2="7.06" gradientUnits="userSpaceOnUse"><stop stop-color="#1AB2E7"/><stop offset="0.37" stop-color="#23AFB4"/><stop offset="0.79" stop-color="#2DAC7E"/><stop offset="1" stop-color="#31AB6A"/></linearGradient>
+                                            <linearGradient id="glow-grad5" x1="0" y1="7.06" x2="24" y2="7.06" gradientUnits="userSpaceOnUse"><stop stop-color="#1AB2E7"/><stop offset="0.37" stop-color="#23AFB4"/><stop offset="0.79" stop-color="#2DAC7E"/><stop offset="1" stop-color="#31AB6A"/></linearGradient>
+                                        </defs>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+
+                        <h3 class="heading-3">Glow Attribution</h3>
+                        <p class="text-body">Every AI surface must include the "Powered by Glow" attribution. Glow is Rosewood's AI brand identity — the mascot logo uses a blue-to-green gradient (<code>#1AB2E7</code> → <code>#31AB6A</code>).</p>
+
+                        <div style="display:flex; gap: 24px; align-items: center; margin: 1.5rem 0; padding: 20px; background: #f8f9fc; border-radius: 8px; border: 1px solid var(--stroke-neutral-Light);">
+                            <div>
+                                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #5f5f5f; margin-bottom: 8px; font-weight: 600;">Default</div>
+                                <span class="glow-attribution">
+                                    Powered by Glow
+                                    <svg class="glow-attribution__icon" viewBox="0 0 24.0001 14.1179" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9.47277 6.69898C9.10958 6.93412 9.40958 7.47126 9.78503 7.19722C10.3752 6.88248 11.0629 7.12795 11.323 7.74711C11.3954 7.91907 11.4801 8.0649 11.6917 7.98712C12.3298 7.66752 11.3654 6.65523 11.0335 6.58414C10.7783 6.49239 10.5292 6.44925 10.2997 6.44925C9.96908 6.44925 9.67951 6.53857 9.47277 6.69898Z" fill="url(#zg1)"/>
+                                        <path d="M13.3879 7.9233C12.7529 9.26735 14.5652 10.0585 15.1161 8.6494C15.3676 7.86862 14.8326 7.31204 14.2627 7.31204C13.9357 7.31204 13.5971 7.49554 13.3879 7.9233Z" fill="url(#zg2)"/>
+                                        <path d="M8.7046 9.12092C8.177 8.94471 7.92793 8.58743 7.86474 8.07703C7.72732 6.93958 8.15062 5.73832 8.87822 4.85789C9.33404 4.36086 9.76961 4.07345 10.5273 4.356C12.4401 5.06873 14.364 5.75412 16.2873 6.44012C17.8977 7.05928 16.875 9.78869 16.0376 10.7159C15.6756 11.1674 15.11 11.4706 14.5186 11.2044C13.5456 10.8551 12.5739 10.5039 11.6015 10.1526C11.6015 10.1545 11.6003 10.1557 11.5996 10.1575C10.6352 9.80935 9.67698 9.44538 8.7046 9.12092ZM14.5634 0.169525C13.7309 0.509182 13.1745 1.37868 13.4542 2.22023C8.21504 1.06211 4.14517 7.33453 7.52057 11.4615C7.63836 11.6225 7.66781 11.7622 7.62119 11.9445C7.58867 12.447 6.7439 14.0918 7.84756 13.7449C8.46473 13.6549 9.41073 13.0285 9.95121 13.3712C13.7518 15.1618 18.4971 12.3735 18.4762 8.22165C18.5161 6.0002 17.2621 3.989 15.3793 2.92142C15.2155 2.78653 15.1407 2.5848 15.2198 2.38854C15.4965 1.68613 16.5241 2.19471 17.1897 2.94997C18.6547 4.61302 19.5167 3.75263 19.6136 2.89225C19.686 2.24879 19.3302 1.60532 18.4781 2.01668C18.8842 2.00635 19.0382 2.22387 19.0412 2.44079C19.0468 2.81022 18.6167 3.18026 18.2529 2.42925C17.7241 1.33918 16.6499 0 15.3554 0C15.0996 0 14.8339 0.0522549 14.5634 0.169525Z" fill="url(#zg3)"/>
+                                        <path d="M2.49545 3.51627C2.05313 3.70099 2.30834 4.28491 2.4519 4.58203C2.61018 4.91075 2.86845 5.27714 2.67091 5.64536C2.67766 5.6484 2.70956 5.63867 2.74576 5.62834C2.79913 5.61376 2.86109 5.59857 2.86477 5.62652C2.86477 5.6247 2.64085 5.69579 2.46785 5.84709C2.49177 5.75655 2.5887 5.73772 2.61999 5.66845C2.2703 5.59857 2.1838 5.27107 2.06417 4.98549C1.98933 4.80563 1.88749 4.63368 1.7654 4.48177C1.51019 4.16338 1.00714 4.02545 0.790574 4.36025C0.555609 4.723 0.981369 5.10033 1.22615 5.30509C1.38566 5.43816 1.55989 5.56029 1.69301 5.72131C1.77461 5.82035 1.83411 5.93397 1.8562 6.06036C1.8697 6.13692 1.88994 6.20436 1.8654 6.29247C1.8378 6.3909 1.79792 6.51303 1.72982 6.52397C1.72491 6.52579 1.71939 6.5264 1.71448 6.52579C1.72001 6.52579 1.72491 6.52458 1.72982 6.52397C1.80099 6.49845 1.82246 6.25237 1.82614 6.21287C1.30713 6.36356 1.02247 5.80941 0.550088 5.74197C0.126782 5.68181 -0.1499 6.0555 0.087519 6.42067C0.452543 6.98211 1.39915 6.58473 1.77031 7.16865C1.73289 7.08662 1.70467 6.99973 1.69056 6.91102C1.71448 7.06292 1.86786 7.27194 1.96601 7.40015C2.09178 7.5636 2.24024 7.71004 2.40282 7.83703C2.54269 7.94701 2.67827 8.08372 2.89545 8.16575C3.09912 8.24231 3.25127 8.2338 3.31507 8.22529C3.33593 8.22226 3.34759 8.21983 3.34759 8.21983C3.35065 8.25142 3.19851 8.26297 3.17826 8.26418C3.25434 8.43067 3.04759 8.74784 3.33532 8.79463C3.53102 8.82623 3.75126 8.73204 3.92549 8.65427C4.12978 8.56373 4.30831 8.45254 4.46965 8.29699C4.6948 8.07947 4.83774 7.68998 4.45554 7.5399C4.50094 7.77383 4.24573 8.00169 4.0807 8.12625C3.86844 8.28666 3.64513 8.36505 3.39237 8.38935C3.65003 8.36383 3.90831 8.23623 4.10217 8.06974C4.2488 7.94397 4.48315 7.65839 4.34327 7.47306C4.1169 7.69849 3.80095 7.75075 3.49482 7.68512C3.65924 7.71915 3.91936 7.66811 4.07641 7.60249C4.27763 7.51924 4.39603 7.35337 4.48744 7.1644C4.6764 6.77431 4.77456 6.34229 5.1997 6.13206C5.40154 6.03241 5.6727 5.94005 5.78926 5.73407C5.93895 5.47097 5.56534 5.2018 5.32915 5.19694C4.89418 5.18843 4.78069 5.71949 4.42241 5.86471C4.06843 6.0075 3.69175 5.73954 3.58685 5.40656C3.45556 4.98731 3.50464 4.53281 3.34759 4.12024C3.24268 3.84439 2.9979 3.4786 2.67459 3.4786C2.61692 3.4786 2.55619 3.49015 2.49361 3.51627" fill="url(#zg4)"/>
+                                        <path d="M19.2073 10.0573C19.1711 10.2906 19.3269 10.5294 19.4238 10.7305C19.6275 11.1552 19.4361 11.5557 19.3416 11.9786C19.2962 12.1833 19.2864 12.3863 19.3925 12.5746C19.4753 12.7217 19.6483 12.921 19.7993 12.9951C19.5177 12.8602 19.3017 12.6263 19.2637 12.3103C19.0379 12.3705 19.0447 12.7387 19.0821 12.927C19.1312 13.1768 19.2545 13.435 19.4416 13.6124C19.2576 13.4393 19.1306 13.2412 19.0637 12.9854C19.0116 12.7867 18.9527 12.4507 19.1336 12.2945C18.7398 12.1791 18.6097 12.5734 18.6514 12.8821C18.6815 13.1033 18.7527 13.2995 18.857 13.4958C18.9459 13.6635 19.0606 13.8719 19.2342 13.9667C19.4895 14.1058 19.5238 13.7297 19.6876 13.6452C19.6723 13.6325 19.56 13.5304 19.5821 13.5073C19.5827 13.5061 19.6937 13.655 19.9717 13.7406C20.1937 13.8087 20.3858 13.7838 20.5643 13.7826C20.7716 13.782 20.9796 13.757 21.1802 13.7054C21.3379 13.6647 21.5888 13.5936 21.7017 13.4891C21.6354 13.5505 21.5594 13.6015 21.4784 13.6434C21.8084 13.5262 22.0986 13.6939 22.3863 13.8609C22.6704 14.0262 22.9526 14.1915 23.2691 14.0827C23.6839 13.9405 23.698 13.4769 23.3274 13.2661C22.9133 13.0303 22.344 13.2928 22.0299 12.8572C22.0084 12.8906 21.8716 13.0972 21.9115 13.161C21.9152 13.1646 21.9176 13.1689 21.9225 13.1719C21.9176 13.1689 21.9146 13.1652 21.9115 13.161C21.8649 13.1105 21.9097 12.9902 21.9489 12.8961C21.9839 12.8116 22.0422 12.7709 22.1005 12.7186C22.1968 12.6323 22.3139 12.5795 22.4397 12.5515C22.6446 12.506 22.8581 12.5163 23.0667 12.509C23.3863 12.4975 23.9569 12.4604 23.998 12.0314C24.036 11.6359 23.5544 11.4366 23.155 11.5313C22.9642 11.5769 22.7771 11.6504 22.6066 11.7458C22.3342 11.8977 22.0624 12.1025 21.7434 11.9439C21.725 12.0168 21.79 12.0916 21.752 12.1772C21.7103 11.9524 21.5784 11.7598 21.5772 11.761C21.6109 11.7282 21.6998 11.8898 21.7183 11.8947C21.7925 11.484 22.2238 11.3533 22.5532 11.1911C22.8514 11.0446 23.4164 10.7408 23.1826 10.3258C22.9649 9.93879 22.4342 10.0986 22.1342 10.2791C21.7532 10.5081 21.5091 10.8958 21.1446 11.1455C20.8545 11.3442 20.3907 11.3248 20.2017 10.996C20.0103 10.6631 20.252 10.1758 19.9036 9.91692C19.8232 9.85676 19.6931 9.8197 19.5674 9.8197C19.3974 9.8197 19.2336 9.88714 19.2073 10.0585" fill="url(#zg5)"/>
+                                        <defs>
+                                            <linearGradient id="zg1" x1="0" y1="7.06" x2="24" y2="7.06" gradientUnits="userSpaceOnUse"><stop stop-color="#1AB2E7"/><stop offset="0.37" stop-color="#23AFB4"/><stop offset="0.79" stop-color="#2DAC7E"/><stop offset="1" stop-color="#31AB6A"/></linearGradient>
+                                            <linearGradient id="zg2" x1="0" y1="7.06" x2="24" y2="7.06" gradientUnits="userSpaceOnUse"><stop stop-color="#1AB2E7"/><stop offset="0.37" stop-color="#23AFB4"/><stop offset="0.79" stop-color="#2DAC7E"/><stop offset="1" stop-color="#31AB6A"/></linearGradient>
+                                            <linearGradient id="zg3" x1="0" y1="7.06" x2="24" y2="7.06" gradientUnits="userSpaceOnUse"><stop stop-color="#1AB2E7"/><stop offset="0.37" stop-color="#23AFB4"/><stop offset="0.79" stop-color="#2DAC7E"/><stop offset="1" stop-color="#31AB6A"/></linearGradient>
+                                            <linearGradient id="zg4" x1="0" y1="7.06" x2="24" y2="7.06" gradientUnits="userSpaceOnUse"><stop stop-color="#1AB2E7"/><stop offset="0.37" stop-color="#23AFB4"/><stop offset="0.79" stop-color="#2DAC7E"/><stop offset="1" stop-color="#31AB6A"/></linearGradient>
+                                            <linearGradient id="zg5" x1="0" y1="7.06" x2="24" y2="7.06" gradientUnits="userSpaceOnUse"><stop stop-color="#1AB2E7"/><stop offset="0.37" stop-color="#23AFB4"/><stop offset="0.79" stop-color="#2DAC7E"/><stop offset="1" stop-color="#31AB6A"/></linearGradient>
+                                        </defs>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+
+                        <table class="properties-table" style="margin-top: 1rem;">
+                            <thead><tr><th>Property</th><th>Value</th><th>Token</th></tr></thead>
+                            <tbody>
+                                <tr><td>Text</td><td>"Powered by Glow"</td><td>—</td></tr>
+                                <tr><td>Font</td><td>Lato Regular 11/16</td><td>Footnote/Small</td></tr>
+                                <tr><td>Text color</td><td>#5f5f5f</td><td><code>--text-tertiary</code></td></tr>
+                                <tr><td>Icon size</td><td>24 × 14.118px</td><td>—</td></tr>
+                                <tr><td>Icon fill</td><td>Linear gradient #1AB2E7 → #23AFB4 → #2DAC7E → #31AB6A</td><td><code>--glow-gradient</code></td></tr>
+                                <tr><td>Gap (text → icon)</td><td>8px</td><td><code>--spacing-s8</code></td></tr>
+                                <tr><td>Placement</td><td>Bottom-right of AI chat, bottom of AI cards</td><td>—</td></tr>
+                            </tbody>
+                        </table>
+                        <p class="text-body"><strong>Rule:</strong> The "Powered by Glow" attribution must appear on every AI-powered surface — either in the chat footer, the bottom of suggestion cards, or in the AI panel header. It must not be hidden or removable by the user.</p>
+
+                        <h3 class="heading-3">Design Rationale</h3>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Element</th>
+                                    <th>Color</th>
+                                    <th>Why</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>User bubble</td>
+                                    <td><code>--bg-cta-blue</code> (#1a78c1)</td>
+                                    <td>Consistent with the design system's primary action color — the user is initiating</td>
+                                </tr>
+                                <tr>
+                                    <td>AI bubble background</td>
+                                    <td><code>--ai-surface</code> (#eff0fd)</td>
+                                    <td>Lavender differentiates AI from user; softer than blue to feel supportive, not assertive</td>
+                                </tr>
+                                <tr>
+                                    <td>AI bubble left border</td>
+                                    <td><code>--ai-primary</code> (#505382)</td>
+                                    <td>3px left accent clearly marks AI origin; same pattern used across all AI containers</td>
+                                </tr>
+                                <tr>
+                                    <td>Chat header</td>
+                                    <td><code>--ai-primary</code> (#505382)</td>
+                                    <td>Signals "this is an AI surface" immediately on entry</td>
+                                </tr>
+                                <tr>
+                                    <td>"AI Generated" label</td>
+                                    <td><code>--ai-primary</code> (#505382)</td>
+                                    <td>Every AI response must carry attribution — transparency principle</td>
+                                </tr>
+                                <tr>
+                                    <td>Conversation background</td>
+                                    <td><code>--bg-default</code> (#f8f9fc)</td>
+                                    <td>Neutral background from the design system; keeps focus on message content</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- AI TYPOGRAPHY -->
+                    <section id="ai-typography" class="section">
+                        <h2 class="heading-2">AI Typography</h2>
+                        <p class="text-body">AI text uses the design system's standard Lato font family — not a different typeface. AI content should feel integrated, not foreign. The distinction comes from color (Lavender accents) and attribution badges, not typography changes.</p>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Style</th>
+                                    <th>Token</th>
+                                    <th>Size</th>
+                                    <th>Weight</th>
+                                    <th>Usage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>AI Response Heading</td>
+                                    <td><code>--font-size-body-large</code></td>
+                                    <td>16px</td>
+                                    <td>Semibold (600)</td>
+                                    <td>Section titles within AI responses</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Response Body</td>
+                                    <td><code>--font-size-body-medium</code></td>
+                                    <td>14px</td>
+                                    <td>Regular (400)</td>
+                                    <td>Main AI response text, chat messages</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Attribution</td>
+                                    <td><code>--font-size-footnote-small</code></td>
+                                    <td>10px</td>
+                                    <td>Semibold (600)</td>
+                                    <td>"AI Generated" labels, uppercase with letter-spacing</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Caption</td>
+                                    <td><code>--font-size-footnote-medium</code></td>
+                                    <td>12px</td>
+                                    <td>Regular (400)</td>
+                                    <td>Confidence scores, timestamps, metadata</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Prompt Input</td>
+                                    <td><code>--font-size-body-medium</code></td>
+                                    <td>14px</td>
+                                    <td>Regular (400)</td>
+                                    <td>User input in prompt/chat fields</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Code/Data</td>
+                                    <td>Consolas, monospace</td>
+                                    <td>13px</td>
+                                    <td>Regular (400)</td>
+                                    <td>Inline data values, formulas, API references in responses</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- AI ICONOGRAPHY -->
+                    <section id="ai-iconography" class="section">
+                        <h2 class="heading-2">AI Iconography</h2>
+                        <p class="text-body">AI icons use the Zen Icon Font where possible. Where new icons are needed, they follow the design system's 24px grid, 2px stroke weight, and rounded line-cap conventions.</p>
+
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Icon</th>
+                                    <th>Name</th>
+                                    <th>Usage</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>&#x2728;</td>
+                                    <td>Sparkle / Star</td>
+                                    <td>Default AI indicator — used in badges, chat headers, and attribution labels</td>
+                                    <td>Primary — use this by default</td>
+                                </tr>
+                                <tr>
+                                    <td>&#x26A1;</td>
+                                    <td>Lightning</td>
+                                    <td>AI-powered quick actions, instant suggestions</td>
+                                    <td>Available in Zen Icon Font</td>
+                                </tr>
+                                <tr>
+                                    <td>&#x2139;</td>
+                                    <td>Info Circle</td>
+                                    <td>"Why this suggestion?" expandable explanations</td>
+                                    <td>Available in Zen Icon Font</td>
+                                </tr>
+                                <tr>
+                                    <td>&#x2714;</td>
+                                    <td>Checkmark</td>
+                                    <td>High confidence indicator, accepted suggestion</td>
+                                    <td>Available in Zen Icon Font</td>
+                                </tr>
+                                <tr>
+                                    <td>&#x26A0;</td>
+                                    <td>Warning Triangle</td>
+                                    <td>Low confidence indicator, needs review</td>
+                                    <td>Available in Zen Icon Font</td>
+                                </tr>
+                                <tr>
+                                    <td>&#x21BB;</td>
+                                    <td>Refresh / Retry</td>
+                                    <td>Regenerate AI response, retry on error</td>
+                                    <td>Available in Zen Icon Font</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-body"><strong>Rule:</strong> The Sparkle icon is the universal AI marker. Every AI-generated surface must include it at least once — either in the header, the attribution badge, or both. Do not use brain, robot, or humanoid icons (see <a href="ai-anti-patterns.html">Anti-Patterns: Anthropomorphization</a>).</p>
+                    </section>
+
+                    <!-- SPACING & LAYOUT -->
+                    <section id="spacing-layout" class="section">
+                        <h2 class="heading-2">Spacing & Layout</h2>
+                        <p class="text-body">AI containers follow the design system's spacing scale. All values map to existing <code>--spacing-*</code> tokens.</p>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Element</th>
+                                    <th>Padding</th>
+                                    <th>Margin Bottom</th>
+                                    <th>Border Radius</th>
+                                    <th>Max Width</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>AI Chat Bubble</td>
+                                    <td>10px 14px</td>
+                                    <td>12px</td>
+                                    <td>12px (4px on tail corner)</td>
+                                    <td>80% of container</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Response Card</td>
+                                    <td>16px 20px</td>
+                                    <td>12px</td>
+                                    <td><code>--radius-lg</code> (12px)</td>
+                                    <td>720px</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Inline Suggestion</td>
+                                    <td>8px 12px</td>
+                                    <td>4px</td>
+                                    <td><code>--radius-md</code> (8px)</td>
+                                    <td>100% of parent</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Prompt Input</td>
+                                    <td>12px 16px</td>
+                                    <td>0</td>
+                                    <td><code>--radius-md</code> (8px)</td>
+                                    <td>100% of container</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Suggestion Card</td>
+                                    <td>16px</td>
+                                    <td>8px</td>
+                                    <td><code>--radius-lg</code> (12px)</td>
+                                    <td>320px</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Confidence Badge</td>
+                                    <td>4px 10px</td>
+                                    <td>0 (inline)</td>
+                                    <td>12px (pill)</td>
+                                    <td>n/a</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-body"><strong>AI content left border:</strong> 3px solid <code>--ai-primary</code>. Applied to AI chat bubbles, AI response cards, and AI inline suggestions. This is the consistent visual signature that marks AI-originated content.</p>
+                    </section>
+
+                    <!-- AI BADGE & LABEL STYLES -->
+                    <section id="ai-badge-label-styles" class="section">
+                        <h2 class="heading-2">AI Badge & Label Styles</h2>
+                        <p class="text-body">Every piece of AI content must carry an attribution badge. Three tiers exist based on AI involvement level.</p>
+
+                        <div style="padding: 1.5rem; background: #f8f9fc; border-radius: 8px; margin: 1rem 0;">
+                            <span class="badge-demo" style="background: var(--bg-lavender, #eff0fd); color: var(--accent-dark-lavender, #505382);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                                AI Generated
+                            </span>
+                            <span class="badge-demo" style="background: var(--bg-blue, #e8f3fc); color: var(--bg-cta-blue, #1a78c1);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                                AI Suggested
+                            </span>
+                            <span class="badge-demo" style="background: #edeff5; color: #435773;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                                AI Assisted
+                            </span>
+                        </div>
+
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Badge</th>
+                                    <th>Background</th>
+                                    <th>Text Color</th>
+                                    <th>When to Use</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>AI Generated</strong></td>
+                                    <td><code>--ai-surface</code> (#eff0fd)</td>
+                                    <td><code>--ai-primary</code> (#505382)</td>
+                                    <td>Content entirely produced by AI with no human edits. Chat responses, auto-generated reports.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>AI Suggested</strong></td>
+                                    <td><code>--bg-blue</code> (#e8f3fc)</td>
+                                    <td><code>--text-blue</code> (#1a78c1)</td>
+                                    <td>Recommendations the user can accept, modify, or dismiss. Scheduling suggestions, smart replies.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>AI Assisted</strong></td>
+                                    <td><code>--bg-cool-gray</code> (#edeff5)</td>
+                                    <td><code>--text-secondary</code> (#435773)</td>
+                                    <td>Content where AI contributed but a human authored or substantially edited. Drafts, auto-filled fields.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p class="text-body"><strong>Placement rules:</strong> Badges appear above or inline with the AI content they describe. In chat, use the inline label format (smaller, uppercase). In cards and reports, use the pill badge format. Never hide the badge behind a hover or expandable section.</p>
+                    </section>
+
+                    <!-- DARK MODE -->
+                    <section id="dark-mode" class="section">
+                        <h2 class="heading-2">Dark Mode Considerations</h2>
+                        <p class="text-body">AI tokens map to dark mode via the design system's <code>[data-theme='dark']</code> selector. Colors shift to preserve meaning while maintaining contrast on dark surfaces. Surface colors become elevated rather than simply inverted.</p>
+
+                        <table class="properties-table dark-mode-table">
+                            <thead>
+                                <tr>
+                                    <th>Token</th>
+                                    <th>Light Mode</th>
+                                    <th>Dark Mode</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>--ai-primary</code></td>
+                                    <td><span class="swatch-inline" style="background:#505382;"></span>#505382</td>
+                                    <td><span class="swatch-inline" style="background:#a4a4d9;"></span>#a4a4d9</td>
+                                    <td>Lighten for contrast on dark backgrounds</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-surface</code></td>
+                                    <td><span class="swatch-inline" style="background:#eff0fd;"></span>#eff0fd</td>
+                                    <td><span class="swatch-inline" style="background:#2a2b3d;"></span>#2a2b3d</td>
+                                    <td>Elevated dark surface with lavender tint</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-confidence-high</code></td>
+                                    <td><span class="swatch-inline" style="background:#1e6421;"></span>#1e6421</td>
+                                    <td><span class="swatch-inline" style="background:#4ade80;"></span>#4ade80</td>
+                                    <td>Lighten green for dark backgrounds</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-confidence-medium</code></td>
+                                    <td><span class="swatch-inline" style="background:#9c7506;"></span>#9c7506</td>
+                                    <td><span class="swatch-inline" style="background:#fbbf24;"></span>#fbbf24</td>
+                                    <td>Lighten yellow for dark backgrounds</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-confidence-low</code></td>
+                                    <td><span class="swatch-inline" style="background:#e63447;"></span>#e63447</td>
+                                    <td><span class="swatch-inline" style="background:#ff8a8a;"></span>#ff8a8a</td>
+                                    <td>Follows the design system's dark mode red mapping</td>
+                                </tr>
+                                <tr>
+                                    <td><code>--ai-chat-user</code></td>
+                                    <td><span class="swatch-inline" style="background:#1a78c1;"></span>#1a78c1</td>
+                                    <td><span class="swatch-inline" style="background:#095997;"></span>#095997</td>
+                                    <td>Slightly darker blue on dark bg for depth</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-body"><strong>Contrast requirement:</strong> All text on AI surfaces must meet WCAG 2.1 AA (4.5:1 ratio for normal text, 3:1 for large text). Test each token pair in both themes before shipping.</p>
+                    </section>
+
+                    <div class="related-pages">
+                        <h3>Related Pages</h3>
+                        <div class="related-pages-list">
+                            <a href="ai-overview.html">Overview</a>
+                            <a href="ai-prompt-box-demo.html">Prompt Box Demo</a>
+                            <a href="ai-processing-states.html">Processing States</a>
+                            <a href="ai-confidence-markers.html">Confidence Markers</a>
+                            <a href="ai-prompt-input.html">Prompt Input</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="page__nav">
+                    <div class="nav-container">
+                        <div class="nav-title">Contents</div>
+                        <ul class="nav-list">
+                            <li class="nav-item">
+                                <a href="#ai-color-palette" class="nav-link">AI Color Palette</a>
+                                <ul class="nav-sublist">
+                                    <li><a href="#ai-color-palette">Accent Colors</a></li>
+                                    <li><a href="#ai-color-palette">Confidence Colors</a></li>
+                                    <li><a href="#ai-color-palette">Gradient Stroke Colors</a></li>
+                                    <li><a href="#ai-color-palette">Chat Colors</a></li>
+                                    <li><a href="#ai-color-palette">Token Reference</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#chat-interface" class="nav-link">Chat Interface Preview</a>
+                                <ul class="nav-sublist">
+                                    <li><a href="#chat-interface">AI Suggestion Card</a></li>
+                                    <li><a href="#chat-interface">Chat Interface</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item"><a href="#ai-typography" class="nav-link">AI Typography</a></li>
+                            <li class="nav-item"><a href="#ai-iconography" class="nav-link">AI Iconography</a></li>
+                            <li class="nav-item"><a href="#spacing-layout" class="nav-link">Spacing & Layout</a></li>
+                            <li class="nav-item"><a href="#ai-badge-label-styles" class="nav-link">AI Badge & Label Styles</a></li>
+                            <li class="nav-item"><a href="#dark-mode" class="nav-link">Dark Mode</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./scripts/documentation.js"></script>
+</body>
+</html>

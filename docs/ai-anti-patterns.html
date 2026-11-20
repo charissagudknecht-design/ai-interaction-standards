@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Anti-Patterns - Rosewood Design System</title>
+    <link rel="stylesheet" href="../dist/styles/rosewood-base.css" />
+    <link rel="stylesheet" href="./styles/documentation.css" />
+</head>
+<body>
+    <div class="page">
+        <div class="page__container">
+            <div class="page__content">
+                <div class="content">
+                    <header class="component-header">
+                        <h1 class="heading-1">AI Anti-Patterns</h1>
+                        <p class="text-body">Common mistakes and harmful patterns to avoid when designing AI-powered features in Rosewood products.</p>
+                    </header>
+
+                    <section id="why-anti-patterns" class="section">
+                        <h2 class="heading-2">Why Document Anti-Patterns?</h2>
+                        <p class="text-body">Documenting what NOT to do is just as important as documenting best practices. Anti-patterns erode user trust, create poor experiences, and can lead to costly errors in a salon and spa management context. By explicitly cataloging these pitfalls, teams can proactively avoid them during design reviews and development, ensuring AI features enhance rather than undermine the user experience.</p>
+                    </section>
+
+                    <section id="overconfident-ai" class="section">
+                        <h2 class="heading-2">Overconfident AI</h2>
+                        <h3 class="heading-3">The Problem</h3>
+                        <p class="text-body">Presenting AI output as definitive fact without confidence indicators misleads users into trusting suggestions that may be uncertain or incorrect. When an AI recommendation appears with the same visual weight as verified data, users cannot distinguish between high-confidence and low-confidence outputs.</p>
+                        <div class="ai-placeholder">[Insert bad example: AI suggestion shown without confidence score or source attribution]</div>
+                        <h3 class="heading-3">The Fix</h3>
+                        <p class="text-body">Always display a confidence level alongside AI-generated content, attribute the source of the suggestion, and provide a clear mechanism for users to override or dismiss the recommendation. Use the glow-ai-confidence component to visually communicate certainty levels.</p>
+                    </section>
+
+                    <section id="black-box-responses" class="section">
+                        <h2 class="heading-2">Black Box Responses</h2>
+                        <h3 class="heading-3">The Problem</h3>
+                        <p class="text-body">When AI provides an answer or recommendation with no explanation of how it arrived at that conclusion, users have no basis for evaluating the quality of the suggestion. This is especially problematic in business-critical contexts like scheduling optimization or revenue forecasting.</p>
+                        <div class="ai-placeholder">[Insert bad example: AI recommendation with no reasoning shown]</div>
+                        <h3 class="heading-3">The Fix</h3>
+                        <p class="text-body">Provide a "Why this suggestion?" expandable section that reveals the data points and reasoning behind the AI output. This transparency allows users to make informed decisions about whether to accept, modify, or reject the suggestion.</p>
+                    </section>
+
+                    <section id="unrecoverable-actions" class="section">
+                        <h2 class="heading-2">Unrecoverable Actions</h2>
+                        <h3 class="heading-3">The Problem</h3>
+                        <p class="text-body">AI that automatically executes actions which cannot be undone poses significant risk. For example, automatically sending a client communication, canceling an appointment, or adjusting pricing without user confirmation can result in business harm and eroded trust.</p>
+                        <div class="ai-placeholder">[Insert bad example: AI auto-sends message without confirmation]</div>
+                        <h3 class="heading-3">The Fix</h3>
+                        <p class="text-body">Always require explicit user confirmation before executing destructive or external-facing actions. Present a preview of the action with a clear confirm/cancel dialog. For batch operations, show a summary of all changes before execution.</p>
+                    </section>
+
+                    <section id="notification-overload" class="section">
+                        <h2 class="heading-2">Notification Overload</h2>
+                        <h3 class="heading-3">The Problem</h3>
+                        <p class="text-body">Surfacing too many AI-generated notifications, suggestions, and alerts drowns out important information and leads to notification fatigue. Users begin ignoring all notifications, including critical ones, when the volume becomes unmanageable.</p>
+                        <div class="ai-placeholder">[Insert bad example: screen cluttered with AI suggestion toasts]</div>
+                        <h3 class="heading-3">The Fix</h3>
+                        <p class="text-body">Batch AI notifications intelligently, prioritize based on urgency and relevance, and provide users with controls to mute or adjust the frequency of AI suggestions. Use a dedicated AI notification center rather than competing with system-level alerts.</p>
+                    </section>
+
+                    <section id="anthropomorphization" class="section">
+                        <h2 class="heading-2">Anthropomorphization</h2>
+                        <h3 class="heading-3">The Problem</h3>
+                        <p class="text-body">Making AI seem human by using first-person language ("I think", "I believe"), human-like avatar faces, or emotional language creates false expectations about AI capabilities. Users may over-trust or develop inappropriate reliance on AI that presents itself as a human-like entity.</p>
+                        <div class="ai-placeholder">[Insert bad example: AI chatbot with human-like avatar saying "I feel this is the best option"]</div>
+                        <h3 class="heading-3">The Fix</h3>
+                        <p class="text-body">Use neutral, data-driven language such as "Based on historical data..." or "Suggested by AI analysis." Represent AI with abstract icons or the Rosewood AI brand mark rather than human-like avatars. Clearly label all AI-generated content with the AI attribution badge.</p>
+                    </section>
+
+                    <section id="checklist" class="section">
+                        <h2 class="heading-2">Checklist</h2>
+                        <p class="text-body">Use this checklist during design reviews and development to verify that AI features avoid common anti-patterns.</p>
+                        <h3 class="heading-3">Do</h3>
+                        <ul>
+                            <li>Show confidence levels</li>
+                            <li>Provide explanations</li>
+                            <li>Allow overrides</li>
+                            <li>Batch notifications</li>
+                            <li>Use neutral AI language</li>
+                            <li>Log decisions</li>
+                        </ul>
+                        <h3 class="heading-3">Don't</h3>
+                        <ul>
+                            <li>Hide AI reasoning</li>
+                            <li>Auto-execute without confirmation</li>
+                            <li>Overload with suggestions</li>
+                            <li>Use human-like personas</li>
+                            <li>Skip audit trails</li>
+                            <li>Ignore error states</li>
+                        </ul>
+                    </section>
+
+                    <div class="related-pages">
+                        <h3>Related Pages</h3>
+                        <div class="related-pages-list">
+                            <a href="ai-processing-states.html">Processing States</a>
+                            <a href="ai-confidence-markers.html">Confidence Markers</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="page__nav">
+                    <div class="nav-container">
+                        <div class="nav-title">Contents</div>
+                        <ul class="nav-list">
+                            <li><a href="#why-anti-patterns">Why Document Anti-Patterns?</a></li>
+                            <li><a href="#overconfident-ai">Overconfident AI</a></li>
+                            <li><a href="#black-box-responses">Black Box Responses</a></li>
+                            <li><a href="#unrecoverable-actions">Unrecoverable Actions</a></li>
+                            <li><a href="#notification-overload">Notification Overload</a></li>
+                            <li><a href="#anthropomorphization">Anthropomorphization</a></li>
+                            <li><a href="#checklist">Checklist</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./scripts/documentation.js"></script>
+</body>
+</html>

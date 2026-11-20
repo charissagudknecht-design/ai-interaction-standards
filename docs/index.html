@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Design Hub - Rosewood Design System</title>
+    <link rel="stylesheet" href="./styles/ai-hub.css" />
+    <style>
+        /* Edge-to-edge ambient backdrop — hub landing page only. Built from the
+           system's own documented "Header gradient" recipe (Ruby -> Champagne,
+           see ai-components.html spec table: 4% Ruby -> 30% Champagne), extended
+           with the Warm Wash token as the base fill and faded to white before
+           the card grid. Not scoped to .ai-hub__header, since that class is
+           shared by every sub-page's plain title bar. */
+        .ai-hub-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 460px;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 900px 340px at 50% 0%, rgba(192, 66, 159, 0.05), transparent 70%),
+                linear-gradient(180deg, #FFEEE3 0%, rgba(251, 236, 214, 0.35) 40%, rgba(255, 255, 255, 0) 82%);
+        }
+        .ai-hub__header {
+            position: relative;
+            padding-top: 32px;
+        }
+    </style>
+</head>
+<body class="ai-hub">
+    <nav class="ai-hub__nav">
+        <div class="ai-hub__nav-inner">
+        <div class="ai-hub__nav-links">
+            <a href="index.html" class="active">Hub</a>
+            <a href="ai-foundations.html">Foundations</a>
+            <a href="ai-visual-language.html">Visual Language</a>
+            <a href="ai-components.html">Components</a>
+            <a href="ai-trust.html">Trust &amp; Governance</a>
+        </div>
+        </div>
+    </nav>
+
+    <div class="ai-hub-backdrop" aria-hidden="true"></div>
+
+    <main class="ai-hub__content">
+        <div class="ai-hub__header">
+            <h1 class="ai-hub__title">Try the four AI surfaces</h1>
+            <p class="ai-hub__subtitle">Glow can show up as an assistant overlay, a copilot sidebar, a canvas, or an inline widget — launch each one below to see how it enters, behaves, and exits.</p>
+        </div>
+
+        <!-- ===== SURFACE STRATEGY PLAYGROUND ===== -->
+        <section id="surface-playground" class="ai-hub__section" style="padding:0;background:transparent;border:none;">
+
+            <style>
+                /* ===== Playground Shell ===== */
+                .surf-playground {
+                    border-radius: 16px;
+                    overflow: hidden;
+                    border: 1px solid rgba(40, 30, 20,0.08);
+                    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+                    font-family: Lato, sans-serif;
+                }
+
+                /* Launch bar */
+                .surf-launch-bar {
+                    background: transparent;
+                    padding: 24px 4px 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                }
+                .surf-launch-bar__label {
+                    font-size: 11px;
+                    font-weight: 700;
+                    color: #9E9E9E;
+                    text-transform: uppercase;
+                    letter-spacing: 0.8px;
+                    margin-right: 4px;
+                    flex-shrink: 0;
+                }
+                .surf-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 7px;
+                    height: 36px;
+                    padding: 0 14px;
+                    border-radius: 8px;
+                    border: 1px solid rgba(192,66,159,0.25);
+                    background: #fff;
+                    color: #C0429F;
+                    font-size: 13px;
+                    font-weight: 600;
+                    font-family: Lato, sans-serif;
+                    cursor: pointer;
+                    transition: background 150ms ease, border-color 150ms ease, transform 100ms ease;
+                    white-space: nowrap;
+                }
+                .surf-btn:hover { background: rgba(192,66,159,0.05); border-color: #C0429F; }
+                .surf-btn:active { transform: scale(0.97); }
+                .surf-btn--active { background: #C0429F; color: #fff; border-color: #C0429F; }
+                .surf-btn--active:hover { background: #d04faf; }
+                .surf-btn svg { flex-shrink: 0; }
+
+                /* The simulated product viewport */
+                .surf-viewport {
+                    position: relative;
+                    background: #f0f2f7;
+                    height: 520px;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: row;
+                }
+                .surf-vp-topbar {
+                    background: #fff;
+                    border-bottom: 1px solid rgba(40, 30, 20,0.08);
+                    height: 48px;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 20px;
+                    gap: 12px;
+                    flex-shrink: 0;
+                    z-index: 1;
+                }
+                .surf-vp-topbar__logo { font-size: 13px; font-weight: 700; color: #1a3a5c; letter-spacing: -0.3px; }
+                .surf-vp-topbar__loc { font-size: 12px; color: #9E9E9E; }
+                .surf-vp-topbar__spacer { flex: 1; }
+                .surf-vp-topbar__dot { width: 28px; height: 28px; border-radius: 50%; background: #edeff5; }
+                .surf-vp-topbar__glow {
+                    width: 36px; height: 36px;
+                    cursor: pointer;
+                    border-radius: 50%;
+                    display: flex; align-items: center; justify-content: center;
+                    transition: background 300ms ease, box-shadow 300ms ease;
+                    position: relative;
+                }
+                .surf-vp-topbar__glow img,
+                .surf-vp-topbar__glow .glow-breath-sm {
+                    opacity: 0 !important;
+                    animation: none !important;
+                    position: absolute;
+                }
+                /* SVG-masked color layers — exact token values, no CSS filter guesswork */
+                .surf-vp-topbar__glow::before {
+                    content: '';
+                    position: absolute;
+                    width: 32px; height: 32px;
+                    background: var(--glow-quiet, #5A2B7A);
+                    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIyLjYyOTkgNS4yNTNDMjMuMzYzIDUuMzA2MzMgMjQuMTg5NCA1LjgxMyAyNC44NTU5IDYuNjc5NjZDMjUuOTg4OSA4LjEzMyAyNi44NTUzIDguODM5NjYgMjguMDE0OSA5LjAyNjMzQzI4LjU0OCA5LjEzMyAyOS4xODc4IDkuMDc5NjYgMjkuNjY3NyA4Ljc5OTY2QzMwLjIwMDkgOC41MDYzMyAzMC41MDc0IDguMDUzIDMwLjYyNzQgNy41NDYzM0MzMC43NjA3IDYuODY2MzMgMzAuNTg3NCA1Ljc5OTY2IDI5LjU3NDQgNS4zNDYzM0MyOC42MTQ3IDQuOTMzIDI4LjA2ODIgNS42OTMgMjguMDY4MiA1LjY5M0MyOC4wNjgyIDUuNjkzIDI4Ljc3NDYgNS41MDYzMyAyOS4yMDEyIDUuOTQ2MzNDMjkuNDE0NCA2LjE3MyAyOS41MDc3IDYuNDY2MzMgMjkuNDQxMSA2Ljc4NjMzQzI5LjM2MTEgNy4xODYzMyAyOC45NzQ2IDcuNDc5NjYgMjguNDgxNCA3LjM5OTY2QzI3Ljc3NSA3LjI5MyAyNy40NTUxIDYuNzMzIDI2LjkzNTIgNS44OTNDMjYuNDk1NCA1LjIyNjMzIDI1Ljc2MjMgMy44NTMgMjQuNjU2IDIuNzU5NjZDMjMuNDQzIDEuNTk5NjYgMjAuMjMwNyAwLjUxOTY2MiAxOC4yMzEzIDIuMjEzQzE2LjU5MTkgMy41NzMgMTYuMzUxOSA1LjM4NjMzIDE2LjMxMiA1Ljc4NjMzSDE2LjI3MkMxMC45NjcgNC44MjYzMyA1Ljc5NTMzIDcuODc5NjYgMy45ODI1OCAxMi43NDYzQzIuMTAzMTggMTIuNzQ2MyAxLjYxIDEzLjcwNjMgMS4zOTY3NCAxNC44OTNDMS4xODM0NyAxNi4wNTMgMS40NTAwNSAxNy4xMDYzIDMuMDc2MiAxNy43NTk3QzMuMjA5NDkgMjAuNTMzIDQuMDg5MjEgMjMuMTMzIDUuNjc1MzcgMjUuMjM5N0M1Ljk4MTk0IDI1LjYxMyA2LjgzNSAyNi41MzMgNi44MzUgMjcuMDEzTDYuMDM1MjUgMjkuOTU5N0M2LjAzNTI1IDMwLjQyNjMgNi40NzUxMSAzMC43NTk3IDYuOTE0OTcgMzAuNjM5N0wxMS43NTM0IDI5LjQzOTdDMTIuMjMzMyAyOS4zMTk3IDEyLjYxOTggMjkuMzMzIDEzLjExMyAyOS40MTNMMTUuMjMyMyAyOS43NzNDMjAuODgzOCAzMC43OTk3IDI1Ljk2MjIgMjcuMTE5NyAyNy44NDE2IDIyLjM3M0MyOS42Njc3IDIyLjMzMyAzMC4yMTQyIDIxLjM4NjMgMzAuNDQwOCAyMC4xOTk3QzMwLjY1NCAxOS4wMjYzIDMwLjQ4MDggMTcuOTQ2MyAyOC43NzQ2IDE3LjI3OTdDMjguODQxMyAxMi42MTMgMjUuODI4OSA4LjM3MyAyMS4zNjM3IDYuODI2MzNDMjEuMTUwNCA2LjI3OTY2IDIxLjMyMzcgNS44OTMgMjEuNTM3IDUuNjUzQzIxLjgwMzUgNS4zNDYzMyAyMi4yMTY3IDUuMjEzIDIyLjYyOTkgNS4yMzk2NlY1LjI1M1pNMjIuMzkgMTQuMzQ2M0wyMy4wMjk4IDE0LjUxOTdDMjMuODk2MiAxNC43ODYzIDI0LjUwOTMgMTUuNDc5NyAyNC41NDkzIDE2LjI5M0MyNC41ODkzIDE3LjU3MyAyNC4xODk0IDIwLjA1MyAyMy43MzYzIDIxLjM5OTdMMjMuNDgzIDIyLjAyNjNDMjMuMTg5OCAyMi43ODYzIDIyLjM3NjcgMjMuMjY2MyAyMS40MzAzIDIzLjE3M0wyMC44MTcyIDIzLjExOTdDMTcuMDE4NCAyMi43OTk3IDEzLjIzMjkgMjIuMTMzIDkuNTU0MTMgMjEuMDY2M0w4Ljc5NDM3IDIwLjg1M0M3LjkxNDY1IDIwLjU4NjMgNy4zMDE1MSAxOS44Mzk3IDcuMjg4MTggMTkuMDUzVjE4LjM3M0M3LjQ2MTQ2IDE2LjU0NjMgNy41NjgwOSAxNS4zMzMgOC4yODc4NiAxMy4yOTNDOC41OTQ0MyAxMi41NzMgOS40MzQxNiAxMi4xMTk3IDEwLjMyNzIgMTIuMTg2M0wxMS4xNTM2IDEyLjI2NjNDMTEuNTkzNSAxMi4yOTMgMTIuMDQ2NyAxMi4zNDYzIDEyLjQ4NjUgMTIuMzczQzEyLjk1MyAxMi40MjYzIDEzLjMyNjMgMTIuNzU5NyAxMy40MTk2IDEzLjIxM0wxMy40NzI5IDEzLjM0NjNDMTMuNjE5NSAxMy45NDYzIDE0LjA5OTMgMTQuNDEzIDE0LjcxMjUgMTQuNTMzTDE3Ljg3MTUgMTUuMTU5N0MxOC40ODQ2IDE1LjI1MyAxOS4xMjQ0IDE0Ljk5OTcgMTkuNDcxIDE0LjQ5M0wxOS41OTA5IDE0LjMzM0MxOS44NDQyIDEzLjk1OTcgMjAuMzI0IDEzLjc4NjMgMjAuNzc3MiAxMy44OTNDMjEuMzEwNCAxNC4wMzk3IDIxLjg1NjkgMTQuMTg2MyAyMi4zOSAxNC4zMzNWMTQuMzQ2M1oiIGZpbGw9IiNDMDQyOUYiLz4KPHBhdGggZD0iTTE4LjIxOCAxOC4xOTk3QzE4LjAxODEgMTkuMjkzIDE4LjczNzkgMjAuMzMzIDE5LjgzMDggMjAuNTMzQzIwLjkzNzEgMjAuNzMzIDIxLjk2MzUgMjAuMDEzIDIyLjE3NjggMTguOTE5N0MyMi4zNzY3IDE3LjgyNjMgMjEuNjU2OSAxNi43ODYzIDIwLjU2MzkgMTYuNTg2M0MxOS40NzEgMTYuMzg2MyAxOC40MzEzIDE3LjEwNjMgMTguMjE4IDE4LjE5OTdaIiBmaWxsPSIjQzA0MjlGIi8+CjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiNDMDQyOUYiLz4KPC9zdmc+Cg==");
+                    -webkit-mask-size: contain;
+                    mask-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIyLjYyOTkgNS4yNTNDMjMuMzYzIDUuMzA2MzMgMjQuMTg5NCA1LjgxMyAyNC44NTU5IDYuNjc5NjZDMjUuOTg4OSA4LjEzMyAyNi44NTUzIDguODM5NjYgMjguMDE0OSA5LjAyNjMzQzI4LjU0OCA5LjEzMyAyOS4xODc4IDkuMDc5NjYgMjkuNjY3NyA4Ljc5OTY2QzMwLjIwMDkgOC41MDYzMyAzMC41MDc0IDguMDUzIDMwLjYyNzQgNy41NDYzM0MzMC43NjA3IDYuODY2MzMgMzAuNTg3NCA1Ljc5OTY2IDI5LjU3NDQgNS4zNDYzM0MyOC42MTQ3IDQuOTMzIDI4LjA2ODIgNS42OTMgMjguMDY4MiA1LjY5M0MyOC4wNjgyIDUuNjkzIDI4Ljc3NDYgNS41MDYzMyAyOS4yMDEyIDUuOTQ2MzNDMjkuNDE0NCA2LjE3MyAyOS41MDc3IDYuNDY2MzMgMjkuNDQxMSA2Ljc4NjMzQzI5LjM2MTEgNy4xODYzMyAyOC45NzQ2IDcuNDc5NjYgMjguNDgxNCA3LjM5OTY2QzI3Ljc3NSA3LjI5MyAyNy40NTUxIDYuNzMzIDI2LjkzNTIgNS44OTNDMjYuNDk1NCA1LjIyNjMzIDI1Ljc2MjMgMy44NTMgMjQuNjU2IDIuNzU5NjZDMjMuNDQzIDEuNTk5NjYgMjAuMjMwNyAwLjUxOTY2MiAxOC4yMzEzIDIuMjEzQzE2LjU5MTkgMy41NzMgMTYuMzUxOSA1LjM4NjMzIDE2LjMxMiA1Ljc4NjMzSDE2LjI3MkMxMC45NjcgNC44MjYzMyA1Ljc5NTMzIDcuODc5NjYgMy45ODI1OCAxMi43NDYzQzIuMTAzMTggMTIuNzQ2MyAxLjYxIDEzLjcwNjMgMS4zOTY3NCAxNC44OTNDMS4xODM0NyAxNi4wNTMgMS40NTAwNSAxNy4xMDYzIDMuMDc2MiAxNy43NTk3QzMuMjA5NDkgMjAuNTMzIDQuMDg5MjEgMjMuMTMzIDUuNjc1MzcgMjUuMjM5N0M1Ljk4MTk0IDI1LjYxMyA2LjgzNSAyNi41MzMgNi44MzUgMjcuMDEzTDYuMDM1MjUgMjkuOTU5N0M2LjAzNTI1IDMwLjQyNjMgNi40NzUxMSAzMC43NTk3IDYuOTE0OTcgMzAuNjM5N0wxMS43NTM0IDI5LjQzOTdDMTIuMjMzMyAyOS4zMTk3IDEyLjYxOTggMjkuMzMzIDEzLjExMyAyOS40MTNMMTUuMjMyMyAyOS43NzNDMjAuODgzOCAzMC43OTk3IDI1Ljk2MjIgMjcuMTE5NyAyNy44NDE2IDIyLjM3M0MyOS42Njc3IDIyLjMzMyAzMC4yMTQyIDIxLjM4NjMgMzAuNDQwOCAyMC4xOTk3QzMwLjY1NCAxOS4wMjYzIDMwLjQ4MDggMTcuOTQ2MyAyOC43NzQ2IDE3LjI3OTdDMjguODQxMyAxMi42MTMgMjUuODI4OSA4LjM3MyAyMS4zNjM3IDYuODI2MzNDMjEuMTUwNCA2LjI3OTY2IDIxLjMyMzcgNS44OTMgMjEuNTM3IDUuNjUzQzIxLjgwMzUgNS4zNDYzMyAyMi4yMTY3IDUuMjEzIDIyLjYyOTkgNS4yMzk2NlY1LjI1M1pNMjIuMzkgMTQuMzQ2M0wyMy4wMjk4IDE0LjUxOTdDMjMuODk2MiAxNC43ODYzIDI0LjUwOTMgMTUuNDc5NyAyNC41NDkzIDE2LjI5M0MyNC41ODkzIDE3LjU3MyAyNC4xODk0IDIwLjA1MyAyMy43MzYzIDIxLjM5OTdMMjMuNDgzIDIyLjAyNjNDMjMuMTg5OCAyMi43ODYzIDIyLjM3NjcgMjMuMjY2MyAyMS40MzAzIDIzLjE3M0wyMC44MTcyIDIzLjExOTdDMTcuMDE4NCAyMi43OTk3IDEzLjIzMjkgMjIuMTMzIDkuNTU0MTMgMjEuMDY2M0w4Ljc5NDM3IDIwLjg1M0M3LjkxNDY1IDIwLjU4NjMgNy4zMDE1MSAxOS44Mzk3IDcuMjg4MTggMTkuMDUzVjE4LjM3M0M3LjQ2MTQ2IDE2LjU0NjMgNy41NjgwOSAxNS4zMzMgOC4yODc4NiAxMy4yOTNDOC41OTQ0MyAxMi41NzMgOS40MzQxNiAxMi4xMTk3IDEwLjMyNzIgMTIuMTg2M0wxMS4xNTM2IDEyLjI2NjNDMTEuNTkzNSAxMi4yOTMgMTIuMDQ2NyAxMi4zNDYzIDEyLjQ4NjUgMTIuMzczQzEyLjk1MyAxMi40MjYzIDEzLjMyNjMgMTIuNzU5NyAxMy40MTk2IDEzLjIxM0wxMy40NzI5IDEzLjM0NjNDMTMuNjE5NSAxMy45NDYzIDE0LjA5OTMgMTQuNDEzIDE0LjcxMjUgMTQuNTMzTDE3Ljg3MTUgMTUuMTU5N0MxOC40ODQ2IDE1LjI1MyAxOS4xMjQ0IDE0Ljk5OTcgMTkuNDcxIDE0LjQ5M0wxOS41OTA5IDE0LjMzM0MxOS44NDQyIDEzLjk1OTcgMjAuMzI0IDEzLjc4NjMgMjAuNzc3MiAxMy44OTNDMjEuMzEwNCAxNC4wMzk3IDIxLjg1NjkgMTQuMTg2MyAyMi4zOSAxNC4zMzNWMTQuMzQ2M1oiIGZpbGw9IiNDMDQyOUYiLz4KPHBhdGggZD0iTTE4LjIxOCAxOC4xOTk3QzE4LjAxODEgMTkuMjkzIDE4LjczNzkgMjAuMzMzIDE5LjgzMDggMjAuNTMzQzIwLjkzNzEgMjAuNzMzIDIxLjk2MzUgMjAuMDEzIDIyLjE3NjggMTguOTE5N0MyMi4zNzY3IDE3LjgyNjMgMjEuNjU2OSAxNi43ODYzIDIwLjU2MzkgMTYuNTg2M0MxOS40NzEgMTYuMzg2MyAxOC40MzEzIDE3LjEwNjMgMTguMjE4IDE4LjE5OTdaIiBmaWxsPSIjQzA0MjlGIi8+CjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiNDMDQyOUYiLz4KPC9zdmc+Cg==");
+                    mask-size: contain;
+                    -webkit-mask-repeat: no-repeat;
+                    mask-repeat: no-repeat;
+                    transition: background 300ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+                    z-index: 1;
+                }
+                .surf-vp-topbar__glow:hover::before {
+                    background: linear-gradient(137deg, #C0429F 0%, #5A2B7A 100%);
+                    transform: rotate(12deg) scale(1.08);
+                }
+
+                /* Copilot FAB */
+                .surf-fab {
+                    position: absolute;
+                    top: 64px;
+                    right: 16px;
+                    width: 48px; height: 48px;
+                    border-radius: 50%;
+                    background: linear-gradient(137deg, #C0429F 0%, #5A2B7A 100%);
+                    border: none;
+                    display: flex; align-items: center; justify-content: center;
+                    cursor: pointer;
+                    z-index: 10;
+                    box-shadow:
+                        0 4px 12px rgba(192,66,159,0.25),
+                        0 0 20px rgba(90,43,122,0.1);
+                    transition: background 300ms ease, transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 300ms ease, opacity 250ms ease;
+                }
+                .surf-fab:hover {
+                    background: linear-gradient(137deg, #C0429F 0%, #6F265C 100%);
+                    transform: scale(1.08);
+                    box-shadow:
+                        0 6px 20px rgba(192,66,159,0.4),
+                        0 0 32px rgba(111,38,92,0.2);
+                }
+                .surf-fab:active { transform: scale(0.95); }
+                .surf-fab__icon {
+                    display: flex; align-items: center; justify-content: center;
+                    transition: transform 300ms ease;
+                }
+                .surf-fab:hover .surf-fab__icon {
+                    transform: rotate(8deg);
+                }
+
+                /* AI Action Button (inline, outline style with AI hover) */
+                .surf-ai-action-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
+                    height: 32px;
+                    padding: 0 12px;
+                    border-radius: 5px;
+                    border: 1px solid rgba(40, 30, 20,0.12);
+                    background: #fff;
+                    color: #4a4a4a;
+                    font-size: 12px;
+                    font-weight: 600;
+                    font-family: Lato, sans-serif;
+                    letter-spacing: 0.2px;
+                    cursor: pointer;
+                    transition: border-color 250ms ease, color 250ms ease, background 250ms ease;
+                }
+                .surf-ai-action-btn:hover {
+                    border-color: #5A2B7A;
+                    color: #5A2B7A;
+                    background: linear-gradient(135deg, rgba(192,66,159,0.06) 0%, rgba(90,43,122,0.06) 100%);
+                }
+                .surf-ai-action-btn:active { transform: scale(0.97); }
+
+                /* Inline sparkle icon (no outline, just the icon) */
+                .surf-inline-sparkle-icon {
+                    background: none;
+                    border: none;
+                    padding: 4px;
+                    cursor: pointer;
+                    color: #5A2B7A;
+                    display: flex; align-items: center; justify-content: center;
+                    border-radius: 4px;
+                    transition: color 250ms ease, transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+                    position: relative;
+                }
+                .surf-inline-sparkle-icon:hover {
+                    color: #C0429F;
+                    transform: scale(1.15) rotate(8deg);
+                }
+                .surf-inline-sparkle-icon:active { transform: scale(0.95); }
+
+                .surf-vp-body {
+                    flex: 1;
+                    display: flex;
+                    overflow: hidden;
+                }
+                .surf-vp-main {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    border-radius: 0 16px 16px 0;
+                }
+                .surf-vp-nav {
+                    width: 48px;
+                    background: #003171;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding: 12px 0;
+                    gap: 4px;
+                    flex-shrink: 0;
+                    border-radius: 16px 0 0 16px;
+                }
+                .surf-vp-nav-item {
+                    width: 40px; height: 40px;
+                    display: flex; align-items: center; justify-content: center;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: background 150ms ease;
+                    position: relative;
+                }
+                .surf-vp-nav-item svg { width: 20px; height: 20px; fill: none; stroke: rgba(255,255,255,0.55); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+                .surf-vp-nav-item:hover { background: rgba(255,255,255,0.08); }
+                .surf-vp-nav-item:hover svg { stroke: rgba(255,255,255,0.85); }
+                .surf-vp-nav-item--active { background: rgba(255,255,255,0.12); }
+                .surf-vp-nav-item--active svg { stroke: #fff; }
+                .surf-vp-nav-sep { width: 24px; height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0; }
+                .surf-vp-content {
+                    flex: 1;
+                    padding: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 14px;
+                    overflow: hidden;
+                    transition: flex 400ms cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                /* Fake dashboard cards */
+                .surf-vp-stat-row { display: flex; gap: 12px; }
+                .surf-vp-stat {
+                    flex: 1;
+                    background: #fff;
+                    border-radius: 10px;
+                    padding: 14px 16px;
+                    border: 1px solid rgba(40, 30, 20,0.05);
+                }
+                .surf-vp-stat__val { font-size: 20px; font-weight: 700; color: #0a0a0a; }
+                .surf-vp-stat__lbl { font-size: 11px; color: #9E9E9E; margin-top: 2px; }
+                .surf-vp-stat__delta { font-size: 11px; font-weight: 600; color: #1E6421; margin-top: 4px; }
+                .surf-vp-table {
+                    background: #fff;
+                    border-radius: 10px;
+                    padding: 14px 16px;
+                    border: 1px solid rgba(40, 30, 20,0.05);
+                    flex: 1;
+                }
+                .surf-vp-table__title { font-size: 13px; font-weight: 700; color: #0a0a0a; margin-bottom: 10px; }
+                .surf-vp-table-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(40, 30, 20,0.04); }
+                .surf-vp-table-row:last-child { border-bottom: none; }
+                .surf-vp-table-row__bar { height: 6px; border-radius: 3px; background: #6BACAA; }
+                .surf-vp-table-row__name { font-size: 12px; color: #4a4a4a; width: 100px; flex-shrink: 0; }
+                .surf-vp-table-row__val { font-size: 12px; font-weight: 600; color: #0a0a0a; margin-left: auto; }
+
+                /* Inline sparkle form area */
+                .surf-vp-form {
+                    background: #fff;
+                    border-radius: 10px;
+                    padding: 14px 16px;
+                    border: 1px solid rgba(40, 30, 20,0.05);
+                }
+                .surf-vp-form__title { font-size: 12px; font-weight: 700; color: #5f5f5f; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+                .surf-vp-form__row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+                .surf-vp-form__label { font-size: 12px; color: #5f5f5f; width: 70px; flex-shrink: 0; }
+                .surf-vp-form__input {
+                    flex: 1;
+                    min-width: 0;
+                    height: 32px;
+                    border: 1px solid rgba(40, 30, 20,0.1);
+                    border-radius: 6px;
+                    padding: 0 10px;
+                    font-size: 12px;
+                    font-family: Lato, sans-serif;
+                    color: #0a0a0a;
+                    background: #fafafa;
+                    outline: none;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .surf-vp-form__sparkle-btn {
+                    width: 32px; height: 32px;
+                    border: 1px solid rgba(90,43,122,0.25);
+                    border-radius: 6px;
+                    background: #fff;
+                    display: flex; align-items: center; justify-content: center;
+                    cursor: pointer;
+                    flex-shrink: 0;
+                    transition: background 150ms, border-color 150ms;
+                    position: relative;
+                }
+                .surf-vp-form__sparkle-btn:hover { background: rgba(90,43,122,0.06); border-color: #5A2B7A; }
+                .surf-vp-form__sparkle-btn.active { background: #5A2B7A; border-color: #5A2B7A; }
+
+                /* ===== SURFACE 1: Overlay ===== */
+                /* ===== SURFACE 1: Assistant Floating Panel ===== */
+                .surf-assistant-panel {
+                    position: absolute;
+                    top: 0;
+                    right: 10px;
+                    bottom: 10px;
+                    width: 340px;
+                    background: #fff;
+                    border-radius: 16px;
+                    box-shadow: 0 8px 30px rgba(90,43,122,0.15), 0 2px 8px rgba(0,0,0,0.08);
+                    border: 1px solid rgba(90,43,122,0.08);
+                    z-index: 20;
+                    opacity: 0;
+                    transform-origin: top right;
+                    transform: scale(0.4);
+                    pointer-events: none;
+                    transition: opacity 250ms ease-out, transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+                    font-family: Lato, sans-serif;
+                }
+                .surf-assistant-panel.open {
+                    opacity: 1;
+                    transform: scale(1);
+                    pointer-events: all;
+                }
+                .surf-assistant-panel__clip {
+                    height: 100%;
+                    overflow: hidden;
+                    border-radius: 16px;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .surf-assistant-panel__header {
+                    display: flex; align-items: center; justify-content: space-between;
+                    padding: 16px 16px 0;
+                }
+                .surf-assistant-panel__close {
+                    background: none; border: none; cursor: pointer; color: #9E9E9E;
+                    padding: 4px; border-radius: 4px; transition: color 150ms;
+                }
+                .surf-assistant-panel__close:hover { color: #0a0a0a; }
+                .surf-assistant-panel__greeting {
+                    padding: 16px 20px 12px;
+                }
+                .surf-assistant-panel__avatar {
+                    flex-shrink: 0;
+                }
+                .surf-assistant-panel__avatar img {
+                    width: 32px; height: 32px;
+                    object-fit: contain;
+                    display: block;
+                }
+
+                /* Shared Glow mark trigger — hover gradient + click menu */
+                .glow-head-trigger {
+                    position: relative; cursor: pointer; flex-shrink: 0;
+                    width: 32px; height: 32px;
+                    display: flex; align-items: center; justify-content: center;
+                }
+                .glow-head-trigger img { opacity: 0 !important; position: absolute; }
+                .glow-head-trigger::before {
+                    content: '';
+                    position: absolute;
+                    width: 100%; height: 100%;
+                    background: linear-gradient(137deg, #C0429F 0%, #5A2B7A 100%);
+                    -webkit-mask-image: var(--glow-mask);
+                    mask-image: var(--glow-mask);
+                    -webkit-mask-size: contain; mask-size: contain;
+                    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+                    transition: background 300ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+                }
+                .glow-head-trigger:hover::before {
+                    background: linear-gradient(137deg, #C0429F 0%, #6F265C 100%);
+                    transform: rotate(12deg) scale(1.08);
+                }
+                .glow-head-trigger.menu-active::before {
+                    background: linear-gradient(137deg, #C0429F 0%, #6F265C 100%);
+                }
+                .glow-head-trigger.menu-active:hover::before {
+                    transform: none;
+                }
+                /* Glow mark menu — full-height drawer overlay */
+                .glow-head-menu-backdrop {
+                    position: absolute; inset: 0;
+                    z-index: 40;
+                    border-radius: inherit;
+                    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+                    background: linear-gradient(135deg, rgba(251,236,214,0.45), rgba(192,66,159,0.08));
+                    opacity: 0; pointer-events: none;
+                    transition: opacity 250ms ease;
+                }
+                .glow-head-menu-backdrop.open { opacity: 1; pointer-events: all; }
+                .glow-head-menu {
+                    position: absolute; top: 0; left: 0; bottom: 0;
+                    width: 200px;
+                    background: #fff;
+                    z-index: 41;
+                    display: flex; flex-direction: column;
+                    padding: 0;
+                    opacity: 0; transform: translateX(-12px);
+                    pointer-events: none;
+                    transition: opacity 200ms ease, transform 250ms cubic-bezier(0.16, 1, 0.3, 1);
+                    font-family: Lato, sans-serif;
+                    border-right: 1px solid rgba(90,43,122,0.06);
+                }
+                .surf-assistant-panel .glow-head-menu { border-radius: 16px 0 0 16px; }
+                .glow-head-menu.open {
+                    opacity: 1; transform: translateX(0); pointer-events: all;
+                }
+                .glow-head-menu__avatar {
+                    padding: 16px 16px 12px;
+                    flex-shrink: 0;
+                }
+                .glow-head-menu__items { display: flex; flex-direction: column; flex: 1; }
+                .glow-head-menu__item {
+                    display: flex; align-items: center; gap: 10px;
+                    padding: 10px 16px;
+                    font-size: 13px; color: #333;
+                    cursor: pointer; border: none; background: none; width: 100%;
+                    text-align: left; font-family: inherit;
+                    transition: background 120ms;
+                }
+                .glow-head-menu__item:hover { background: rgba(90,43,122,0.06); }
+                .glow-head-menu__item--active { background: rgba(184,160,208,0.18); font-weight: 600; color: #5A2B7A; }
+                .glow-head-menu__item svg { flex-shrink: 0; width: 18px; height: 18px; color: #5A2B7A; }
+                /* Canvas drawer — edge to edge */
+                .surf-canvas-wrap .glow-head-menu {
+                    width: 240px; border-radius: 0;
+                    position: relative; top: auto; left: auto; bottom: auto;
+                    flex-shrink: 0; opacity: 1; transform: none; pointer-events: all;
+                    display: none;
+                }
+                .surf-canvas-wrap .glow-head-menu.open { display: flex; }
+                .surf-canvas-menu-collapse {
+                    display: flex; align-items: center; justify-content: center;
+                    width: 28px; height: 28px; border: none; background: none;
+                    cursor: pointer; color: #9E9E9E; margin-left: auto;
+                    padding: 4px; border-radius: 6px; transition: color 200ms ease, background 200ms ease;
+                    position: absolute; top: 8px; right: 8px;
+                }
+                .surf-canvas-menu-collapse:hover { color: #5A2B7A; background: rgba(90,43,122,0.06); }
+                .surf-canvas-wrap .glow-head-menu-backdrop { display: none; }
+                .surf-canvas-wrap .glow-head-menu__avatar { display: none; }
+                .surf-assistant-panel__hi {
+                    font-size: 18px; font-weight: 700; color: #0a0a0a; line-height: 1.3;
+                    margin-bottom: 2px;
+                }
+                .surf-assistant-panel__question {
+                    font-size: 15px; font-weight: 400; color: #5f5f5f; line-height: 1.3;
+                }
+                .surf-assistant-panel__chips {
+                    display: flex; flex-wrap: wrap; gap: 8px;
+                    padding: 0 20px 16px;
+                }
+                .surf-assistant-panel__chip {
+                    padding: 8px 14px;
+                    border: 1px solid rgba(40, 30, 20,0.10);
+                    border-radius: 20px;
+                    font-size: 12px; color: #0a0a0a; font-weight: 500;
+                    cursor: pointer; background: #fff;
+                    font-family: Lato, sans-serif;
+                    transition: background 120ms, border-color 120ms;
+                }
+                .surf-assistant-panel__chip:hover { background: rgba(90,43,122,0.04); border-color: rgba(90,43,122,0.15); }
+
+                /* ===== Prompt Box (shared across surfaces) ===== */
+                .surf-prompt-box {
+                    padding: 12px 16px;
+                    margin-top: auto;
+                }
+                .surf-prompt-box__border-ring {
+                    border: 2px solid rgba(40, 30, 20,0.12);
+                    border-radius: 12px;
+                    background: #fff;
+                    overflow: hidden;
+                    transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
+                }
+                .surf-prompt-box__border-ring:focus-within {
+                    border-color: transparent;
+                    background:
+                        linear-gradient(#fff, #fff) padding-box,
+                        linear-gradient(137deg, #C0429F 0%, #5A2B7A 100%) border-box;
+                    box-shadow:
+                        0 0 12px 2px rgba(239,240,253,0.7),
+                        0 0 24px 6px rgba(253,239,249,0.5),
+                        0 0 40px 12px rgba(255,238,227,0.35);
+                }
+                .surf-prompt-box__border-ring--generating,
+                .surf-prompt-box__border-ring--listening {
+                    border-color: transparent !important;
+                    background:
+                        linear-gradient(#fff, #fff) padding-box,
+                        conic-gradient(
+                            from var(--glow-angle, 0deg),
+                            #6F265C, #5A2B7A, #6F265C, #5A2B7A, #6F265C
+                        ) border-box !important;
+                    border: 2px solid transparent !important;
+                    animation: glow-rainbow-spin 2s linear infinite;
+                }
+                .surf-prompt-box__input-row {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 8px;
+                    padding: 12px 12px 0 12px;
+                }
+                .surf-prompt-box__sparkle {
+                    flex-shrink: 0; margin-top: 2px; line-height: 1;
+                    animation: glow-pulse-glow 3s ease-in-out infinite;
+                }
+                .surf-prompt-box__input {
+                    flex: 1; background: none; border: none; outline: none;
+                    font-size: 14px; font-family: Lato, sans-serif; color: #0a0a0a;
+                    line-height: 20px; resize: none;
+                }
+                .surf-prompt-box__input::placeholder { color: #9E9E9E; }
+                .surf-prompt-box__toolbar {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 8px 12px 10px 12px;
+                }
+                .surf-prompt-box__plus-btn {
+                    border: none; background: none; cursor: pointer;
+                    color: #9E9E9E; padding: 0;
+                    width: 24px; height: 24px;
+                    display: flex; align-items: center; justify-content: center;
+                    transition: color 200ms ease;
+                }
+                .surf-prompt-box__plus-btn:hover { color: #5A2B7A; }
+                .surf-prompt-box__action-btn {
+                    border: none; background: none; cursor: pointer;
+                    color: #9E9E9E; padding: 0;
+                    width: 24px; height: 24px;
+                    display: flex; align-items: center; justify-content: center;
+                    transition: color 200ms ease;
+                }
+                .surf-prompt-box__action-btn:hover { color: #5A2B7A; }
+                .surf-prompt-box__disclaimer {
+                    font-size: 10px; color: #9E9E9E; text-align: center;
+                    margin-top: 6px; font-family: Lato, sans-serif;
+                }
+
+                /* ===== SURFACE 2: Sidebar ===== */
+                .surf-sidebar-panel {
+                    position: relative;
+                    width: 0;
+                    min-width: 0;
+                    background: #fff;
+                    border-left: 1px solid rgba(90,43,122,0.10);
+                    box-shadow: -4px 0 20px rgba(90,43,122,0.06);
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    flex-shrink: 0;
+                    transition: width 400ms cubic-bezier(0.16, 1, 0.3, 1), min-width 400ms cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                .surf-sidebar-panel.open { width: 320px; min-width: 320px; }
+                .surf-viewport.copilot-open .surf-fab { opacity: 0; pointer-events: none; transform: scale(0.6); }
+                .surf-viewport.copilot-open .surf-vp-topbar__glow::before { background: #B8A0D0; }
+                .surf-sidebar__head {
+                    display: flex; align-items: center; justify-content: space-between;
+                    padding: 14px 16px;
+                }
+                .surf-sidebar__title { display: none; }
+                .surf-sidebar__close {
+                    background: none; border: none; cursor: pointer; color: #9E9E9E;
+                    padding: 4px; border-radius: 4px; transition: color 150ms;
+                }
+                .surf-sidebar__close:hover { color: #0a0a0a; }
+                .surf-sidebar__thread { flex: 1; padding: 14px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+                .surf-sidebar__msg { font-size: 12px; line-height: 1.5; padding: 8px 12px; border-radius: 8px; }
+                .surf-sidebar__msg--user { background: rgba(192,66,159,0.08); color: #0a0a0a; align-self: flex-end; max-width: 85%; }
+                .surf-sidebar__msg--ai { background: #f5f6fa; color: #0a0a0a; align-self: flex-start; max-width: 90%; }
+                .surf-sidebar__ai-label { font-size: 10px; font-weight: 700; color: #5A2B7A; margin-bottom: 4px; }
+                .surf-sidebar__prompt {
+                    padding: 12px 16px;
+                    border-top: 1px solid rgba(40, 30, 20,0.06);
+                    display: flex; align-items: center; gap: 8px;
+                }
+                .surf-sidebar__prompt input {
+                    flex: 1; height: 32px; border: 1px solid rgba(40, 30, 20,0.1); border-radius: 6px;
+                    padding: 0 10px; font-size: 12px; font-family: Lato,sans-serif; outline: none;
+                }
+                .surf-sidebar__send {
+                    width: 32px; height: 32px; border-radius: 6px; background: #C0429F;
+                    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+                }
+
+                /* ===== SURFACE 3: Canvas (fixed full-screen) ===== */
+                .surf-canvas-wrap {
+                    position: absolute;
+                    inset: 0;
+                    z-index: 25;
+                    display: flex;
+                    flex-direction: column;
+                    background: #f0f2f7;
+                    border-radius: 16px;
+                    overflow: hidden;
+                    clip-path: inset(0 round 16px);
+                    transform: scale(0.95);
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: transform 200ms ease-out, opacity 200ms ease-out, visibility 200ms ease-out;
+                    visibility: hidden;
+                }
+                .surf-canvas-wrap.open {
+                    transform: scale(1);
+                    opacity: 1;
+                    pointer-events: all;
+                    visibility: visible;
+                }
+                .surf-canvas-header {
+                    height: 52px;
+                    background: #fff;
+                    border-bottom: 1px solid rgba(40, 30, 20,0.08);
+                    display: flex;
+                    align-items: center;
+                    padding: 0 24px;
+                    gap: 12px;
+                    flex-shrink: 0;
+                }
+                .surf-canvas-header__brand {
+                    display: flex; align-items: center; gap: 8px;
+                    font-size: 14px; font-weight: 700; color: #0a0a0a;
+                    position: relative; overflow: visible;
+                }
+                .surf-canvas-header__spacer { flex: 1; }
+                .surf-canvas-header__close {
+                    display: flex; align-items: center; justify-content: center;
+                    width: 32px; height: 32px; padding: 0;
+                    border: none; border-radius: 6px;
+                    background: none; cursor: pointer;
+                    color: #9E9E9E;
+                    transition: background 150ms, color 150ms;
+                }
+                .surf-canvas-header__close:hover { background: rgba(0,0,0,0.05); color: #0a0a0a; }
+                .surf-canvas-body {
+                    flex: 1;
+                    display: flex;
+                    overflow: hidden;
+                }
+                /* Thread (40%) */
+                .surf-canvas-thread {
+                    flex: 1;
+                    min-width: 0;
+                    background: #fff;
+                    border-right: 1px solid rgba(40, 30, 20,0.07);
+                    display: flex;
+                    flex-direction: column;
+                }
+                .surf-canvas-thread__head {
+                    padding: 16px 20px 12px;
+                    border-bottom: 1px solid rgba(40, 30, 20,0.06);
+                    font-size: 13px; font-weight: 700; color: #0a0a0a;
+                }
+                .surf-canvas-thread__messages {
+                    flex: 1; padding: 16px 20px; overflow-y: auto;
+                    display: flex; flex-direction: column; gap: 12px;
+                }
+                .surf-canvas-msg { font-size: 13px; line-height: 1.55; padding: 10px 14px; border-radius: 10px; }
+                .surf-canvas-msg--user { background: rgba(184,160,208,0.18); align-self: flex-end; max-width: 85%; }
+                .surf-canvas-msg--ai { background: transparent; align-self: flex-start; max-width: 90%; padding-left: 0; padding-right: 0; }
+                .surf-canvas-msg__label { font-size: 10px; font-weight: 700; color: #5A2B7A; margin-bottom: 4px; }
+                .surf-canvas-thread__prompt {
+                    padding: 12px 20px 16px;
+                    border-top: 1px solid rgba(40, 30, 20,0.06);
+                    display: flex; gap: 8px; align-items: center;
+                }
+                .surf-canvas-thread__prompt input {
+                    flex: 1; height: 36px; border: 1px solid rgba(192,66,159,0.25);
+                    border-radius: 8px; padding: 0 12px; font-size: 13px;
+                    font-family: Lato,sans-serif; outline: none;
+                    transition: border-color 150ms;
+                }
+                .surf-canvas-thread__prompt input:focus { border-color: #5A2B7A; }
+                /* Artifact grid (60%) */
+                .surf-canvas-artifact {
+                    flex: 1;
+                    padding: 24px;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                    background: linear-gradient(135deg, rgba(251,236,214,0.3), rgba(192,66,159,0.04));
+                }
+                .surf-canvas-artifact__head {
+                    font-size: 13px; font-weight: 700; color: #0a0a0a;
+                    display: flex; align-items: center; gap: 8px;
+                }
+                .surf-canvas-artifact__tag {
+                    font-size: 10px; font-weight: 700; color: #C0429F;
+                    background: #fff;
+                    padding: 3px 8px; border-radius: 20px;
+                    text-transform: uppercase; letter-spacing: 0.5px;
+                }
+                .surf-canvas-card {
+                    background: #fff; border-radius: 12px; padding: 18px 20px;
+                    border: 1px solid rgba(40, 30, 20,0.06);
+                }
+                .surf-canvas-card__title { font-size: 13px; font-weight: 700; color: #0a0a0a; margin-bottom: 8px; }
+                .surf-canvas-card__body { font-size: 12px; line-height: 1.6; color: #5f5f5f; }
+                .surf-canvas-card__bar { height: 6px; border-radius: 3px; background: linear-gradient(90deg, #5A2B7A, #9B6DB7); margin-top: 10px; }
+
+                /* ===== SURFACE 4: Inline Widget ===== */
+                .surf-inline-popover {
+                    position: absolute;
+                    background: #fff;
+                    border: 1px solid rgba(192,66,159,0.15);
+                    border-radius: 10px;
+                    box-shadow: 0 8px 24px rgba(192,66,159,0.15);
+                    width: 280px;
+                    z-index: 30;
+                    opacity: 0;
+                    transform: scale(0.9) translateY(4px);
+                    pointer-events: none;
+                    transition: opacity 200ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                                transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+                    overflow: hidden;
+                }
+                .surf-inline-popover.open {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                    pointer-events: all;
+                }
+                .surf-inline-popover__head {
+                    display: flex; align-items: center; gap: 8px;
+                    padding: 10px 12px 8px;
+                    border-bottom: 1px solid rgba(40, 30, 20,0.05);
+                    font-size: 12px; font-weight: 700; color: #0a0a0a;
+                }
+                .surf-inline-popover__body { padding: 10px 12px; }
+                .surf-inline-suggestion {
+                    padding: 7px 10px; border-radius: 6px;
+                    font-size: 12px; color: #0a0a0a; cursor: pointer;
+                    transition: background 120ms;
+                    display: flex; align-items: center; gap: 8px;
+                    border: none; background: none; width: 100%; text-align: left;
+                    font-family: Lato, sans-serif;
+                }
+                .surf-inline-suggestion:hover { background: rgba(192,66,159,0.06); }
+                .surf-inline-suggestion__dot { width: 4px; height: 4px; border-radius: 50%; background: #C0429F; flex-shrink: 0; }
+
+                /* Label badge on viewport */
+                .surf-active-label {
+                    position: absolute;
+                    top: 56px; left: 12px;
+                    background: rgba(192,66,159,0.9);
+                    color: #fff; font-size: 10px; font-weight: 700;
+                    padding: 3px 10px; border-radius: 20px;
+                    font-family: Lato,sans-serif;
+                    z-index: 25;
+                    opacity: 0;
+                    transition: opacity 300ms;
+                    pointer-events: none;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+                .surf-active-label.visible { opacity: 1; }
+            </style>
+
+            <div class="surf-playground">
+
+                <!-- Simulated Product Viewport -->
+                <div class="surf-viewport" id="surfViewport">
+
+                    <!-- Active label -->
+                    <div class="surf-active-label" id="surfLabel"></div>
+
+                    <!-- Sidebar nav strip -->
+                    <div class="surf-vp-nav">
+                        <!-- Search -->
+                        <div class="surf-vp-nav-item">
+                            <svg viewBox="0 0 20 20"><circle cx="9" cy="9" r="5.5"/><line x1="13" y1="13" x2="17" y2="17"/></svg>
+                        </div>
+                        <!-- Home (active) -->
+                        <div class="surf-vp-nav-item surf-vp-nav-item--active">
+                            <svg viewBox="0 0 20 20"><path d="M3 10l7-7 7 7"/><path d="M5 9v7a1 1 0 001 1h3v-4h2v4h3a1 1 0 001-1V9"/></svg>
+                        </div>
+                        <!-- Calendar -->
+                        <div class="surf-vp-nav-item">
+                            <svg viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="13" rx="1.5"/><line x1="3" y1="8" x2="17" y2="8"/><line x1="7" y1="2" x2="7" y2="5"/><line x1="13" y1="2" x2="13" y2="5"/></svg>
+                        </div>
+                        <!-- Guests -->
+                        <div class="surf-vp-nav-item">
+                            <svg viewBox="0 0 20 20"><circle cx="10" cy="7" r="3.5"/><path d="M3.5 17.5c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"/></svg>
+                        </div>
+                        <div class="surf-vp-nav-sep"></div>
+                        <!-- Marketing -->
+                        <div class="surf-vp-nav-item">
+                            <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="3"/><circle cx="10" cy="10" r="6.5"/><line x1="10" y1="3.5" x2="10" y2="1.5"/><line x1="10" y1="18.5" x2="10" y2="16.5"/><line x1="3.5" y1="10" x2="1.5" y2="10"/><line x1="18.5" y1="10" x2="16.5" y2="10"/></svg>
+                        </div>
+                        <!-- Loyalty/tag -->
+                        <div class="surf-vp-nav-item">
+                            <svg viewBox="0 0 20 20"><path d="M3 3h6l8 8-6 6-8-8V3z"/><circle cx="7" cy="7" r="1.5" fill="rgba(255,255,255,0.55)" stroke="none"/></svg>
+                        </div>
+                        <!-- Reports -->
+                        <div class="surf-vp-nav-item">
+                            <svg viewBox="0 0 20 20"><rect x="3" y="10" width="3" height="7" rx="0.5"/><rect x="8.5" y="6" width="3" height="11" rx="0.5"/><rect x="14" y="3" width="3" height="14" rx="0.5"/></svg>
+                        </div>
+                        <div class="surf-vp-nav-sep"></div>
+                        <!-- Grid/apps -->
+                        <div class="surf-vp-nav-item">
+                            <svg viewBox="0 0 20 20"><rect x="3" y="3" width="5.5" height="5.5" rx="1"/><rect x="11.5" y="3" width="5.5" height="5.5" rx="1"/><rect x="3" y="11.5" width="5.5" height="5.5" rx="1"/><rect x="11.5" y="11.5" width="5.5" height="5.5" rx="1"/></svg>
+                        </div>
+                        <!-- Clipboard -->
+                        <div class="surf-vp-nav-item">
+                            <svg viewBox="0 0 20 20"><rect x="4" y="3" width="12" height="15" rx="1.5"/><line x1="7" y1="8" x2="13" y2="8"/><line x1="7" y1="11" x2="13" y2="11"/><line x1="7" y1="14" x2="10" y2="14"/></svg>
+                        </div>
+                        <!-- Settings -->
+                        <div class="surf-vp-nav-item">
+                            <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="2.5"/><path d="M10 1.5l1.2 2.3a6.5 6.5 0 012 1.2L15.5 4l1 1.7-2 1.5a6.5 6.5 0 01.5 2.3H17v2h-2a6.5 6.5 0 01-.5 2.3l2 1.5-1 1.7-2.3-1a6.5 6.5 0 01-2 1.2L10 18.5l-1.2-2.3a6.5 6.5 0 01-2-1.2L4.5 16l-1-1.7 2-1.5A6.5 6.5 0 015 10.5H3v-2h2a6.5 6.5 0 01.5-2.3l-2-1.5 1-1.7 2.3 1a6.5 6.5 0 012-1.2L10 1.5z"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Main area (topbar + body) -->
+                    <div class="surf-vp-main">
+
+                    <!-- Topbar -->
+                    <div class="surf-vp-topbar">
+                        <span class="surf-vp-topbar__logo">Rosewood</span>
+                        <span class="surf-vp-topbar__loc">Sample Salon &ndash; Example City</span>
+                        <div class="surf-vp-topbar__spacer"></div>
+                        <div class="surf-vp-topbar__dot"></div>
+                        <div class="surf-vp-topbar__dot"></div>
+                        <div class="surf-vp-topbar__glow" id="vpGlowHead">
+                            <img class="glow-breath-sm" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIyLjYyOTkgNS4yNTNDMjMuMzYzIDUuMzA2MzMgMjQuMTg5NCA1LjgxMyAyNC44NTU5IDYuNjc5NjZDMjUuOTg4OSA4LjEzMyAyNi44NTUzIDguODM5NjYgMjguMDE0OSA5LjAyNjMzQzI4LjU0OCA5LjEzMyAyOS4xODc4IDkuMDc5NjYgMjkuNjY3NyA4Ljc5OTY2QzMwLjIwMDkgOC41MDYzMyAzMC41MDc0IDguMDUzIDMwLjYyNzQgNy41NDYzM0MzMC43NjA3IDYuODY2MzMgMzAuNTg3NCA1Ljc5OTY2IDI5LjU3NDQgNS4zNDYzM0MyOC42MTQ3IDQuOTMzIDI4LjA2ODIgNS42OTMgMjguMDY4MiA1LjY5M0MyOC4wNjgyIDUuNjkzIDI4Ljc3NDYgNS41MDYzMyAyOS4yMDEyIDUuOTQ2MzNDMjkuNDE0NCA2LjE3MyAyOS41MDc3IDYuNDY2MzMgMjkuNDQxMSA2Ljc4NjMzQzI5LjM2MTEgNy4xODYzMyAyOC45NzQ2IDcuNDc5NjYgMjguNDgxNCA3LjM5OTY2QzI3Ljc3NSA3LjI5MyAyNy40NTUxIDYuNzMzIDI2LjkzNTIgNS44OTNDMjYuNDk1NCA1LjIyNjMzIDI1Ljc2MjMgMy44NTMgMjQuNjU2IDIuNzU5NjZDMjMuNDQzIDEuNTk5NjYgMjAuMjMwNyAwLjUxOTY2MiAxOC4yMzEzIDIuMjEzQzE2LjU5MTkgMy41NzMgMTYuMzUxOSA1LjM4NjMzIDE2LjMxMiA1Ljc4NjMzSDE2LjI3MkMxMC45NjcgNC44MjYzMyA1Ljc5NTMzIDcuODc5NjYgMy45ODI1OCAxMi43NDYzQzIuMTAzMTggMTIuNzQ2MyAxLjYxIDEzLjcwNjMgMS4zOTY3NCAxNC44OTNDMS4xODM0NyAxNi4wNTMgMS40NTAwNSAxNy4xMDYzIDMuMDc2MiAxNy43NTk3QzMuMjA5NDkgMjAuNTMzIDQuMDg5MjEgMjMuMTMzIDUuNjc1MzcgMjUuMjM5N0M1Ljk4MTk0IDI1LjYxMyA2LjgzNSAyNi41MzMgNi44MzUgMjcuMDEzTDYuMDM1MjUgMjkuOTU5N0M2LjAzNTI1IDMwLjQyNjMgNi40NzUxMSAzMC43NTk3IDYuOTE0OTcgMzAuNjM5N0wxMS43NTM0IDI5LjQzOTdDMTIuMjMzMyAyOS4zMTk3IDEyLjYxOTggMjkuMzMzIDEzLjExMyAyOS40MTNMMTUuMjMyMyAyOS43NzNDMjAuODgzOCAzMC43OTk3IDI1Ljk2MjIgMjcuMTE5NyAyNy44NDE2IDIyLjM3M0MyOS42Njc3IDIyLjMzMyAzMC4yMTQyIDIxLjM4NjMgMzAuNDQwOCAyMC4xOTk3QzMwLjY1NCAxOS4wMjYzIDMwLjQ4MDggMTcuOTQ2MyAyOC43NzQ2IDE3LjI3OTdDMjguODQxMyAxMi42MTMgMjUuODI4OSA4LjM3MyAyMS4zNjM3IDYuODI2MzNDMjEuMTUwNCA2LjI3OTY2IDIxLjMyMzcgNS44OTMgMjEuNTM3IDUuNjUzQzIxLjgwMzUgNS4zNDYzMyAyMi4yMTY3IDUuMjEzIDIyLjYyOTkgNS4yMzk2NlY1LjI1M1pNMjIuMzkgMTQuMzQ2M0wyMy4wMjk4IDE0LjUxOTdDMjMuODk2MiAxNC43ODYzIDI0LjUwOTMgMTUuNDc5NyAyNC41NDkzIDE2LjI5M0MyNC41ODkzIDE3LjU3MyAyNC4xODk0IDIwLjA1MyAyMy43MzYzIDIxLjM5OTdMMjMuNDgzIDIyLjAyNjNDMjMuMTg5OCAyMi43ODYzIDIyLjM3NjcgMjMuMjY2MyAyMS40MzAzIDIzLjE3M0wyMC44MTcyIDIzLjExOTdDMTcuMDE4NCAyMi43OTk3IDEzLjIzMjkgMjIuMTMzIDkuNTU0MTMgMjEuMDY2M0w4Ljc5NDM3IDIwLjg1M0M3LjkxNDY1IDIwLjU4NjMgNy4zMDE1MSAxOS44Mzk3IDcuMjg4MTggMTkuMDUzVjE4LjM3M0M3LjQ2MTQ2IDE2LjU0NjMgNy41NjgwOSAxNS4zMzMgOC4yODc4NiAxMy4yOTNDOC41OTQ0MyAxMi41NzMgOS40MzQxNiAxMi4xMTk3IDEwLjMyNzIgMTIuMTg2M0wxMS4xNTM2IDEyLjI2NjNDMTEuNTkzNSAxMi4yOTMgMTIuMDQ2NyAxMi4zNDYzIDEyLjQ4NjUgMTIuMzczQzEyLjk1MyAxMi40MjYzIDEzLjMyNjMgMTIuNzU5NyAxMy40MTk2IDEzLjIxM0wxMy40NzI5IDEzLjM0NjNDMTMuNjE5NSAxMy45NDYzIDE0LjA5OTMgMTQuNDEzIDE0LjcxMjUgMTQuNTMzTDE3Ljg3MTUgMTUuMTU5N0MxOC40ODQ2IDE1LjI1MyAxOS4xMjQ0IDE0Ljk5OTcgMTkuNDcxIDE0LjQ5M0wxOS41OTA5IDE0LjMzM0MxOS44NDQyIDEzLjk1OTcgMjAuMzI0IDEzLjc4NjMgMjAuNzc3MiAxMy44OTNDMjEuMzEwNCAxNC4wMzk3IDIxLjg1NjkgMTQuMTg2MyAyMi4zOSAxNC4zMzNWMTQuMzQ2M1oiIGZpbGw9IiNDMDQyOUYiLz4KPHBhdGggZD0iTTE4LjIxOCAxOC4xOTk3QzE4LjAxODEgMTkuMjkzIDE4LjczNzkgMjAuMzMzIDE5LjgzMDggMjAuNTMzQzIwLjkzNzEgMjAuNzMzIDIxLjk2MzUgMjAuMDEzIDIyLjE3NjggMTguOTE5N0MyMi4zNzY3IDE3LjgyNjMgMjEuNjU2OSAxNi43ODYzIDIwLjU2MzkgMTYuNTg2M0MxOS40NzEgMTYuMzg2MyAxOC40MzEzIDE3LjEwNjMgMTguMjE4IDE4LjE5OTdaIiBmaWxsPSIjQzA0MjlGIi8+CjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiNDMDQyOUYiLz4KPC9zdmc+Cg==" width="32" height="32" alt="Glow">
+                        </div>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="surf-vp-body">
+
+                        <!-- Main content -->
+                        <div class="surf-vp-content">
+
+                            <!-- Stat row -->
+                            <div class="surf-vp-stat-row">
+                                <div class="surf-vp-stat">
+                                    <div class="surf-vp-stat__val">$100.0K</div>
+                                    <div class="surf-vp-stat__lbl">Monthly Revenue</div>
+                                    <div class="surf-vp-stat__delta">↑ 14% vs last month</div>
+                                </div>
+                                <div class="surf-vp-stat">
+                                    <div class="surf-vp-stat__val">1,000</div>
+                                    <div class="surf-vp-stat__lbl">Appointments</div>
+                                    <div class="surf-vp-stat__delta">↑ 8%</div>
+                                </div>
+                                <div class="surf-vp-stat" style="position:relative;">
+                                    <div style="display:flex; align-items:flex-start; justify-content:space-between;">
+                                        <div class="surf-vp-stat__val">75%</div>
+                                        <button class="surf-inline-sparkle-icon" id="inlineSparkleBtn">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="currentColor"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="currentColor"/></svg>
+                                        </button>
+                                        <!-- Inline popover -->
+                                        <div class="surf-inline-popover" id="inlinePopover" style="top:30px; right:0;">
+                                            <div class="surf-inline-popover__head">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="#5A2B7A"/></svg>
+                                                Schedule Suggestions
+                                            </div>
+                                            <div class="surf-inline-popover__body">
+                                                <button class="surf-inline-suggestion"><div class="surf-inline-suggestion__dot"></div>Move 2 gaps on Thu to boost to 81%</button>
+                                                <button class="surf-inline-suggestion"><div class="surf-inline-suggestion__dot"></div>Add express services to Tue 2-4pm</button>
+                                                <button class="surf-inline-suggestion"><div class="surf-inline-suggestion__dot"></div>Reassign Lisa's Wed block to Sara</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="surf-vp-stat__lbl">Staff Utilization</div>
+                                    <div class="surf-vp-stat__delta" style="color:#8E4019;">↓ 3%</div>
+                                </div>
+                                <div class="surf-vp-stat">
+                                    <div class="surf-vp-stat__val">5.0★</div>
+                                    <div class="surf-vp-stat__lbl">Guest Rating</div>
+                                    <div class="surf-vp-stat__delta">↑ 0.2</div>
+                                </div>
+                            </div>
+
+                            <!-- Table + form row -->
+                            <div style="display:flex; gap:14px; flex:1; overflow:hidden;">
+
+                                <!-- Services table -->
+                                <div class="surf-vp-table" style="flex:1;">
+                                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                                        <div class="surf-vp-table__title" style="margin-bottom:0;">Top Services</div>
+                                        <button class="surf-ai-action-btn" id="btnInsights" title="AI Insights">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="currentColor"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="currentColor"/></svg>
+                                            Insights
+                                        </button>
+                                    </div>
+                                    <div class="surf-vp-table-row">
+                                        <span class="surf-vp-table-row__name">Facials</span>
+                                        <div style="flex:1;"><div class="surf-vp-table-row__bar" style="width:85%;"></div></div>
+                                        <span class="surf-vp-table-row__val">$40K</span>
+                                    </div>
+                                    <div class="surf-vp-table-row">
+                                        <span class="surf-vp-table-row__name">Massage</span>
+                                        <div style="flex:1;"><div class="surf-vp-table-row__bar" style="width:58%;"></div></div>
+                                        <span class="surf-vp-table-row__val">$20K</span>
+                                    </div>
+                                    <div class="surf-vp-table-row">
+                                        <span class="surf-vp-table-row__name">Waxing</span>
+                                        <div style="flex:1;"><div class="surf-vp-table-row__bar" style="width:31%;"></div></div>
+                                        <span class="surf-vp-table-row__val">$10K</span>
+                                    </div>
+                                </div>
+
+                                <!-- Form with inline sparkle -->
+                                <div class="surf-vp-form" style="width:220px;flex-shrink:0;position:relative;">
+                                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                                        <div class="surf-vp-form__title" style="margin-bottom:0;">Campaign</div>
+                                        <button class="surf-ai-action-btn" id="btnDraft" title="AI Draft">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="currentColor"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="currentColor"/></svg>
+                                            Draft
+                                        </button>
+                                    </div>
+                                    <div class="surf-vp-form__row">
+                                        <span class="surf-vp-form__label">Subject line</span>
+                                        <input class="surf-vp-form__input" value="Summer Glow" readonly>
+                                    </div>
+                                    <div class="surf-vp-form__row">
+                                        <span class="surf-vp-form__label">Audience</span>
+                                        <input class="surf-vp-form__input" value="Cart abandoners" readonly>
+                                    </div>
+                                    <div class="surf-vp-form__row">
+                                        <span class="surf-vp-form__label">Send time</span>
+                                        <input class="surf-vp-form__input" value="Tue 10:00 AM" readonly>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div><!-- end surf-vp-content -->
+
+                        <!-- ===== Surface 2: Sidebar ===== -->
+                        <div class="surf-sidebar-panel" id="surfSidebar">
+                        <div class="surf-sidebar__head">
+                        <div id="sidebarGlowHead" class="glow-head-trigger" style="width:28px;height:28px;--glow-mask: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjIuNjI5OSA1LjI1M0MyMy4zNjMgNS4zMDYzMyAyNC4xODk0IDUuODEzIDI0Ljg1NTkgNi42Nzk2NkMyNS45ODg5IDguMTMzIDI2Ljg1NTMgOC44Mzk2NiAyOC4wMTQ5IDkuMDI2MzNDMjguNTQ4IDkuMTMzIDI5LjE4NzggOS4wNzk2NiAyOS42Njc3IDguNzk5NjZDMzAuMjAwOSA4LjUwNjMzIDMwLjUwNzQgOC4wNTMgMzAuNjI3NCA3LjU0NjMzQzMwLjc2MDcgNi44NjYzMyAzMC41ODc0IDUuNzk5NjYgMjkuNTc0NCA1LjM0NjMzQzI4LjYxNDcgNC45MzMgMjguMDY4MiA1LjY5MyAyOC4wNjgyIDUuNjkzQzI4LjA2ODIgNS42OTMgMjguNzc0NiA1LjUwNjMzIDI5LjIwMTIgNS45NDYzM0MyOS40MTQ0IDYuMTczIDI5LjUwNzcgNi40NjYzMyAyOS40NDExIDYuNzg2MzNDMjkuMzYxMSA3LjE4NjMzIDI4Ljk3NDYgNy40Nzk2NiAyOC40ODE0IDcuMzk5NjZDMjcuNzc1IDcuMjkzIDI3LjQ1NTEgNi43MzMgMjYuOTM1MiA1Ljg5M0MyNi40OTU0IDUuMjI2MzMgMjUuNzYyMyAzLjg1MyAyNC42NTYgMi43NTk2NkMyMy40NDMgMS41OTk2NiAyMC4yMzA3IDAuNTE5NjYyIDE4LjIzMTMgMi4yMTNDMTYuNTkxOSAzLjU3MyAxNi4zNTE5IDUuMzg2MzMgMTYuMzEyIDUuNzg2MzNIMTYuMjcyQzEwLjk2NyA0LjgyNjMzIDUuNzk1MzMgNy44Nzk2NiAzLjk4MjU4IDEyLjc0NjNDMi4xMDMxOCAxMi43NDYzIDEuNjEgMTMuNzA2MyAxLjM5Njc0IDE0Ljg5M0MxLjE4MzQ3IDE2LjA1MyAxLjQ1MDA1IDE3LjEwNjMgMy4wNzYyIDE3Ljc1OTdDMy4yMDk0OSAyMC41MzMgNC4wODkyMSAyMy4xMzMgNS42NzUzNyAyNS4yMzk3QzUuOTgxOTQgMjUuNjEzIDYuODM1IDI2LjUzMyA2LjgzNSAyNy4wMTNMNi4wMzUyNSAyOS45NTk3QzYuMDM1MjUgMzAuNDI2MyA2LjQ3NTExIDMwLjc1OTcgNi45MTQ5NyAzMC42Mzk3TDExLjc1MzQgMjkuNDM5N0MxMi4yMzMzIDI5LjMxOTcgMTIuNjE5OCAyOS4zMzMgMTMuMTEzIDI5LjQxM0wxNS4yMzIzIDI5Ljc3M0MyMC44ODM4IDMwLjc5OTcgMjUuOTYyMiAyNy4xMTk3IDI3Ljg0MTYgMjIuMzczQzI5LjY2NzcgMjIuMzMzIDMwLjIxNDIgMjEuMzg2MyAzMC40NDA4IDIwLjE5OTdDMzAuNjU0IDE5LjAyNjMgMzAuNDgwOCAxNy45NDYzIDI4Ljc3NDYgMTcuMjc5N0MyOC44NDEzIDEyLjYxMyAyNS44Mjg5IDguMzczIDIxLjM2MzcgNi44MjYzM0MyMS4xNTA0IDYuMjc5NjYgMjEuMzIzNyA1Ljg5MyAyMS41MzcgNS42NTNDMjEuODAzNSA1LjM0NjMzIDIyLjIxNjcgNS4yMTMgMjIuNjI5OSA1LjIzOTY2VjUuMjUzWk0yMi4zOSAxNC4zNDYzTDIzLjAyOTggMTQuNTE5N0MyMy44OTYyIDE0Ljc4NjMgMjQuNTA5MyAxNS40Nzk3IDI0LjU0OTMgMTYuMjkzQzI0LjU4OTMgMTcuNTczIDI0LjE4OTQgMjAuMDUzIDIzLjczNjMgMjEuMzk5N0wyMy40ODMgMjIuMDI2M0MyMy4xODk4IDIyLjc4NjMgMjIuMzc2NyAyMy4yNjYzIDIxLjQzMDMgMjMuMTczTDIwLjgxNzIgMjMuMTE5N0MxNy4wMTg0IDIyLjc5OTcgMTMuMjMyOSAyMi4xMzMgOS41NTQxMyAyMS4wNjYzTDguNzk0MzcgMjAuODUzQzcuOTE0NjUgMjAuNTg2MyA3LjMwMTUxIDE5LjgzOTcgNy4yODgxOCAxOS4wNTNWMTguMzczQzcuNDYxNDYgMTYuNTQ2MyA3LjU2ODA5IDE1LjMzMyA4LjI4Nzg2IDEzLjI5M0M4LjU5NDQzIDEyLjU3MyA5LjQzNDE2IDEyLjExOTcgMTAuMzI3MiAxMi4xODYzTDExLjE1MzYgMTIuMjY2M0MxMS41OTM1IDEyLjI5MyAxMi4wNDY3IDEyLjM0NjMgMTIuNDg2NSAxMi4zNzNDMTIuOTUzIDEyLjQyNjMgMTMuMzI2MyAxMi43NTk3IDEzLjQxOTYgMTMuMjEzTDEzLjQ3MjkgMTMuMzQ2M0MxMy42MTk1IDEzLjk0NjMgMTQuMDk5MyAxNC40MTMgMTQuNzEyNSAxNC41MzNMMTcuODcxNSAxNS4xNTk3QzE4LjQ4NDYgMTUuMjUzIDE5LjEyNDQgMTQuOTk5NyAxOS40NzEgMTQuNDkzTDE5LjU5MDkgMTQuMzMzQzE5Ljg0NDIgMTMuOTU5NyAyMC4zMjQgMTMuNzg2MyAyMC43NzcyIDEzLjg5M0MyMS4zMTA0IDE0LjAzOTcgMjEuODU2OSAxNC4xODYzIDIyLjM5IDE0LjMzM1YxNC4zNDYzWiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xOC4yMTggMTguMTk5N0MxOC4wMTgxIDE5LjI5MyAxOC43Mzc5IDIwLjMzMyAxOS44MzA4IDIwLjUzM0MyMC45MzcxIDIwLjczMyAyMS45NjM1IDIwLjAxMyAyMi4xNzY4IDE4LjkxOTdDMjIuMzc2NyAxNy44MjYzIDIxLjY1NjkgMTYuNzg2MyAyMC41NjM5IDE2LjU4NjNDMTkuNDcxIDE2LjM4NjMgMTguNDMxMyAxNy4xMDYzIDE4LjIxOCAxOC4xOTk3WiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiM1QTJCN0EiLz48L3N2Zz4=')">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjIuNjI5OSA1LjI1M0MyMy4zNjMgNS4zMDYzMyAyNC4xODk0IDUuODEzIDI0Ljg1NTkgNi42Nzk2NkMyNS45ODg5IDguMTMzIDI2Ljg1NTMgOC44Mzk2NiAyOC4wMTQ5IDkuMDI2MzNDMjguNTQ4IDkuMTMzIDI5LjE4NzggOS4wNzk2NiAyOS42Njc3IDguNzk5NjZDMzAuMjAwOSA4LjUwNjMzIDMwLjUwNzQgOC4wNTMgMzAuNjI3NCA3LjU0NjMzQzMwLjc2MDcgNi44NjYzMyAzMC41ODc0IDUuNzk5NjYgMjkuNTc0NCA1LjM0NjMzQzI4LjYxNDcgNC45MzMgMjguMDY4MiA1LjY5MyAyOC4wNjgyIDUuNjkzQzI4LjA2ODIgNS42OTMgMjguNzc0NiA1LjUwNjMzIDI5LjIwMTIgNS45NDYzM0MyOS40MTQ0IDYuMTczIDI5LjUwNzcgNi40NjYzMyAyOS40NDExIDYuNzg2MzNDMjkuMzYxMSA3LjE4NjMzIDI4Ljk3NDYgNy40Nzk2NiAyOC40ODE0IDcuMzk5NjZDMjcuNzc1IDcuMjkzIDI3LjQ1NTEgNi43MzMgMjYuOTM1MiA1Ljg5M0MyNi40OTU0IDUuMjI2MzMgMjUuNzYyMyAzLjg1MyAyNC42NTYgMi43NTk2NkMyMy40NDMgMS41OTk2NiAyMC4yMzA3IDAuNTE5NjYyIDE4LjIzMTMgMi4yMTNDMTYuNTkxOSAzLjU3MyAxNi4zNTE5IDUuMzg2MzMgMTYuMzEyIDUuNzg2MzNIMTYuMjcyQzEwLjk2NyA0LjgyNjMzIDUuNzk1MzMgNy44Nzk2NiAzLjk4MjU4IDEyLjc0NjNDMi4xMDMxOCAxMi43NDYzIDEuNjEgMTMuNzA2MyAxLjM5Njc0IDE0Ljg5M0MxLjE4MzQ3IDE2LjA1MyAxLjQ1MDA1IDE3LjEwNjMgMy4wNzYyIDE3Ljc1OTdDMy4yMDk0OSAyMC41MzMgNC4wODkyMSAyMy4xMzMgNS42NzUzNyAyNS4yMzk3QzUuOTgxOTQgMjUuNjEzIDYuODM1IDI2LjUzMyA2LjgzNSAyNy4wMTNMNi4wMzUyNSAyOS45NTk3QzYuMDM1MjUgMzAuNDI2MyA2LjQ3NTExIDMwLjc1OTcgNi45MTQ5NyAzMC42Mzk3TDExLjc1MzQgMjkuNDM5N0MxMi4yMzMzIDI5LjMxOTcgMTIuNjE5OCAyOS4zMzMgMTMuMTEzIDI5LjQxM0wxNS4yMzIzIDI5Ljc3M0MyMC44ODM4IDMwLjc5OTcgMjUuOTYyMiAyNy4xMTk3IDI3Ljg0MTYgMjIuMzczQzI5LjY2NzcgMjIuMzMzIDMwLjIxNDIgMjEuMzg2MyAzMC40NDA4IDIwLjE5OTdDMzAuNjU0IDE5LjAyNjMgMzAuNDgwOCAxNy45NDYzIDI4Ljc3NDYgMTcuMjc5N0MyOC44NDEzIDEyLjYxMyAyNS44Mjg5IDguMzczIDIxLjM2MzcgNi44MjYzM0MyMS4xNTA0IDYuMjc5NjYgMjEuMzIzNyA1Ljg5MyAyMS41MzcgNS42NTNDMjEuODAzNSA1LjM0NjMzIDIyLjIxNjcgNS4yMTMgMjIuNjI5OSA1LjIzOTY2VjUuMjUzWk0yMi4zOSAxNC4zNDYzTDIzLjAyOTggMTQuNTE5N0MyMy44OTYyIDE0Ljc4NjMgMjQuNTA5MyAxNS40Nzk3IDI0LjU0OTMgMTYuMjkzQzI0LjU4OTMgMTcuNTczIDI0LjE4OTQgMjAuMDUzIDIzLjczNjMgMjEuMzk5N0wyMy40ODMgMjIuMDI2M0MyMy4xODk4IDIyLjc4NjMgMjIuMzc2NyAyMy4yNjYzIDIxLjQzMDMgMjMuMTczTDIwLjgxNzIgMjMuMTE5N0MxNy4wMTg0IDIyLjc5OTcgMTMuMjMyOSAyMi4xMzMgOS41NTQxMyAyMS4wNjYzTDguNzk0MzcgMjAuODUzQzcuOTE0NjUgMjAuNTg2MyA3LjMwMTUxIDE5LjgzOTcgNy4yODgxOCAxOS4wNTNWMTguMzczQzcuNDYxNDYgMTYuNTQ2MyA3LjU2ODA5IDE1LjMzMyA4LjI4Nzg2IDEzLjI5M0M4LjU5NDQzIDEyLjU3MyA5LjQzNDE2IDEyLjExOTcgMTAuMzI3MiAxMi4xODYzTDExLjE1MzYgMTIuMjY2M0MxMS41OTM1IDEyLjI5MyAxMi4wNDY3IDEyLjM0NjMgMTIuNDg2NSAxMi4zNzNDMTIuOTUzIDEyLjQyNjMgMTMuMzI2MyAxMi43NTk3IDEzLjQxOTYgMTMuMjEzTDEzLjQ3MjkgMTMuMzQ2M0MxMy42MTk1IDEzLjk0NjMgMTQuMDk5MyAxNC40MTMgMTQuNzEyNSAxNC41MzNMMTcuODcxNSAxNS4xNTk3QzE4LjQ4NDYgMTUuMjUzIDE5LjEyNDQgMTQuOTk5NyAxOS40NzEgMTQuNDkzTDE5LjU5MDkgMTQuMzMzQzE5Ljg0NDIgMTMuOTU5NyAyMC4zMjQgMTMuNzg2MyAyMC43NzcyIDEzLjg5M0MyMS4zMTA0IDE0LjAzOTcgMjEuODU2OSAxNC4xODYzIDIyLjM5IDE0LjMzM1YxNC4zNDYzWiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xOC4yMTggMTguMTk5N0MxOC4wMTgxIDE5LjI5MyAxOC43Mzc5IDIwLjMzMyAxOS44MzA4IDIwLjUzM0MyMC45MzcxIDIwLjczMyAyMS45NjM1IDIwLjAxMyAyMi4xNzY4IDE4LjkxOTdDMjIuMzc2NyAxNy44MjYzIDIxLjY1NjkgMTYuNzg2MyAyMC41NjM5IDE2LjU4NjNDMTkuNDcxIDE2LjM4NjMgMTguNDMxMyAxNy4xMDYzIDE4LjIxOCAxOC4xOTk3WiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiM1QTJCN0EiLz48L3N2Zz4=" width="28" height="28" alt="Glow">
+                            </div>
+                            <button class="surf-assistant-panel__close" id="sidebarClose">
+                                <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            </button>
+                        </div>
+                        <div class="surf-assistant-panel__greeting">
+                            <div class="surf-assistant-panel__hi">Hi Alex,</div>
+                            <div class="surf-assistant-panel__question">how can I help?</div>
+                        </div>
+                        <div class="surf-assistant-panel__chips">
+                            <button class="surf-assistant-panel__chip">Create an employee</button>
+                            <button class="surf-assistant-panel__chip">Raise a purchase order</button>
+                            <button class="surf-assistant-panel__chip">Create a target segment</button>
+                        </div>
+                        <div class="surf-prompt-box">
+                            <div class="surf-prompt-box__border-ring">
+                                <div class="surf-prompt-box__input-row">
+                                    <span class="surf-prompt-box__sparkle"><svg class="glow-sparkle-svg" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#surf-sparkle-grad)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#surf-sparkle-grad2)"/><defs><linearGradient id="surf-sparkle-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#C0429F"/><stop offset="1" stop-color="#5A2B7A"/></linearGradient><linearGradient id="surf-sparkle-grad2" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#C0429F"/><stop offset="1" stop-color="#5A2B7A"/></linearGradient></defs></svg></span>
+                                    <input class="surf-prompt-box__input" type="text" placeholder="Ask Glow anything…">
+                                </div>
+                                <div class="surf-prompt-box__toolbar">
+                                    <button class="surf-prompt-box__plus-btn" aria-label="Add context">
+                                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                                    </button>
+                                    <button class="surf-prompt-box__action-btn" aria-label="Send">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="surf-prompt-box__disclaimer">Glow can make mistakes. Verify important information.</div>
+                        </div>
+                    
+                        <div class="glow-head-menu-backdrop" id="menuBackdropSidebar"></div>
+                        <div class="glow-head-menu" id="menuSidebar">
+                            <div class="glow-head-menu__avatar">
+                                <div class="glow-head-trigger" style="width:32px;height:32px;--glow-mask: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjIuNjI5OSA1LjI1M0MyMy4zNjMgNS4zMDYzMyAyNC4xODk0IDUuODEzIDI0Ljg1NTkgNi42Nzk2NkMyNS45ODg5IDguMTMzIDI2Ljg1NTMgOC44Mzk2NiAyOC4wMTQ5IDkuMDI2MzNDMjguNTQ4IDkuMTMzIDI5LjE4NzggOS4wNzk2NiAyOS42Njc3IDguNzk5NjZDMzAuMjAwOSA4LjUwNjMzIDMwLjUwNzQgOC4wNTMgMzAuNjI3NCA3LjU0NjMzQzMwLjc2MDcgNi44NjYzMyAzMC41ODc0IDUuNzk5NjYgMjkuNTc0NCA1LjM0NjMzQzI4LjYxNDcgNC45MzMgMjguMDY4MiA1LjY5MyAyOC4wNjgyIDUuNjkzQzI4LjA2ODIgNS42OTMgMjguNzc0NiA1LjUwNjMzIDI5LjIwMTIgNS45NDYzM0MyOS40MTQ0IDYuMTczIDI5LjUwNzcgNi40NjYzMyAyOS40NDExIDYuNzg2MzNDMjkuMzYxMSA3LjE4NjMzIDI4Ljk3NDYgNy40Nzk2NiAyOC40ODE0IDcuMzk5NjZDMjcuNzc1IDcuMjkzIDI3LjQ1NTEgNi43MzMgMjYuOTM1MiA1Ljg5M0MyNi40OTU0IDUuMjI2MzMgMjUuNzYyMyAzLjg1MyAyNC42NTYgMi43NTk2NkMyMy40NDMgMS41OTk2NiAyMC4yMzA3IDAuNTE5NjYyIDE4LjIzMTMgMi4yMTNDMTYuNTkxOSAzLjU3MyAxNi4zNTE5IDUuMzg2MzMgMTYuMzEyIDUuNzg2MzNIMTYuMjcyQzEwLjk2NyA0LjgyNjMzIDUuNzk1MzMgNy44Nzk2NiAzLjk4MjU4IDEyLjc0NjNDMi4xMDMxOCAxMi43NDYzIDEuNjEgMTMuNzA2MyAxLjM5Njc0IDE0Ljg5M0MxLjE4MzQ3IDE2LjA1MyAxLjQ1MDA1IDE3LjEwNjMgMy4wNzYyIDE3Ljc1OTdDMy4yMDk0OSAyMC41MzMgNC4wODkyMSAyMy4xMzMgNS42NzUzNyAyNS4yMzk3QzUuOTgxOTQgMjUuNjEzIDYuODM1IDI2LjUzMyA2LjgzNSAyNy4wMTNMNi4wMzUyNSAyOS45NTk3QzYuMDM1MjUgMzAuNDI2MyA2LjQ3NTExIDMwLjc1OTcgNi45MTQ5NyAzMC42Mzk3TDExLjc1MzQgMjkuNDM5N0MxMi4yMzMzIDI5LjMxOTcgMTIuNjE5OCAyOS4zMzMgMTMuMTEzIDI5LjQxM0wxNS4yMzIzIDI5Ljc3M0MyMC44ODM4IDMwLjc5OTcgMjUuOTYyMiAyNy4xMTk3IDI3Ljg0MTYgMjIuMzczQzI5LjY2NzcgMjIuMzMzIDMwLjIxNDIgMjEuMzg2MyAzMC40NDA4IDIwLjE5OTdDMzAuNjU0IDE5LjAyNjMgMzAuNDgwOCAxNy45NDYzIDI4Ljc3NDYgMTcuMjc5N0MyOC44NDEzIDEyLjYxMyAyNS44Mjg5IDguMzczIDIxLjM2MzcgNi44MjYzM0MyMS4xNTA0IDYuMjc5NjYgMjEuMzIzNyA1Ljg5MyAyMS41MzcgNS42NTNDMjEuODAzNSA1LjM0NjMzIDIyLjIxNjcgNS4yMTMgMjIuNjI5OSA1LjIzOTY2VjUuMjUzWk0yMi4zOSAxNC4zNDYzTDIzLjAyOTggMTQuNTE5N0MyMy44OTYyIDE0Ljc4NjMgMjQuNTA5MyAxNS40Nzk3IDI0LjU0OTMgMTYuMjkzQzI0LjU4OTMgMTcuNTczIDI0LjE4OTQgMjAuMDUzIDIzLjczNjMgMjEuMzk5N0wyMy40ODMgMjIuMDI2M0MyMy4xODk4IDIyLjc4NjMgMjIuMzc2NyAyMy4yNjYzIDIxLjQzMDMgMjMuMTczTDIwLjgxNzIgMjMuMTE5N0MxNy4wMTg0IDIyLjc5OTcgMTMuMjMyOSAyMi4xMzMgOS41NTQxMyAyMS4wNjYzTDguNzk0MzcgMjAuODUzQzcuOTE0NjUgMjAuNTg2MyA3LjMwMTUxIDE5LjgzOTcgNy4yODgxOCAxOS4wNTNWMTguMzczQzcuNDYxNDYgMTYuNTQ2MyA3LjU2ODA5IDE1LjMzMyA4LjI4Nzg2IDEzLjI5M0M4LjU5NDQzIDEyLjU3MyA5LjQzNDE2IDEyLjExOTcgMTAuMzI3MiAxMi4xODYzTDExLjE1MzYgMTIuMjY2M0MxMS41OTM1IDEyLjI5MyAxMi4wNDY3IDEyLjM0NjMgMTIuNDg2NSAxMi4zNzNDMTIuOTUzIDEyLjQyNjMgMTMuMzI2MyAxMi43NTk3IDEzLjQxOTYgMTMuMjEzTDEzLjQ3MjkgMTMuMzQ2M0MxMy42MTk1IDEzLjk0NjMgMTQuMDk5MyAxNC40MTMgMTQuNzEyNSAxNC41MzNMMTcuODcxNSAxNS4xNTk3QzE4LjQ4NDYgMTUuMjUzIDE5LjEyNDQgMTQuOTk5NyAxOS40NzEgMTQuNDkzTDE5LjU5MDkgMTQuMzMzQzE5Ljg0NDIgMTMuOTU5NyAyMC4zMjQgMTMuNzg2MyAyMC43NzcyIDEzLjg5M0MyMS4zMTA0IDE0LjAzOTcgMjEuODU2OSAxNC4xODYzIDIyLjM5IDE0LjMzM1YxNC4zNDYzWiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xOC4yMTggMTguMTk5N0MxOC4wMTgxIDE5LjI5MyAxOC43Mzc5IDIwLjMzMyAxOS44MzA4IDIwLjUzM0MyMC45MzcxIDIwLjczMyAyMS45NjM1IDIwLjAxMyAyMi4xNzY4IDE4LjkxOTdDMjIuMzc2NyAxNy44MjYzIDIxLjY1NjkgMTYuNzg2MyAyMC41NjM5IDE2LjU4NjNDMTkuNDcxIDE2LjM4NjMgMTguNDMxMyAxNy4xMDYzIDE4LjIxOCAxOC4xOTk3WiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiM1QTJCN0EiLz48L3N2Zz4=')">
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjIuNjI5OSA1LjI1M0MyMy4zNjMgNS4zMDYzMyAyNC4xODk0IDUuODEzIDI0Ljg1NTkgNi42Nzk2NkMyNS45ODg5IDguMTMzIDI2Ljg1NTMgOC44Mzk2NiAyOC4wMTQ5IDkuMDI2MzNDMjguNTQ4IDkuMTMzIDI5LjE4NzggOS4wNzk2NiAyOS42Njc3IDguNzk5NjZDMzAuMjAwOSA4LjUwNjMzIDMwLjUwNzQgOC4wNTMgMzAuNjI3NCA3LjU0NjMzQzMwLjc2MDcgNi44NjYzMyAzMC41ODc0IDUuNzk5NjYgMjkuNTc0NCA1LjM0NjMzQzI4LjYxNDcgNC45MzMgMjguMDY4MiA1LjY5MyAyOC4wNjgyIDUuNjkzQzI4LjA2ODIgNS42OTMgMjguNzc0NiA1LjUwNjMzIDI5LjIwMTIgNS45NDYzM0MyOS40MTQ0IDYuMTczIDI5LjUwNzcgNi40NjYzMyAyOS40NDExIDYuNzg2MzNDMjkuMzYxMSA3LjE4NjMzIDI4Ljk3NDYgNy40Nzk2NiAyOC40ODE0IDcuMzk5NjZDMjcuNzc1IDcuMjkzIDI3LjQ1NTEgNi43MzMgMjYuOTM1MiA1Ljg5M0MyNi40OTU0IDUuMjI2MzMgMjUuNzYyMyAzLjg1MyAyNC42NTYgMi43NTk2NkMyMy40NDMgMS41OTk2NiAyMC4yMzA3IDAuNTE5NjYyIDE4LjIzMTMgMi4yMTNDMTYuNTkxOSAzLjU3MyAxNi4zNTE5IDUuMzg2MzMgMTYuMzEyIDUuNzg2MzNIMTYuMjcyQzEwLjk2NyA0LjgyNjMzIDUuNzk1MzMgNy44Nzk2NiAzLjk4MjU4IDEyLjc0NjNDMi4xMDMxOCAxMi43NDYzIDEuNjEgMTMuNzA2MyAxLjM5Njc0IDE0Ljg5M0MxLjE4MzQ3IDE2LjA1MyAxLjQ1MDA1IDE3LjEwNjMgMy4wNzYyIDE3Ljc1OTdDMy4yMDk0OSAyMC41MzMgNC4wODkyMSAyMy4xMzMgNS42NzUzNyAyNS4yMzk3QzUuOTgxOTQgMjUuNjEzIDYuODM1IDI2LjUzMyA2LjgzNSAyNy4wMTNMNi4wMzUyNSAyOS45NTk3QzYuMDM1MjUgMzAuNDI2MyA2LjQ3NTExIDMwLjc1OTcgNi45MTQ5NyAzMC42Mzk3TDExLjc1MzQgMjkuNDM5N0MxMi4yMzMzIDI5LjMxOTcgMTIuNjE5OCAyOS4zMzMgMTMuMTEzIDI5LjQxM0wxNS4yMzIzIDI5Ljc3M0MyMC44ODM4IDMwLjc5OTcgMjUuOTYyMiAyNy4xMTk3IDI3Ljg0MTYgMjIuMzczQzI5LjY2NzcgMjIuMzMzIDMwLjIxNDIgMjEuMzg2MyAzMC40NDA4IDIwLjE5OTdDMzAuNjU0IDE5LjAyNjMgMzAuNDgwOCAxNy45NDYzIDI4Ljc3NDYgMTcuMjc5N0MyOC44NDEzIDEyLjYxMyAyNS44Mjg5IDguMzczIDIxLjM2MzcgNi44MjYzM0MyMS4xNTA0IDYuMjc5NjYgMjEuMzIzNyA1Ljg5MyAyMS41MzcgNS42NTNDMjEuODAzNSA1LjM0NjMzIDIyLjIxNjcgNS4yMTMgMjIuNjI5OSA1LjIzOTY2VjUuMjUzWk0yMi4zOSAxNC4zNDYzTDIzLjAyOTggMTQuNTE5N0MyMy44OTYyIDE0Ljc4NjMgMjQuNTA5MyAxNS40Nzk3IDI0LjU0OTMgMTYuMjkzQzI0LjU4OTMgMTcuNTczIDI0LjE4OTQgMjAuMDUzIDIzLjczNjMgMjEuMzk5N0wyMy40ODMgMjIuMDI2M0MyMy4xODk4IDIyLjc4NjMgMjIuMzc2NyAyMy4yNjYzIDIxLjQzMDMgMjMuMTczTDIwLjgxNzIgMjMuMTE5N0MxNy4wMTg0IDIyLjc5OTcgMTMuMjMyOSAyMi4xMzMgOS41NTQxMyAyMS4wNjYzTDguNzk0MzcgMjAuODUzQzcuOTE0NjUgMjAuNTg2MyA3LjMwMTUxIDE5LjgzOTcgNy4yODgxOCAxOS4wNTNWMTguMzczQzcuNDYxNDYgMTYuNTQ2MyA3LjU2ODA5IDE1LjMzMyA4LjI4Nzg2IDEzLjI5M0M4LjU5NDQzIDEyLjU3MyA5LjQzNDE2IDEyLjExOTcgMTAuMzI3MiAxMi4xODYzTDExLjE1MzYgMTIuMjY2M0MxMS41OTM1IDEyLjI5MyAxMi4wNDY3IDEyLjM0NjMgMTIuNDg2NSAxMi4zNzNDMTIuOTUzIDEyLjQyNjMgMTMuMzI2MyAxMi43NTk3IDEzLjQxOTYgMTMuMjEzTDEzLjQ3MjkgMTMuMzQ2M0MxMy42MTk1IDEzLjk0NjMgMTQuMDk5MyAxNC40MTMgMTQuNzEyNSAxNC41MzNMMTcuODcxNSAxNS4xNTk3QzE4LjQ4NDYgMTUuMjUzIDE5LjEyNDQgMTQuOTk5NyAxOS40NzEgMTQuNDkzTDE5LjU5MDkgMTQuMzMzQzE5Ljg0NDIgMTMuOTU5NyAyMC4zMjQgMTMuNzg2MyAyMC43NzcyIDEzLjg5M0MyMS4zMTA0IDE0LjAzOTcgMjEuODU2OSAxNC4xODYzIDIyLjM5IDE0LjMzM1YxNC4zNDYzWiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xOC4yMTggMTguMTk5N0MxOC4wMTgxIDE5LjI5MyAxOC43Mzc5IDIwLjMzMyAxOS44MzA4IDIwLjUzM0MyMC45MzcxIDIwLjczMyAyMS45NjM1IDIwLjAxMyAyMi4xNzY4IDE4LjkxOTdDMjIuMzc2NyAxNy44MjYzIDIxLjY1NjkgMTYuNzg2MyAyMC41NjM5IDE2LjU4NjNDMTkuNDcxIDE2LjM4NjMgMTguNDMxMyAxNy4xMDYzIDE4LjIxOCAxOC4xOTk3WiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiM1QTJCN0EiLz48L3N2Zz4=" width="32" height="32" alt="Glow">
+                                </div>
+                            </div>
+                            <div class="glow-head-menu__items">
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v2M10 15v2M3 10h2M15 10h2M5.05 5.05l1.41 1.41M13.54 13.54l1.41 1.41M5.05 14.95l1.41-1.41M13.54 6.46l1.41-1.41"/><circle cx="10" cy="10" r="3"/></svg>New chat</button>
+                                <button class="glow-head-menu__item glow-head-menu__item--active"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l2.5 2.5"/></svg>History</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 7h6M7 10h4"/></svg>Prompts</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4h4"/><path d="M4 17V5a2 2 0 012-2h6l4 4v10a2 2 0 01-2 2H6a2 2 0 01-2-2z"/></svg>Upload documents</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/><path d="M7 8h6M7 11h4"/></svg>Saved responses</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15l4-8 4 5 2-3 4 6"/><circle cx="14" cy="7" r="2"/></svg>Feedback</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Assistant Overlay Panel -->
+                    <div class="surf-assistant-panel" id="surfAssistantPanel">
+                        <div class="surf-assistant-panel__clip">
+                        <div class="surf-assistant-panel__header">
+                            <div id="assistantGlowHead" class="glow-head-trigger" style="width:28px;height:28px;--glow-mask: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjIuNjI5OSA1LjI1M0MyMy4zNjMgNS4zMDYzMyAyNC4xODk0IDUuODEzIDI0Ljg1NTkgNi42Nzk2NkMyNS45ODg5IDguMTMzIDI2Ljg1NTMgOC44Mzk2NiAyOC4wMTQ5IDkuMDI2MzNDMjguNTQ4IDkuMTMzIDI5LjE4NzggOS4wNzk2NiAyOS42Njc3IDguNzk5NjZDMzAuMjAwOSA4LjUwNjMzIDMwLjUwNzQgOC4wNTMgMzAuNjI3NCA3LjU0NjMzQzMwLjc2MDcgNi44NjYzMyAzMC41ODc0IDUuNzk5NjYgMjkuNTc0NCA1LjM0NjMzQzI4LjYxNDcgNC45MzMgMjguMDY4MiA1LjY5MyAyOC4wNjgyIDUuNjkzQzI4LjA2ODIgNS42OTMgMjguNzc0NiA1LjUwNjMzIDI5LjIwMTIgNS45NDYzM0MyOS40MTQ0IDYuMTczIDI5LjUwNzcgNi40NjYzMyAyOS40NDExIDYuNzg2MzNDMjkuMzYxMSA3LjE4NjMzIDI4Ljk3NDYgNy40Nzk2NiAyOC40ODE0IDcuMzk5NjZDMjcuNzc1IDcuMjkzIDI3LjQ1NTEgNi43MzMgMjYuOTM1MiA1Ljg5M0MyNi40OTU0IDUuMjI2MzMgMjUuNzYyMyAzLjg1MyAyNC42NTYgMi43NTk2NkMyMy40NDMgMS41OTk2NiAyMC4yMzA3IDAuNTE5NjYyIDE4LjIzMTMgMi4yMTNDMTYuNTkxOSAzLjU3MyAxNi4zNTE5IDUuMzg2MzMgMTYuMzEyIDUuNzg2MzNIMTYuMjcyQzEwLjk2NyA0LjgyNjMzIDUuNzk1MzMgNy44Nzk2NiAzLjk4MjU4IDEyLjc0NjNDMi4xMDMxOCAxMi43NDYzIDEuNjEgMTMuNzA2MyAxLjM5Njc0IDE0Ljg5M0MxLjE4MzQ3IDE2LjA1MyAxLjQ1MDA1IDE3LjEwNjMgMy4wNzYyIDE3Ljc1OTdDMy4yMDk0OSAyMC41MzMgNC4wODkyMSAyMy4xMzMgNS42NzUzNyAyNS4yMzk3QzUuOTgxOTQgMjUuNjEzIDYuODM1IDI2LjUzMyA2LjgzNSAyNy4wMTNMNi4wMzUyNSAyOS45NTk3QzYuMDM1MjUgMzAuNDI2MyA2LjQ3NTExIDMwLjc1OTcgNi45MTQ5NyAzMC42Mzk3TDExLjc1MzQgMjkuNDM5N0MxMi4yMzMzIDI5LjMxOTcgMTIuNjE5OCAyOS4zMzMgMTMuMTEzIDI5LjQxM0wxNS4yMzIzIDI5Ljc3M0MyMC44ODM4IDMwLjc5OTcgMjUuOTYyMiAyNy4xMTk3IDI3Ljg0MTYgMjIuMzczQzI5LjY2NzcgMjIuMzMzIDMwLjIxNDIgMjEuMzg2MyAzMC40NDA4IDIwLjE5OTdDMzAuNjU0IDE5LjAyNjMgMzAuNDgwOCAxNy45NDYzIDI4Ljc3NDYgMTcuMjc5N0MyOC44NDEzIDEyLjYxMyAyNS44Mjg5IDguMzczIDIxLjM2MzcgNi44MjYzM0MyMS4xNTA0IDYuMjc5NjYgMjEuMzIzNyA1Ljg5MyAyMS41MzcgNS42NTNDMjEuODAzNSA1LjM0NjMzIDIyLjIxNjcgNS4yMTMgMjIuNjI5OSA1LjIzOTY2VjUuMjUzWk0yMi4zOSAxNC4zNDYzTDIzLjAyOTggMTQuNTE5N0MyMy44OTYyIDE0Ljc4NjMgMjQuNTA5MyAxNS40Nzk3IDI0LjU0OTMgMTYuMjkzQzI0LjU4OTMgMTcuNTczIDI0LjE4OTQgMjAuMDUzIDIzLjczNjMgMjEuMzk5N0wyMy40ODMgMjIuMDI2M0MyMy4xODk4IDIyLjc4NjMgMjIuMzc2NyAyMy4yNjYzIDIxLjQzMDMgMjMuMTczTDIwLjgxNzIgMjMuMTE5N0MxNy4wMTg0IDIyLjc5OTcgMTMuMjMyOSAyMi4xMzMgOS41NTQxMyAyMS4wNjYzTDguNzk0MzcgMjAuODUzQzcuOTE0NjUgMjAuNTg2MyA3LjMwMTUxIDE5LjgzOTcgNy4yODgxOCAxOS4wNTNWMTguMzczQzcuNDYxNDYgMTYuNTQ2MyA3LjU2ODA5IDE1LjMzMyA4LjI4Nzg2IDEzLjI5M0M4LjU5NDQzIDEyLjU3MyA5LjQzNDE2IDEyLjExOTcgMTAuMzI3MiAxMi4xODYzTDExLjE1MzYgMTIuMjY2M0MxMS41OTM1IDEyLjI5MyAxMi4wNDY3IDEyLjM0NjMgMTIuNDg2NSAxMi4zNzNDMTIuOTUzIDEyLjQyNjMgMTMuMzI2MyAxMi43NTk3IDEzLjQxOTYgMTMuMjEzTDEzLjQ3MjkgMTMuMzQ2M0MxMy42MTk1IDEzLjk0NjMgMTQuMDk5MyAxNC40MTMgMTQuNzEyNSAxNC41MzNMMTcuODcxNSAxNS4xNTk3QzE4LjQ4NDYgMTUuMjUzIDE5LjEyNDQgMTQuOTk5NyAxOS40NzEgMTQuNDkzTDE5LjU5MDkgMTQuMzMzQzE5Ljg0NDIgMTMuOTU5NyAyMC4zMjQgMTMuNzg2MyAyMC43NzcyIDEzLjg5M0MyMS4zMTA0IDE0LjAzOTcgMjEuODU2OSAxNC4xODYzIDIyLjM5IDE0LjMzM1YxNC4zNDYzWiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xOC4yMTggMTguMTk5N0MxOC4wMTgxIDE5LjI5MyAxOC43Mzc5IDIwLjMzMyAxOS44MzA4IDIwLjUzM0MyMC45MzcxIDIwLjczMyAyMS45NjM1IDIwLjAxMyAyMi4xNzY4IDE4LjkxOTdDMjIuMzc2NyAxNy44MjYzIDIxLjY1NjkgMTYuNzg2MyAyMC41NjM5IDE2LjU4NjNDMTkuNDcxIDE2LjM4NjMgMTguNDMxMyAxNy4xMDYzIDE4LjIxOCAxOC4xOTk3WiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiM1QTJCN0EiLz48L3N2Zz4=')">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjIuNjI5OSA1LjI1M0MyMy4zNjMgNS4zMDYzMyAyNC4xODk0IDUuODEzIDI0Ljg1NTkgNi42Nzk2NkMyNS45ODg5IDguMTMzIDI2Ljg1NTMgOC44Mzk2NiAyOC4wMTQ5IDkuMDI2MzNDMjguNTQ4IDkuMTMzIDI5LjE4NzggOS4wNzk2NiAyOS42Njc3IDguNzk5NjZDMzAuMjAwOSA4LjUwNjMzIDMwLjUwNzQgOC4wNTMgMzAuNjI3NCA3LjU0NjMzQzMwLjc2MDcgNi44NjYzMyAzMC41ODc0IDUuNzk5NjYgMjkuNTc0NCA1LjM0NjMzQzI4LjYxNDcgNC45MzMgMjguMDY4MiA1LjY5MyAyOC4wNjgyIDUuNjkzQzI4LjA2ODIgNS42OTMgMjguNzc0NiA1LjUwNjMzIDI5LjIwMTIgNS45NDYzM0MyOS40MTQ0IDYuMTczIDI5LjUwNzcgNi40NjYzMyAyOS40NDExIDYuNzg2MzNDMjkuMzYxMSA3LjE4NjMzIDI4Ljk3NDYgNy40Nzk2NiAyOC40ODE0IDcuMzk5NjZDMjcuNzc1IDcuMjkzIDI3LjQ1NTEgNi43MzMgMjYuOTM1MiA1Ljg5M0MyNi40OTU0IDUuMjI2MzMgMjUuNzYyMyAzLjg1MyAyNC42NTYgMi43NTk2NkMyMy40NDMgMS41OTk2NiAyMC4yMzA3IDAuNTE5NjYyIDE4LjIzMTMgMi4yMTNDMTYuNTkxOSAzLjU3MyAxNi4zNTE5IDUuMzg2MzMgMTYuMzEyIDUuNzg2MzNIMTYuMjcyQzEwLjk2NyA0LjgyNjMzIDUuNzk1MzMgNy44Nzk2NiAzLjk4MjU4IDEyLjc0NjNDMi4xMDMxOCAxMi43NDYzIDEuNjEgMTMuNzA2MyAxLjM5Njc0IDE0Ljg5M0MxLjE4MzQ3IDE2LjA1MyAxLjQ1MDA1IDE3LjEwNjMgMy4wNzYyIDE3Ljc1OTdDMy4yMDk0OSAyMC41MzMgNC4wODkyMSAyMy4xMzMgNS42NzUzNyAyNS4yMzk3QzUuOTgxOTQgMjUuNjEzIDYuODM1IDI2LjUzMyA2LjgzNSAyNy4wMTNMNi4wMzUyNSAyOS45NTk3QzYuMDM1MjUgMzAuNDI2MyA2LjQ3NTExIDMwLjc1OTcgNi45MTQ5NyAzMC42Mzk3TDExLjc1MzQgMjkuNDM5N0MxMi4yMzMzIDI5LjMxOTcgMTIuNjE5OCAyOS4zMzMgMTMuMTEzIDI5LjQxM0wxNS4yMzIzIDI5Ljc3M0MyMC44ODM4IDMwLjc5OTcgMjUuOTYyMiAyNy4xMTk3IDI3Ljg0MTYgMjIuMzczQzI5LjY2NzcgMjIuMzMzIDMwLjIxNDIgMjEuMzg2MyAzMC40NDA4IDIwLjE5OTdDMzAuNjU0IDE5LjAyNjMgMzAuNDgwOCAxNy45NDYzIDI4Ljc3NDYgMTcuMjc5N0MyOC44NDEzIDEyLjYxMyAyNS44Mjg5IDguMzczIDIxLjM2MzcgNi44MjYzM0MyMS4xNTA0IDYuMjc5NjYgMjEuMzIzNyA1Ljg5MyAyMS41MzcgNS42NTNDMjEuODAzNSA1LjM0NjMzIDIyLjIxNjcgNS4yMTMgMjIuNjI5OSA1LjIzOTY2VjUuMjUzWk0yMi4zOSAxNC4zNDYzTDIzLjAyOTggMTQuNTE5N0MyMy44OTYyIDE0Ljc4NjMgMjQuNTA5MyAxNS40Nzk3IDI0LjU0OTMgMTYuMjkzQzI0LjU4OTMgMTcuNTczIDI0LjE4OTQgMjAuMDUzIDIzLjczNjMgMjEuMzk5N0wyMy40ODMgMjIuMDI2M0MyMy4xODk4IDIyLjc4NjMgMjIuMzc2NyAyMy4yNjYzIDIxLjQzMDMgMjMuMTczTDIwLjgxNzIgMjMuMTE5N0MxNy4wMTg0IDIyLjc5OTcgMTMuMjMyOSAyMi4xMzMgOS41NTQxMyAyMS4wNjYzTDguNzk0MzcgMjAuODUzQzcuOTE0NjUgMjAuNTg2MyA3LjMwMTUxIDE5LjgzOTcgNy4yODgxOCAxOS4wNTNWMTguMzczQzcuNDYxNDYgMTYuNTQ2MyA3LjU2ODA5IDE1LjMzMyA4LjI4Nzg2IDEzLjI5M0M4LjU5NDQzIDEyLjU3MyA5LjQzNDE2IDEyLjExOTcgMTAuMzI3MiAxMi4xODYzTDExLjE1MzYgMTIuMjY2M0MxMS41OTM1IDEyLjI5MyAxMi4wNDY3IDEyLjM0NjMgMTIuNDg2NSAxMi4zNzNDMTIuOTUzIDEyLjQyNjMgMTMuMzI2MyAxMi43NTk3IDEzLjQxOTYgMTMuMjEzTDEzLjQ3MjkgMTMuMzQ2M0MxMy42MTk1IDEzLjk0NjMgMTQuMDk5MyAxNC40MTMgMTQuNzEyNSAxNC41MzNMMTcuODcxNSAxNS4xNTk3QzE4LjQ4NDYgMTUuMjUzIDE5LjEyNDQgMTQuOTk5NyAxOS40NzEgMTQuNDkzTDE5LjU5MDkgMTQuMzMzQzE5Ljg0NDIgMTMuOTU5NyAyMC4zMjQgMTMuNzg2MyAyMC43NzcyIDEzLjg5M0MyMS4zMTA0IDE0LjAzOTcgMjEuODU2OSAxNC4xODYzIDIyLjM5IDE0LjMzM1YxNC4zNDYzWiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xOC4yMTggMTguMTk5N0MxOC4wMTgxIDE5LjI5MyAxOC43Mzc5IDIwLjMzMyAxOS44MzA4IDIwLjUzM0MyMC45MzcxIDIwLjczMyAyMS45NjM1IDIwLjAxMyAyMi4xNzY4IDE4LjkxOTdDMjIuMzc2NyAxNy44MjYzIDIxLjY1NjkgMTYuNzg2MyAyMC41NjM5IDE2LjU4NjNDMTkuNDcxIDE2LjM4NjMgMTguNDMxMyAxNy4xMDYzIDE4LjIxOCAxOC4xOTk3WiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiM1QTJCN0EiLz48L3N2Zz4=" width="28" height="28" alt="Glow">
+                        </div>
+                            <button class="surf-assistant-panel__close" id="overlayClose">
+                                <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            </button>
+                        </div>
+                        <div class="surf-assistant-panel__greeting">
+                            <div class="surf-assistant-panel__hi">Hi Alex,</div>
+                            <div class="surf-assistant-panel__question">how can I help?</div>
+                        </div>
+                        <div class="surf-assistant-panel__chips">
+                            <button class="surf-assistant-panel__chip">Create an employee</button>
+                            <button class="surf-assistant-panel__chip">Raise a purchase order</button>
+                            <button class="surf-assistant-panel__chip">Create a target segment</button>
+                        </div>
+                        <div class="surf-prompt-box" style="margin-top:auto;">
+                            <div class="surf-prompt-box__border-ring">
+                                <div class="surf-prompt-box__input-row">
+                                    <span class="surf-prompt-box__sparkle"><svg class="glow-sparkle-svg" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#asst-sparkle-grad)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#asst-sparkle-grad2)"/><defs><linearGradient id="asst-sparkle-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#C0429F"/><stop offset="1" stop-color="#5A2B7A"/></linearGradient><linearGradient id="asst-sparkle-grad2" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#C0429F"/><stop offset="1" stop-color="#5A2B7A"/></linearGradient></defs></svg></span>
+                                    <input class="surf-prompt-box__input" type="text" placeholder="Ask Glow anything…">
+                                </div>
+                                <div class="surf-prompt-box__toolbar">
+                                    <button class="surf-prompt-box__plus-btn" aria-label="Add context">
+                                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                                    </button>
+                                    <button class="surf-prompt-box__action-btn" aria-label="Send">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="surf-prompt-box__disclaimer">Glow can make mistakes. Verify important information.</div>
+                        </div>
+                        <div class="glow-head-menu-backdrop" id="menuBackdropAssistant"></div>
+                    <div class="glow-head-menu" id="menuAssistant">
+                        <div class="glow-head-menu__avatar">
+                            <div class="glow-head-trigger" style="width:32px;height:32px;--glow-mask: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjIuNjI5OSA1LjI1M0MyMy4zNjMgNS4zMDYzMyAyNC4xODk0IDUuODEzIDI0Ljg1NTkgNi42Nzk2NkMyNS45ODg5IDguMTMzIDI2Ljg1NTMgOC44Mzk2NiAyOC4wMTQ5IDkuMDI2MzNDMjguNTQ4IDkuMTMzIDI5LjE4NzggOS4wNzk2NiAyOS42Njc3IDguNzk5NjZDMzAuMjAwOSA4LjUwNjMzIDMwLjUwNzQgOC4wNTMgMzAuNjI3NCA3LjU0NjMzQzMwLjc2MDcgNi44NjYzMyAzMC41ODc0IDUuNzk5NjYgMjkuNTc0NCA1LjM0NjMzQzI4LjYxNDcgNC45MzMgMjguMDY4MiA1LjY5MyAyOC4wNjgyIDUuNjkzQzI4LjA2ODIgNS42OTMgMjguNzc0NiA1LjUwNjMzIDI5LjIwMTIgNS45NDYzM0MyOS40MTQ0IDYuMTczIDI5LjUwNzcgNi40NjYzMyAyOS40NDExIDYuNzg2MzNDMjkuMzYxMSA3LjE4NjMzIDI4Ljk3NDYgNy40Nzk2NiAyOC40ODE0IDcuMzk5NjZDMjcuNzc1IDcuMjkzIDI3LjQ1NTEgNi43MzMgMjYuOTM1MiA1Ljg5M0MyNi40OTU0IDUuMjI2MzMgMjUuNzYyMyAzLjg1MyAyNC42NTYgMi43NTk2NkMyMy40NDMgMS41OTk2NiAyMC4yMzA3IDAuNTE5NjYyIDE4LjIzMTMgMi4yMTNDMTYuNTkxOSAzLjU3MyAxNi4zNTE5IDUuMzg2MzMgMTYuMzEyIDUuNzg2MzNIMTYuMjcyQzEwLjk2NyA0LjgyNjMzIDUuNzk1MzMgNy44Nzk2NiAzLjk4MjU4IDEyLjc0NjNDMi4xMDMxOCAxMi43NDYzIDEuNjEgMTMuNzA2MyAxLjM5Njc0IDE0Ljg5M0MxLjE4MzQ3IDE2LjA1MyAxLjQ1MDA1IDE3LjEwNjMgMy4wNzYyIDE3Ljc1OTdDMy4yMDk0OSAyMC41MzMgNC4wODkyMSAyMy4xMzMgNS42NzUzNyAyNS4yMzk3QzUuOTgxOTQgMjUuNjEzIDYuODM1IDI2LjUzMyA2LjgzNSAyNy4wMTNMNi4wMzUyNSAyOS45NTk3QzYuMDM1MjUgMzAuNDI2MyA2LjQ3NTExIDMwLjc1OTcgNi45MTQ5NyAzMC42Mzk3TDExLjc1MzQgMjkuNDM5N0MxMi4yMzMzIDI5LjMxOTcgMTIuNjE5OCAyOS4zMzMgMTMuMTEzIDI5LjQxM0wxNS4yMzIzIDI5Ljc3M0MyMC44ODM4IDMwLjc5OTcgMjUuOTYyMiAyNy4xMTk3IDI3Ljg0MTYgMjIuMzczQzI5LjY2NzcgMjIuMzMzIDMwLjIxNDIgMjEuMzg2MyAzMC40NDA4IDIwLjE5OTdDMzAuNjU0IDE5LjAyNjMgMzAuNDgwOCAxNy45NDYzIDI4Ljc3NDYgMTcuMjc5N0MyOC44NDEzIDEyLjYxMyAyNS44Mjg5IDguMzczIDIxLjM2MzcgNi44MjYzM0MyMS4xNTA0IDYuMjc5NjYgMjEuMzIzNyA1Ljg5MyAyMS41MzcgNS42NTNDMjEuODAzNSA1LjM0NjMzIDIyLjIxNjcgNS4yMTMgMjIuNjI5OSA1LjIzOTY2VjUuMjUzWk0yMi4zOSAxNC4zNDYzTDIzLjAyOTggMTQuNTE5N0MyMy44OTYyIDE0Ljc4NjMgMjQuNTA5MyAxNS40Nzk3IDI0LjU0OTMgMTYuMjkzQzI0LjU4OTMgMTcuNTczIDI0LjE4OTQgMjAuMDUzIDIzLjczNjMgMjEuMzk5N0wyMy40ODMgMjIuMDI2M0MyMy4xODk4IDIyLjc4NjMgMjIuMzc2NyAyMy4yNjYzIDIxLjQzMDMgMjMuMTczTDIwLjgxNzIgMjMuMTE5N0MxNy4wMTg0IDIyLjc5OTcgMTMuMjMyOSAyMi4xMzMgOS41NTQxMyAyMS4wNjYzTDguNzk0MzcgMjAuODUzQzcuOTE0NjUgMjAuNTg2MyA3LjMwMTUxIDE5LjgzOTcgNy4yODgxOCAxOS4wNTNWMTguMzczQzcuNDYxNDYgMTYuNTQ2MyA3LjU2ODA5IDE1LjMzMyA4LjI4Nzg2IDEzLjI5M0M4LjU5NDQzIDEyLjU3MyA5LjQzNDE2IDEyLjExOTcgMTAuMzI3MiAxMi4xODYzTDExLjE1MzYgMTIuMjY2M0MxMS41OTM1IDEyLjI5MyAxMi4wNDY3IDEyLjM0NjMgMTIuNDg2NSAxMi4zNzNDMTIuOTUzIDEyLjQyNjMgMTMuMzI2MyAxMi43NTk3IDEzLjQxOTYgMTMuMjEzTDEzLjQ3MjkgMTMuMzQ2M0MxMy42MTk1IDEzLjk0NjMgMTQuMDk5MyAxNC40MTMgMTQuNzEyNSAxNC41MzNMMTcuODcxNSAxNS4xNTk3QzE4LjQ4NDYgMTUuMjUzIDE5LjEyNDQgMTQuOTk5NyAxOS40NzEgMTQuNDkzTDE5LjU5MDkgMTQuMzMzQzE5Ljg0NDIgMTMuOTU5NyAyMC4zMjQgMTMuNzg2MyAyMC43NzcyIDEzLjg5M0MyMS4zMTA0IDE0LjAzOTcgMjEuODU2OSAxNC4xODYzIDIyLjM5IDE0LjMzM1YxNC4zNDYzWiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xOC4yMTggMTguMTk5N0MxOC4wMTgxIDE5LjI5MyAxOC43Mzc5IDIwLjMzMyAxOS44MzA4IDIwLjUzM0MyMC45MzcxIDIwLjczMyAyMS45NjM1IDIwLjAxMyAyMi4xNzY4IDE4LjkxOTdDMjIuMzc2NyAxNy44MjYzIDIxLjY1NjkgMTYuNzg2MyAyMC41NjM5IDE2LjU4NjNDMTkuNDcxIDE2LjM4NjMgMTguNDMxMyAxNy4xMDYzIDE4LjIxOCAxOC4xOTk3WiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiM1QTJCN0EiLz48L3N2Zz4=')">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjIuNjI5OSA1LjI1M0MyMy4zNjMgNS4zMDYzMyAyNC4xODk0IDUuODEzIDI0Ljg1NTkgNi42Nzk2NkMyNS45ODg5IDguMTMzIDI2Ljg1NTMgOC44Mzk2NiAyOC4wMTQ5IDkuMDI2MzNDMjguNTQ4IDkuMTMzIDI5LjE4NzggOS4wNzk2NiAyOS42Njc3IDguNzk5NjZDMzAuMjAwOSA4LjUwNjMzIDMwLjUwNzQgOC4wNTMgMzAuNjI3NCA3LjU0NjMzQzMwLjc2MDcgNi44NjYzMyAzMC41ODc0IDUuNzk5NjYgMjkuNTc0NCA1LjM0NjMzQzI4LjYxNDcgNC45MzMgMjguMDY4MiA1LjY5MyAyOC4wNjgyIDUuNjkzQzI4LjA2ODIgNS42OTMgMjguNzc0NiA1LjUwNjMzIDI5LjIwMTIgNS45NDYzM0MyOS40MTQ0IDYuMTczIDI5LjUwNzcgNi40NjYzMyAyOS40NDExIDYuNzg2MzNDMjkuMzYxMSA3LjE4NjMzIDI4Ljk3NDYgNy40Nzk2NiAyOC40ODE0IDcuMzk5NjZDMjcuNzc1IDcuMjkzIDI3LjQ1NTEgNi43MzMgMjYuOTM1MiA1Ljg5M0MyNi40OTU0IDUuMjI2MzMgMjUuNzYyMyAzLjg1MyAyNC42NTYgMi43NTk2NkMyMy40NDMgMS41OTk2NiAyMC4yMzA3IDAuNTE5NjYyIDE4LjIzMTMgMi4yMTNDMTYuNTkxOSAzLjU3MyAxNi4zNTE5IDUuMzg2MzMgMTYuMzEyIDUuNzg2MzNIMTYuMjcyQzEwLjk2NyA0LjgyNjMzIDUuNzk1MzMgNy44Nzk2NiAzLjk4MjU4IDEyLjc0NjNDMi4xMDMxOCAxMi43NDYzIDEuNjEgMTMuNzA2MyAxLjM5Njc0IDE0Ljg5M0MxLjE4MzQ3IDE2LjA1MyAxLjQ1MDA1IDE3LjEwNjMgMy4wNzYyIDE3Ljc1OTdDMy4yMDk0OSAyMC41MzMgNC4wODkyMSAyMy4xMzMgNS42NzUzNyAyNS4yMzk3QzUuOTgxOTQgMjUuNjEzIDYuODM1IDI2LjUzMyA2LjgzNSAyNy4wMTNMNi4wMzUyNSAyOS45NTk3QzYuMDM1MjUgMzAuNDI2MyA2LjQ3NTExIDMwLjc1OTcgNi45MTQ5NyAzMC42Mzk3TDExLjc1MzQgMjkuNDM5N0MxMi4yMzMzIDI5LjMxOTcgMTIuNjE5OCAyOS4zMzMgMTMuMTEzIDI5LjQxM0wxNS4yMzIzIDI5Ljc3M0MyMC44ODM4IDMwLjc5OTcgMjUuOTYyMiAyNy4xMTk3IDI3Ljg0MTYgMjIuMzczQzI5LjY2NzcgMjIuMzMzIDMwLjIxNDIgMjEuMzg2MyAzMC40NDA4IDIwLjE5OTdDMzAuNjU0IDE5LjAyNjMgMzAuNDgwOCAxNy45NDYzIDI4Ljc3NDYgMTcuMjc5N0MyOC44NDEzIDEyLjYxMyAyNS44Mjg5IDguMzczIDIxLjM2MzcgNi44MjYzM0MyMS4xNTA0IDYuMjc5NjYgMjEuMzIzNyA1Ljg5MyAyMS41MzcgNS42NTNDMjEuODAzNSA1LjM0NjMzIDIyLjIxNjcgNS4yMTMgMjIuNjI5OSA1LjIzOTY2VjUuMjUzWk0yMi4zOSAxNC4zNDYzTDIzLjAyOTggMTQuNTE5N0MyMy44OTYyIDE0Ljc4NjMgMjQuNTA5MyAxNS40Nzk3IDI0LjU0OTMgMTYuMjkzQzI0LjU4OTMgMTcuNTczIDI0LjE4OTQgMjAuMDUzIDIzLjczNjMgMjEuMzk5N0wyMy40ODMgMjIuMDI2M0MyMy4xODk4IDIyLjc4NjMgMjIuMzc2NyAyMy4yNjYzIDIxLjQzMDMgMjMuMTczTDIwLjgxNzIgMjMuMTE5N0MxNy4wMTg0IDIyLjc5OTcgMTMuMjMyOSAyMi4xMzMgOS41NTQxMyAyMS4wNjYzTDguNzk0MzcgMjAuODUzQzcuOTE0NjUgMjAuNTg2MyA3LjMwMTUxIDE5LjgzOTcgNy4yODgxOCAxOS4wNTNWMTguMzczQzcuNDYxNDYgMTYuNTQ2MyA3LjU2ODA5IDE1LjMzMyA4LjI4Nzg2IDEzLjI5M0M4LjU5NDQzIDEyLjU3MyA5LjQzNDE2IDEyLjExOTcgMTAuMzI3MiAxMi4xODYzTDExLjE1MzYgMTIuMjY2M0MxMS41OTM1IDEyLjI5MyAxMi4wNDY3IDEyLjM0NjMgMTIuNDg2NSAxMi4zNzNDMTIuOTUzIDEyLjQyNjMgMTMuMzI2MyAxMi43NTk3IDEzLjQxOTYgMTMuMjEzTDEzLjQ3MjkgMTMuMzQ2M0MxMy42MTk1IDEzLjk0NjMgMTQuMDk5MyAxNC40MTMgMTQuNzEyNSAxNC41MzNMMTcuODcxNSAxNS4xNTk3QzE4LjQ4NDYgMTUuMjUzIDE5LjEyNDQgMTQuOTk5NyAxOS40NzEgMTQuNDkzTDE5LjU5MDkgMTQuMzMzQzE5Ljg0NDIgMTMuOTU5NyAyMC4zMjQgMTMuNzg2MyAyMC43NzcyIDEzLjg5M0MyMS4zMTA0IDE0LjAzOTcgMjEuODU2OSAxNC4xODYzIDIyLjM5IDE0LjMzM1YxNC4zNDYzWiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xOC4yMTggMTguMTk5N0MxOC4wMTgxIDE5LjI5MyAxOC43Mzc5IDIwLjMzMyAxOS44MzA4IDIwLjUzM0MyMC45MzcxIDIwLjczMyAyMS45NjM1IDIwLjAxMyAyMi4xNzY4IDE4LjkxOTdDMjIuMzc2NyAxNy44MjYzIDIxLjY1NjkgMTYuNzg2MyAyMC41NjM5IDE2LjU4NjNDMTkuNDcxIDE2LjM4NjMgMTguNDMxMyAxNy4xMDYzIDE4LjIxOCAxOC4xOTk3WiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiM1QTJCN0EiLz48L3N2Zz4=" width="32" height="32" alt="Glow">
+                            </div>
+                        </div>
+                        <div class="glow-head-menu__items">
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v2M10 15v2M3 10h2M15 10h2M5.05 5.05l1.41 1.41M13.54 13.54l1.41 1.41M5.05 14.95l1.41-1.41M13.54 6.46l1.41-1.41"/><circle cx="10" cy="10" r="3"/></svg>New chat</button>
+                                <button class="glow-head-menu__item glow-head-menu__item--active"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l2.5 2.5"/></svg>History</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 7h6M7 10h4"/></svg>Prompts</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4h4"/><path d="M4 17V5a2 2 0 012-2h6l4 4v10a2 2 0 01-2 2H6a2 2 0 01-2-2z"/></svg>Upload documents</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/><path d="M7 8h6M7 11h4"/></svg>Saved responses</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15l4-8 4 5 2-3 4 6"/><circle cx="14" cy="7" r="2"/></svg>Feedback</button>
+                        </div>
+                    </div>
+                        </div><!-- end surf-assistant-panel__clip -->
+                    </div>
+                    <!-- Copilot FAB -->
+                    <div class="surf-fab" id="surfFab" title="Launch Copilot Sidebar">
+                        <div class="surf-fab__icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="#fff"/>
+                                <path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="#fff"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- ===== Surface 3: Canvas (confined to surface viewport) ===== -->
+                    <div class="surf-canvas-wrap" id="surfCanvas">
+                <div class="surf-canvas-header">
+                    <div class="surf-canvas-header__brand">
+                        <div id="canvasGlowHead" class="glow-head-trigger" style="width:28px;height:28px;--glow-mask: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIyLjYyOTkgNS4yNTNDMjMuMzYzIDUuMzA2MzMgMjQuMTg5NCA1LjgxMyAyNC44NTU5IDYuNjc5NjZDMjUuOTg4OSA4LjEzMyAyNi44NTUzIDguODM5NjYgMjguMDE0OSA5LjAyNjMzQzI4LjU0OCA5LjEzMyAyOS4xODc4IDkuMDc5NjYgMjkuNjY3NyA4Ljc5OTY2QzMwLjIwMDkgOC41MDYzMyAzMC41MDc0IDguMDUzIDMwLjYyNzQgNy41NDYzM0MzMC43NjA3IDYuODY2MzMgMzAuNTg3NCA1Ljc5OTY2IDI5LjU3NDQgNS4zNDYzM0MyOC42MTQ3IDQuOTMzIDI4LjA2ODIgNS42OTMgMjguMDY4MiA1LjY5M0MyOC4wNjgyIDUuNjkzIDI4Ljc3NDYgNS41MDYzMyAyOS4yMDEyIDUuOTQ2MzNDMjkuNDE0NCA2LjE3MyAyOS41MDc3IDYuNDY2MzMgMjkuNDQxMSA2Ljc4NjMzQzI5LjM2MTEgNy4xODYzMyAyOC45NzQ2IDcuNDc5NjYgMjguNDgxNCA3LjM5OTY2QzI3Ljc3NSA3LjI5MyAyNy40NTUxIDYuNzMzIDI2LjkzNTIgNS44OTNDMjYuNDk1NCA1LjIyNjMzIDI1Ljc2MjMgMy44NTMgMjQuNjU2IDIuNzU5NjZDMjMuNDQzIDEuNTk5NjYgMjAuMjMwNyAwLjUxOTY2MiAxOC4yMzEzIDIuMjEzQzE2LjU5MTkgMy41NzMgMTYuMzUxOSA1LjM4NjMzIDE2LjMxMiA1Ljc4NjMzSDE2LjI3MkMxMC45NjcgNC44MjYzMyA1Ljc5NTMzIDcuODc5NjYgMy45ODI1OCAxMi43NDYzQzIuMTAzMTggMTIuNzQ2MyAxLjYxIDEzLjcwNjMgMS4zOTY3NCAxNC44OTNDMS4xODM0NyAxNi4wNTMgMS40NTAwNSAxNy4xMDYzIDMuMDc2MiAxNy43NTk3QzMuMjA5NDkgMjAuNTMzIDQuMDg5MjEgMjMuMTMzIDUuNjc1MzcgMjUuMjM5N0M1Ljk4MTk0IDI1LjYxMyA2LjgzNSAyNi41MzMgNi44MzUgMjcuMDEzTDYuMDM1MjUgMjkuOTU5N0M2LjAzNTI1IDMwLjQyNjMgNi40NzUxMSAzMC43NTk3IDYuOTE0OTcgMzAuNjM5N0wxMS43NTM0IDI5LjQzOTdDMTIuMjMzMyAyOS4zMTk3IDEyLjYxOTggMjkuMzMzIDEzLjExMyAyOS40MTNMMTUuMjMyMyAyOS43NzNDMjAuODgzOCAzMC43OTk3IDI1Ljk2MjIgMjcuMTE5NyAyNy44NDE2IDIyLjM3M0MyOS42Njc3IDIyLjMzMyAzMC4yMTQyIDIxLjM4NjMgMzAuNDQwOCAyMC4xOTk3QzMwLjY1NCAxOS4wMjYzIDMwLjQ4MDggMTcuOTQ2MyAyOC43NzQ2IDE3LjI3OTdDMjguODQxMyAxMi42MTMgMjUuODI4OSA4LjM3MyAyMS4zNjM3IDYuODI2MzNDMjEuMTUwNCA2LjI3OTY2IDIxLjMyMzcgNS44OTMgMjEuNTM3IDUuNjUzQzIxLjgwMzUgNS4zNDYzMyAyMi4yMTY3IDUuMjEzIDIyLjYyOTkgNS4yMzk2NlY1LjI1M1pNMjIuMzkgMTQuMzQ2M0wyMy4wMjk4IDE0LjUxOTdDMjMuODk2MiAxNC43ODYzIDI0LjUwOTMgMTUuNDc5NyAyNC41NDkzIDE2LjI5M0MyNC41ODkzIDE3LjU3MyAyNC4xODk0IDIwLjA1MyAyMy43MzYzIDIxLjM5OTdMMjMuNDgzIDIyLjAyNjNDMjMuMTg5OCAyMi43ODYzIDIyLjM3NjcgMjMuMjY2MyAyMS40MzAzIDIzLjE3M0wyMC44MTcyIDIzLjExOTdDMTcuMDE4NCAyMi43OTk3IDEzLjIzMjkgMjIuMTMzIDkuNTU0MTMgMjEuMDY2M0w4Ljc5NDM3IDIwLjg1M0M3LjkxNDY1IDIwLjU4NjMgNy4zMDE1MSAxOS44Mzk3IDcuMjg4MTggMTkuMDUzVjE4LjM3M0M3LjQ2MTQ2IDE2LjU0NjMgNy41NjgwOSAxNS4zMzMgOC4yODc4NiAxMy4yOTNDOC41OTQ0MyAxMi41NzMgOS40MzQxNiAxMi4xMTk3IDEwLjMyNzIgMTIuMTg2M0wxMS4xNTM2IDEyLjI2NjNDMTEuNTkzNSAxMi4yOTMgMTIuMDQ2NyAxMi4zNDYzIDEyLjQ4NjUgMTIuMzczQzEyLjk1MyAxMi40MjYzIDEzLjMyNjMgMTIuNzU5NyAxMy40MTk2IDEzLjIxM0wxMy40NzI5IDEzLjM0NjNDMTMuNjE5NSAxMy45NDYzIDE0LjA5OTMgMTQuNDEzIDE0LjcxMjUgMTQuNTMzTDE3Ljg3MTUgMTUuMTU5N0MxOC40ODQ2IDE1LjI1MyAxOS4xMjQ0IDE0Ljk5OTcgMTkuNDcxIDE0LjQ5M0wxOS41OTA5IDE0LjMzM0MxOS44NDQyIDEzLjk1OTcgMjAuMzI0IDEzLjc4NjMgMjAuNzc3MiAxMy44OTNDMjEuMzEwNCAxNC4wMzk3IDIxLjg1NjkgMTQuMTg2MyAyMi4zOSAxNC4zMzNWMTQuMzQ2M1oiIGZpbGw9IiNDMDQyOUYiLz4KPHBhdGggZD0iTTE4LjIxOCAxOC4xOTk3QzE4LjAxODEgMTkuMjkzIDE4LjczNzkgMjAuMzMzIDE5LjgzMDggMjAuNTMzQzIwLjkzNzEgMjAuNzMzIDIxLjk2MzUgMjAuMDEzIDIyLjE3NjggMTguOTE5N0MyMi4zNzY3IDE3LjgyNjMgMjEuNjU2OSAxNi43ODYzIDIwLjU2MzkgMTYuNTg2M0MxOS40NzEgMTYuMzg2MyAxOC40MzEzIDE3LjEwNjMgMTguMjE4IDE4LjE5OTdaIiBmaWxsPSIjQzA0MjlGIi8+CjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiNDMDQyOUYiLz4KPC9zdmc+Cg==')">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIyLjYyOTkgNS4yNTNDMjMuMzYzIDUuMzA2MzMgMjQuMTg5NCA1LjgxMyAyNC44NTU5IDYuNjc5NjZDMjUuOTg4OSA4LjEzMyAyNi44NTUzIDguODM5NjYgMjguMDE0OSA5LjAyNjMzQzI4LjU0OCA5LjEzMyAyOS4xODc4IDkuMDc5NjYgMjkuNjY3NyA4Ljc5OTY2QzMwLjIwMDkgOC41MDYzMyAzMC41MDc0IDguMDUzIDMwLjYyNzQgNy41NDYzM0MzMC43NjA3IDYuODY2MzMgMzAuNTg3NCA1Ljc5OTY2IDI5LjU3NDQgNS4zNDYzM0MyOC42MTQ3IDQuOTMzIDI4LjA2ODIgNS42OTMgMjguMDY4MiA1LjY5M0MyOC4wNjgyIDUuNjkzIDI4Ljc3NDYgNS41MDYzMyAyOS4yMDEyIDUuOTQ2MzNDMjkuNDE0NCA2LjE3MyAyOS41MDc3IDYuNDY2MzMgMjkuNDQxMSA2Ljc4NjMzQzI5LjM2MTEgNy4xODYzMyAyOC45NzQ2IDcuNDc5NjYgMjguNDgxNCA3LjM5OTY2QzI3Ljc3NSA3LjI5MyAyNy40NTUxIDYuNzMzIDI2LjkzNTIgNS44OTNDMjYuNDk1NCA1LjIyNjMzIDI1Ljc2MjMgMy44NTMgMjQuNjU2IDIuNzU5NjZDMjMuNDQzIDEuNTk5NjYgMjAuMjMwNyAwLjUxOTY2MiAxOC4yMzEzIDIuMjEzQzE2LjU5MTkgMy41NzMgMTYuMzUxOSA1LjM4NjMzIDE2LjMxMiA1Ljc4NjMzSDE2LjI3MkMxMC45NjcgNC44MjYzMyA1Ljc5NTMzIDcuODc5NjYgMy45ODI1OCAxMi43NDYzQzIuMTAzMTggMTIuNzQ2MyAxLjYxIDEzLjcwNjMgMS4zOTY3NCAxNC44OTNDMS4xODM0NyAxNi4wNTMgMS40NTAwNSAxNy4xMDYzIDMuMDc2MiAxNy43NTk3QzMuMjA5NDkgMjAuNTMzIDQuMDg5MjEgMjMuMTMzIDUuNjc1MzcgMjUuMjM5N0M1Ljk4MTk0IDI1LjYxMyA2LjgzNSAyNi41MzMgNi44MzUgMjcuMDEzTDYuMDM1MjUgMjkuOTU5N0M2LjAzNTI1IDMwLjQyNjMgNi40NzUxMSAzMC43NTk3IDYuOTE0OTcgMzAuNjM5N0wxMS43NTM0IDI5LjQzOTdDMTIuMjMzMyAyOS4zMTk3IDEyLjYxOTggMjkuMzMzIDEzLjExMyAyOS40MTNMMTUuMjMyMyAyOS43NzNDMjAuODgzOCAzMC43OTk3IDI1Ljk2MjIgMjcuMTE5NyAyNy44NDE2IDIyLjM3M0MyOS42Njc3IDIyLjMzMyAzMC4yMTQyIDIxLjM4NjMgMzAuNDQwOCAyMC4xOTk3QzMwLjY1NCAxOS4wMjYzIDMwLjQ4MDggMTcuOTQ2MyAyOC43NzQ2IDE3LjI3OTdDMjguODQxMyAxMi42MTMgMjUuODI4OSA4LjM3MyAyMS4zNjM3IDYuODI2MzNDMjEuMTUwNCA2LjI3OTY2IDIxLjMyMzcgNS44OTMgMjEuNTM3IDUuNjUzQzIxLjgwMzUgNS4zNDYzMyAyMi4yMTY3IDUuMjEzIDIyLjYyOTkgNS4yMzk2NlY1LjI1M1pNMjIuMzkgMTQuMzQ2M0wyMy4wMjk4IDE0LjUxOTdDMjMuODk2MiAxNC43ODYzIDI0LjUwOTMgMTUuNDc5NyAyNC41NDkzIDE2LjI5M0MyNC41ODkzIDE3LjU3MyAyNC4xODk0IDIwLjA1MyAyMy43MzYzIDIxLjM5OTdMMjMuNDgzIDIyLjAyNjNDMjMuMTg5OCAyMi43ODYzIDIyLjM3NjcgMjMuMjY2MyAyMS40MzAzIDIzLjE3M0wyMC44MTcyIDIzLjExOTdDMTcuMDE4NCAyMi43OTk3IDEzLjIzMjkgMjIuMTMzIDkuNTU0MTMgMjEuMDY2M0w4Ljc5NDM3IDIwLjg1M0M3LjkxNDY1IDIwLjU4NjMgNy4zMDE1MSAxOS44Mzk3IDcuMjg4MTggMTkuMDUzVjE4LjM3M0M3LjQ2MTQ2IDE2LjU0NjMgNy41NjgwOSAxNS4zMzMgOC4yODc4NiAxMy4yOTNDOC41OTQ0MyAxMi41NzMgOS40MzQxNiAxMi4xMTk3IDEwLjMyNzIgMTIuMTg2M0wxMS4xNTM2IDEyLjI2NjNDMTEuNTkzNSAxMi4yOTMgMTIuMDQ2NyAxMi4zNDYzIDEyLjQ4NjUgMTIuMzczQzEyLjk1MyAxMi40MjYzIDEzLjMyNjMgMTIuNzU5NyAxMy40MTk2IDEzLjIxM0wxMy40NzI5IDEzLjM0NjNDMTMuNjE5NSAxMy45NDYzIDE0LjA5OTMgMTQuNDEzIDE0LjcxMjUgMTQuNTMzTDE3Ljg3MTUgMTUuMTU5N0MxOC40ODQ2IDE1LjI1MyAxOS4xMjQ0IDE0Ljk5OTcgMTkuNDcxIDE0LjQ5M0wxOS41OTA5IDE0LjMzM0MxOS44NDQyIDEzLjk1OTcgMjAuMzI0IDEzLjc4NjMgMjAuNzc3MiAxMy44OTNDMjEuMzEwNCAxNC4wMzk3IDIxLjg1NjkgMTQuMTg2MyAyMi4zOSAxNC4zMzNWMTQuMzQ2M1oiIGZpbGw9IiNDMDQyOUYiLz4KPHBhdGggZD0iTTE4LjIxOCAxOC4xOTk3QzE4LjAxODEgMTkuMjkzIDE4LjczNzkgMjAuMzMzIDE5LjgzMDggMjAuNTMzQzIwLjkzNzEgMjAuNzMzIDIxLjk2MzUgMjAuMDEzIDIyLjE3NjggMTguOTE5N0MyMi4zNzY3IDE3LjgyNjMgMjEuNjU2OSAxNi43ODYzIDIwLjU2MzkgMTYuNTg2M0MxOS40NzEgMTYuMzg2MyAxOC40MzEzIDE3LjEwNjMgMTguMjE4IDE4LjE5OTdaIiBmaWxsPSIjQzA0MjlGIi8+CjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiNDMDQyOUYiLz4KPC9zdmc+Cg==" width="28" height="28" alt="Glow">
+                        </div>
+                        Campaign Studio: Summer Launch
+                    </div>
+                    <div class="surf-canvas-header__spacer"></div>
+                    <button class="surf-canvas-header__close" id="canvasClose">
+                        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </button>
+                </div>
+<div class="surf-canvas-body">
+                                <div class="glow-head-menu-backdrop" id="menuBackdropCanvas"></div>
+                <div class="glow-head-menu" id="menuCanvas">
+                    <button class="surf-canvas-menu-collapse" id="canvasMenuCollapse" aria-label="Collapse menu">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10 3L5 8l5 5"/></svg>
+                    </button>
+                    <div class="glow-head-menu__avatar">
+                                <div class="glow-head-trigger" style="width:32px;height:32px;--glow-mask: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjIuNjI5OSA1LjI1M0MyMy4zNjMgNS4zMDYzMyAyNC4xODk0IDUuODEzIDI0Ljg1NTkgNi42Nzk2NkMyNS45ODg5IDguMTMzIDI2Ljg1NTMgOC44Mzk2NiAyOC4wMTQ5IDkuMDI2MzNDMjguNTQ4IDkuMTMzIDI5LjE4NzggOS4wNzk2NiAyOS42Njc3IDguNzk5NjZDMzAuMjAwOSA4LjUwNjMzIDMwLjUwNzQgOC4wNTMgMzAuNjI3NCA3LjU0NjMzQzMwLjc2MDcgNi44NjYzMyAzMC41ODc0IDUuNzk5NjYgMjkuNTc0NCA1LjM0NjMzQzI4LjYxNDcgNC45MzMgMjguMDY4MiA1LjY5MyAyOC4wNjgyIDUuNjkzQzI4LjA2ODIgNS42OTMgMjguNzc0NiA1LjUwNjMzIDI5LjIwMTIgNS45NDYzM0MyOS40MTQ0IDYuMTczIDI5LjUwNzcgNi40NjYzMyAyOS40NDExIDYuNzg2MzNDMjkuMzYxMSA3LjE4NjMzIDI4Ljk3NDYgNy40Nzk2NiAyOC40ODE0IDcuMzk5NjZDMjcuNzc1IDcuMjkzIDI3LjQ1NTEgNi43MzMgMjYuOTM1MiA1Ljg5M0MyNi40OTU0IDUuMjI2MzMgMjUuNzYyMyAzLjg1MyAyNC42NTYgMi43NTk2NkMyMy40NDMgMS41OTk2NiAyMC4yMzA3IDAuNTE5NjYyIDE4LjIzMTMgMi4yMTNDMTYuNTkxOSAzLjU3MyAxNi4zNTE5IDUuMzg2MzMgMTYuMzEyIDUuNzg2MzNIMTYuMjcyQzEwLjk2NyA0LjgyNjMzIDUuNzk1MzMgNy44Nzk2NiAzLjk4MjU4IDEyLjc0NjNDMi4xMDMxOCAxMi43NDYzIDEuNjEgMTMuNzA2MyAxLjM5Njc0IDE0Ljg5M0MxLjE4MzQ3IDE2LjA1MyAxLjQ1MDA1IDE3LjEwNjMgMy4wNzYyIDE3Ljc1OTdDMy4yMDk0OSAyMC41MzMgNC4wODkyMSAyMy4xMzMgNS42NzUzNyAyNS4yMzk3QzUuOTgxOTQgMjUuNjEzIDYuODM1IDI2LjUzMyA2LjgzNSAyNy4wMTNMNi4wMzUyNSAyOS45NTk3QzYuMDM1MjUgMzAuNDI2MyA2LjQ3NTExIDMwLjc1OTcgNi45MTQ5NyAzMC42Mzk3TDExLjc1MzQgMjkuNDM5N0MxMi4yMzMzIDI5LjMxOTcgMTIuNjE5OCAyOS4zMzMgMTMuMTEzIDI5LjQxM0wxNS4yMzIzIDI5Ljc3M0MyMC44ODM4IDMwLjc5OTcgMjUuOTYyMiAyNy4xMTk3IDI3Ljg0MTYgMjIuMzczQzI5LjY2NzcgMjIuMzMzIDMwLjIxNDIgMjEuMzg2MyAzMC40NDA4IDIwLjE5OTdDMzAuNjU0IDE5LjAyNjMgMzAuNDgwOCAxNy45NDYzIDI4Ljc3NDYgMTcuMjc5N0MyOC44NDEzIDEyLjYxMyAyNS44Mjg5IDguMzczIDIxLjM2MzcgNi44MjYzM0MyMS4xNTA0IDYuMjc5NjYgMjEuMzIzNyA1Ljg5MyAyMS41MzcgNS42NTNDMjEuODAzNSA1LjM0NjMzIDIyLjIxNjcgNS4yMTMgMjIuNjI5OSA1LjIzOTY2VjUuMjUzWk0yMi4zOSAxNC4zNDYzTDIzLjAyOTggMTQuNTE5N0MyMy44OTYyIDE0Ljc4NjMgMjQuNTA5MyAxNS40Nzk3IDI0LjU0OTMgMTYuMjkzQzI0LjU4OTMgMTcuNTczIDI0LjE4OTQgMjAuMDUzIDIzLjczNjMgMjEuMzk5N0wyMy40ODMgMjIuMDI2M0MyMy4xODk4IDIyLjc4NjMgMjIuMzc2NyAyMy4yNjYzIDIxLjQzMDMgMjMuMTczTDIwLjgxNzIgMjMuMTE5N0MxNy4wMTg0IDIyLjc5OTcgMTMuMjMyOSAyMi4xMzMgOS41NTQxMyAyMS4wNjYzTDguNzk0MzcgMjAuODUzQzcuOTE0NjUgMjAuNTg2MyA3LjMwMTUxIDE5LjgzOTcgNy4yODgxOCAxOS4wNTNWMTguMzczQzcuNDYxNDYgMTYuNTQ2MyA3LjU2ODA5IDE1LjMzMyA4LjI4Nzg2IDEzLjI5M0M4LjU5NDQzIDEyLjU3MyA5LjQzNDE2IDEyLjExOTcgMTAuMzI3MiAxMi4xODYzTDExLjE1MzYgMTIuMjY2M0MxMS41OTM1IDEyLjI5MyAxMi4wNDY3IDEyLjM0NjMgMTIuNDg2NSAxMi4zNzNDMTIuOTUzIDEyLjQyNjMgMTMuMzI2MyAxMi43NTk3IDEzLjQxOTYgMTMuMjEzTDEzLjQ3MjkgMTMuMzQ2M0MxMy42MTk1IDEzLjk0NjMgMTQuMDk5MyAxNC40MTMgMTQuNzEyNSAxNC41MzNMMTcuODcxNSAxNS4xNTk3QzE4LjQ4NDYgMTUuMjUzIDE5LjEyNDQgMTQuOTk5NyAxOS40NzEgMTQuNDkzTDE5LjU5MDkgMTQuMzMzQzE5Ljg0NDIgMTMuOTU5NyAyMC4zMjQgMTMuNzg2MyAyMC43NzcyIDEzLjg5M0MyMS4zMTA0IDE0LjAzOTcgMjEuODU2OSAxNC4xODYzIDIyLjM5IDE0LjMzM1YxNC4zNDYzWiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xOC4yMTggMTguMTk5N0MxOC4wMTgxIDE5LjI5MyAxOC43Mzc5IDIwLjMzMyAxOS44MzA4IDIwLjUzM0MyMC45MzcxIDIwLjczMyAyMS45NjM1IDIwLjAxMyAyMi4xNzY4IDE4LjkxOTdDMjIuMzc2NyAxNy44MjYzIDIxLjY1NjkgMTYuNzg2MyAyMC41NjM5IDE2LjU4NjNDMTkuNDcxIDE2LjM4NjMgMTguNDMxMyAxNy4xMDYzIDE4LjIxOCAxOC4xOTk3WiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiM1QTJCN0EiLz48L3N2Zz4=')">
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjIuNjI5OSA1LjI1M0MyMy4zNjMgNS4zMDYzMyAyNC4xODk0IDUuODEzIDI0Ljg1NTkgNi42Nzk2NkMyNS45ODg5IDguMTMzIDI2Ljg1NTMgOC44Mzk2NiAyOC4wMTQ5IDkuMDI2MzNDMjguNTQ4IDkuMTMzIDI5LjE4NzggOS4wNzk2NiAyOS42Njc3IDguNzk5NjZDMzAuMjAwOSA4LjUwNjMzIDMwLjUwNzQgOC4wNTMgMzAuNjI3NCA3LjU0NjMzQzMwLjc2MDcgNi44NjYzMyAzMC41ODc0IDUuNzk5NjYgMjkuNTc0NCA1LjM0NjMzQzI4LjYxNDcgNC45MzMgMjguMDY4MiA1LjY5MyAyOC4wNjgyIDUuNjkzQzI4LjA2ODIgNS42OTMgMjguNzc0NiA1LjUwNjMzIDI5LjIwMTIgNS45NDYzM0MyOS40MTQ0IDYuMTczIDI5LjUwNzcgNi40NjYzMyAyOS40NDExIDYuNzg2MzNDMjkuMzYxMSA3LjE4NjMzIDI4Ljk3NDYgNy40Nzk2NiAyOC40ODE0IDcuMzk5NjZDMjcuNzc1IDcuMjkzIDI3LjQ1NTEgNi43MzMgMjYuOTM1MiA1Ljg5M0MyNi40OTU0IDUuMjI2MzMgMjUuNzYyMyAzLjg1MyAyNC42NTYgMi43NTk2NkMyMy40NDMgMS41OTk2NiAyMC4yMzA3IDAuNTE5NjYyIDE4LjIzMTMgMi4yMTNDMTYuNTkxOSAzLjU3MyAxNi4zNTE5IDUuMzg2MzMgMTYuMzEyIDUuNzg2MzNIMTYuMjcyQzEwLjk2NyA0LjgyNjMzIDUuNzk1MzMgNy44Nzk2NiAzLjk4MjU4IDEyLjc0NjNDMi4xMDMxOCAxMi43NDYzIDEuNjEgMTMuNzA2MyAxLjM5Njc0IDE0Ljg5M0MxLjE4MzQ3IDE2LjA1MyAxLjQ1MDA1IDE3LjEwNjMgMy4wNzYyIDE3Ljc1OTdDMy4yMDk0OSAyMC41MzMgNC4wODkyMSAyMy4xMzMgNS42NzUzNyAyNS4yMzk3QzUuOTgxOTQgMjUuNjEzIDYuODM1IDI2LjUzMyA2LjgzNSAyNy4wMTNMNi4wMzUyNSAyOS45NTk3QzYuMDM1MjUgMzAuNDI2MyA2LjQ3NTExIDMwLjc1OTcgNi45MTQ5NyAzMC42Mzk3TDExLjc1MzQgMjkuNDM5N0MxMi4yMzMzIDI5LjMxOTcgMTIuNjE5OCAyOS4zMzMgMTMuMTEzIDI5LjQxM0wxNS4yMzIzIDI5Ljc3M0MyMC44ODM4IDMwLjc5OTcgMjUuOTYyMiAyNy4xMTk3IDI3Ljg0MTYgMjIuMzczQzI5LjY2NzcgMjIuMzMzIDMwLjIxNDIgMjEuMzg2MyAzMC40NDA4IDIwLjE5OTdDMzAuNjU0IDE5LjAyNjMgMzAuNDgwOCAxNy45NDYzIDI4Ljc3NDYgMTcuMjc5N0MyOC44NDEzIDEyLjYxMyAyNS44Mjg5IDguMzczIDIxLjM2MzcgNi44MjYzM0MyMS4xNTA0IDYuMjc5NjYgMjEuMzIzNyA1Ljg5MyAyMS41MzcgNS42NTNDMjEuODAzNSA1LjM0NjMzIDIyLjIxNjcgNS4yMTMgMjIuNjI5OSA1LjIzOTY2VjUuMjUzWk0yMi4zOSAxNC4zNDYzTDIzLjAyOTggMTQuNTE5N0MyMy44OTYyIDE0Ljc4NjMgMjQuNTA5MyAxNS40Nzk3IDI0LjU0OTMgMTYuMjkzQzI0LjU4OTMgMTcuNTczIDI0LjE4OTQgMjAuMDUzIDIzLjczNjMgMjEuMzk5N0wyMy40ODMgMjIuMDI2M0MyMy4xODk4IDIyLjc4NjMgMjIuMzc2NyAyMy4yNjYzIDIxLjQzMDMgMjMuMTczTDIwLjgxNzIgMjMuMTE5N0MxNy4wMTg0IDIyLjc5OTcgMTMuMjMyOSAyMi4xMzMgOS41NTQxMyAyMS4wNjYzTDguNzk0MzcgMjAuODUzQzcuOTE0NjUgMjAuNTg2MyA3LjMwMTUxIDE5LjgzOTcgNy4yODgxOCAxOS4wNTNWMTguMzczQzcuNDYxNDYgMTYuNTQ2MyA3LjU2ODA5IDE1LjMzMyA4LjI4Nzg2IDEzLjI5M0M4LjU5NDQzIDEyLjU3MyA5LjQzNDE2IDEyLjExOTcgMTAuMzI3MiAxMi4xODYzTDExLjE1MzYgMTIuMjY2M0MxMS41OTM1IDEyLjI5MyAxMi4wNDY3IDEyLjM0NjMgMTIuNDg2NSAxMi4zNzNDMTIuOTUzIDEyLjQyNjMgMTMuMzI2MyAxMi43NTk3IDEzLjQxOTYgMTMuMjEzTDEzLjQ3MjkgMTMuMzQ2M0MxMy42MTk1IDEzLjk0NjMgMTQuMDk5MyAxNC40MTMgMTQuNzEyNSAxNC41MzNMMTcuODcxNSAxNS4xNTk3QzE4LjQ4NDYgMTUuMjUzIDE5LjEyNDQgMTQuOTk5NyAxOS40NzEgMTQuNDkzTDE5LjU5MDkgMTQuMzMzQzE5Ljg0NDIgMTMuOTU5NyAyMC4zMjQgMTMuNzg2MyAyMC43NzcyIDEzLjg5M0MyMS4zMTA0IDE0LjAzOTcgMjEuODU2OSAxNC4xODYzIDIyLjM5IDE0LjMzM1YxNC4zNDYzWiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xOC4yMTggMTguMTk5N0MxOC4wMTgxIDE5LjI5MyAxOC43Mzc5IDIwLjMzMyAxOS44MzA4IDIwLjUzM0MyMC45MzcxIDIwLjczMyAyMS45NjM1IDIwLjAxMyAyMi4xNzY4IDE4LjkxOTdDMjIuMzc2NyAxNy44MjYzIDIxLjY1NjkgMTYuNzg2MyAyMC41NjM5IDE2LjU4NjNDMTkuNDcxIDE2LjM4NjMgMTguNDMxMyAxNy4xMDYzIDE4LjIxOCAxOC4xOTk3WiIgZmlsbD0iIzVBMkI3QSIvPjxwYXRoIGQ9Ik0xMi4wNzMzIDE1Ljg2NjNDMTAuOTY3IDE1LjY1MyA5Ljk0MDY3IDE2LjM4NjMgOS43Mjc0IDE3LjQ2NjNMMTAuOTAwNCAxNy42Nzk3QzEwLjk4MDMgMTcuMjM5NyAxMS40MDY5IDE2Ljk0NjMgMTEuODYwMSAxNy4wMjYzQzEyLjI5OTkgMTcuMTA2MyAxMi41OTMyIDE3LjUzMyAxMi41MjY1IDE3Ljk3M0wxMy42OTk1IDE4LjE5OTdDMTMuODk5NCAxNy4xMDYzIDEzLjE3OTYgMTYuMDY2MyAxMi4wODY2IDE1Ljg2NjNIMTIuMDczM1oiIGZpbGw9IiM1QTJCN0EiLz48L3N2Zz4=" width="32" height="32" alt="Glow">
+                                </div>
+                            </div>
+                            <div class="glow-head-menu__items">
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v2M10 15v2M3 10h2M15 10h2M5.05 5.05l1.41 1.41M13.54 13.54l1.41 1.41M5.05 14.95l1.41-1.41M13.54 6.46l1.41-1.41"/><circle cx="10" cy="10" r="3"/></svg>New chat</button>
+                                <button class="glow-head-menu__item glow-head-menu__item--active"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l2.5 2.5"/></svg>History</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 7h6M7 10h4"/></svg>Prompts</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4h4"/><path d="M4 17V5a2 2 0 012-2h6l4 4v10a2 2 0 01-2 2H6a2 2 0 01-2-2z"/></svg>Upload documents</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/><path d="M7 8h6M7 11h4"/></svg>Saved responses</button>
+                                <button class="glow-head-menu__item"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15l4-8 4 5 2-3 4 6"/><circle cx="14" cy="7" r="2"/></svg>Feedback</button>
+                            </div>
+                </div>
+
+                    <!-- Thread (40%) -->
+                    <div class="surf-canvas-thread">
+                        <div class="surf-canvas-thread__head">Strategy Thread</div>
+                        <div class="surf-canvas-thread__messages">
+                            <div class="surf-canvas-msg surf-canvas-msg--user">Build a marketing strategy for our summer launch</div>
+                            <div class="surf-canvas-msg surf-canvas-msg--ai">
+                                <div class="surf-canvas-msg__label" style="color:#888;">Glow</div>
+                                I've analyzed your top-performing services and audience segments. Here's a 3-pillar strategy focused on Facials, your highest-revenue service.
+                            </div>
+                            <div class="surf-canvas-msg surf-canvas-msg--user">Can you write 3 subject line options?</div>
+                            <div class="surf-canvas-msg surf-canvas-msg--ai">
+                                <div class="surf-canvas-msg__label"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle; margin-right: 4px;"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#canvas-msg-grad)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#canvas-msg-grad2)"/><defs><linearGradient id="canvas-msg-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#C0429F"/><stop offset="1" stop-color="#5A2B7A"/></linearGradient><linearGradient id="canvas-msg-grad2" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#C0429F"/><stop offset="1" stop-color="#5A2B7A"/></linearGradient></defs></svg><span style="font-size: 13px; background: linear-gradient(137deg, #C0429F 0%, #5A2B7A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Glow</span></div>
+                                Done — I've added 3 subject line options to the artifact panel on the right. Click any to copy.
+                            </div>
+                        </div>
+                        <div class="surf-prompt-box">
+                            <div class="surf-prompt-box__border-ring">
+                                <div class="surf-prompt-box__input-row">
+                                    <span class="surf-prompt-box__sparkle"><svg class="glow-sparkle-svg" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="url(#surf-sparkle-grad)"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="url(#surf-sparkle-grad2)"/><defs><linearGradient id="surf-sparkle-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#C0429F"/><stop offset="1" stop-color="#5A2B7A"/></linearGradient><linearGradient id="surf-sparkle-grad2" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#C0429F"/><stop offset="1" stop-color="#5A2B7A"/></linearGradient></defs></svg></span>
+                                    <input class="surf-prompt-box__input" type="text" placeholder="Continue the strategy…">
+                                </div>
+                                <div class="surf-prompt-box__toolbar">
+                                    <button class="surf-prompt-box__plus-btn" aria-label="Add context">
+                                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                                    </button>
+                                    <button class="surf-prompt-box__action-btn" aria-label="Send">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="surf-prompt-box__disclaimer">Glow can make mistakes. Verify important information.</div>
+                        </div>
+                    </div>
+                    <!-- Artifact grid (60%) -->
+                    <div class="surf-canvas-artifact">
+                        <div class="surf-canvas-artifact__head">
+                            Artifacts
+                            <span class="surf-canvas-artifact__tag">Summer Launch</span>
+                        </div>
+                        <div class="surf-canvas-card">
+                            <div class="surf-canvas-card__title">3-Pillar Summer Strategy</div>
+                            <div class="surf-canvas-card__body">1. Lead with Facials — your $40K top performer. 2. SMS re-engagement for cart abandoners (23% open rate). 3. Tuesday send window — historically highest for your audience.</div>
+                            <div class="surf-canvas-card__bar" style="width:100%;"></div>
+                        </div>
+                        <div class="surf-canvas-card">
+                            <div class="surf-canvas-card__title">Subject Lines</div>
+                            <div class="surf-canvas-card__body" style="display:flex;flex-direction:column;gap:8px;">
+                                <div style="padding:8px 12px;background:rgba(184,160,208,0.18);border-radius:6px;cursor:pointer;border:1px solid rgba(184,160,208,0.25);">Glow Up This Summer — Your Facial Awaits</div>
+                                <div style="padding:8px 12px;background:#f5f6fa;border-radius:6px;cursor:pointer;">Your Summer Radiance Starts Here</div>
+                                <div style="padding:8px 12px;background:#f5f6fa;border-radius:6px;cursor:pointer;">Treat Yourself: Book a Facial This Week</div>
+                            </div>
+                        </div>
+                        <div class="surf-canvas-card">
+                            <div class="surf-canvas-card__title">Audience Recommendation</div>
+                            <div class="surf-canvas-card__body">Target: Cart abandoners + Serene Dreamers segment. Estimated reach: 1,840 contacts. Projected conversion: 6–9% based on similar campaigns.</div>
+                            <div class="surf-canvas-card__bar" style="width:72%;"></div>
+                        </div>
+                    </div>
+                </div>
+                    </div><!-- end surf-canvas -->
+                        </div><!-- end surf-vp-body -->
+                    </div><!-- end surf-vp-main -->
+                </div><!-- end surf-viewport -->
+            </div><!-- end surf-playground -->
+
+            <!-- Launch Bar -->
+            <div class="surf-launch-bar">
+                <span class="surf-launch-bar__label">Launch</span>
+                <button class="surf-btn" id="btnOverlay">
+                    <img src="images/glow-head-ruby.svg" width="14" height="14" alt="">
+                    Assistant
+                </button>
+                <button class="surf-btn" id="btnSidebar">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                    Copilot
+                </button>
+                <button class="surf-btn" id="btnCanvas">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3"/></svg>
+                    Canvas
+                </button>
+                <button class="surf-btn" id="btnInline">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="currentColor"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="currentColor"/></svg>
+                    Inline Widget
+                </button>
+                <button class="surf-btn" id="btnReset" style="margin-left:auto; color:#9E9E9E; border-color:rgba(40, 30, 20,0.1);">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 109-9 9 9 0 00-9 9M3 3v6h6"/></svg>
+                    Reset
+                </button>
+            </div>
+
+            <!-- Playground JS -->
+            <script>
+            (function() {
+                var viewport = document.getElementById('surfViewport');
+                var label = document.getElementById('surfLabel');
+
+                function setLabel(text) {
+                    if (text) { label.textContent = text; label.classList.add('visible'); }
+                    else { label.classList.remove('visible'); }
+                }
+                function setActiveBtn(id) {
+                    document.querySelectorAll('.surf-btn').forEach(function(b) { b.classList.remove('surf-btn--active'); });
+                    var overlayIcon = document.querySelector('#btnOverlay img');
+                    if (overlayIcon) overlayIcon.src = 'images/glow-head-ruby.svg';
+                    if (id) {
+                        document.getElementById(id).classList.add('surf-btn--active');
+                        if (id === 'btnOverlay' && overlayIcon) overlayIcon.src = 'images/glow-head-white.svg';
+                    }
+                }
+
+                // ===== Assistant Panel =====
+                var assistantPanel = document.getElementById('surfAssistantPanel');
+
+                function openOverlay() {
+                    closeAll();
+                    if (assistantPanel) assistantPanel.classList.add('open');
+                    setLabel('Surface 1 — Assistant Panel');
+                    setActiveBtn('btnOverlay');
+                }
+                function closeOverlay() {
+                    if (assistantPanel) assistantPanel.classList.remove('open');
+                    setLabel(null); setActiveBtn(null);
+                }
+
+                document.getElementById('btnOverlay').addEventListener('click', openOverlay);
+                document.getElementById('vpGlowHead').addEventListener('click', openOverlay);
+                var overlayCloseBtn = document.getElementById('overlayClose');
+                if (overlayCloseBtn) overlayCloseBtn.addEventListener('click', closeOverlay);
+
+                // ===== Sidebar =====
+                var sidebar = document.getElementById('surfSidebar');
+
+                function openSidebar() {
+                    closeAll();
+                    sidebar.classList.add('open');
+                    viewport.classList.add('copilot-open');
+                    setLabel('Surface 2 — Copilot Sidebar');
+                    setActiveBtn('btnSidebar');
+                }
+                function closeSidebar() {
+                    sidebar.classList.remove('open');
+                    viewport.classList.remove('copilot-open');
+                    setLabel(null); setActiveBtn(null);
+                }
+
+                document.getElementById('btnSidebar').addEventListener('click', openSidebar);
+                document.getElementById('sidebarClose').addEventListener('click', closeSidebar);
+                document.getElementById('surfFab').addEventListener('click', openSidebar);
+
+                // ===== Canvas =====
+                var canvas = document.getElementById('surfCanvas');
+
+                function openCanvas() {
+                    closeAll();
+                    canvas.classList.add('open');
+                    setActiveBtn('btnCanvas');
+                }
+                function closeCanvas() {
+                    canvas.classList.remove('open');
+                    setActiveBtn(null);
+                }
+
+                document.getElementById('btnCanvas').addEventListener('click', openCanvas);
+                document.getElementById('canvasClose').addEventListener('click', closeCanvas);
+                // ESC key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') { closeCanvas(); closeOverlay(); closeSidebar(); }
+                });
+
+                // ===== Inline sparkle =====
+                var sparkleBtn = document.getElementById('inlineSparkleBtn');
+                var popover = document.getElementById('inlinePopover');
+                var inlineOpen = false;
+
+                function openInline() {
+                    closeAll();
+                    inlineOpen = true;
+                    sparkleBtn.classList.add('active');
+                    popover.classList.add('open');
+                    setLabel('Surface 4 — Inline Widget');
+                    setActiveBtn('btnInline');
+                }
+                function closeInline() {
+                    inlineOpen = false;
+                    sparkleBtn.classList.remove('active');
+                    popover.classList.remove('open');
+                    setLabel(null); setActiveBtn(null);
+                }
+
+                document.getElementById('btnInline').addEventListener('click', openInline);
+                sparkleBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    inlineOpen ? closeInline() : openInline();
+                });
+
+                // Clicking a suggestion fills the input
+                popover.querySelectorAll('.surf-inline-suggestion').forEach(function(s) {
+                    s.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var field = document.querySelector('.surf-vp-form__input');
+                        if (field) field.value = s.textContent.trim().replace(/^[•\s]+/, '');
+                        closeInline();
+                    });
+                });
+
+                // Click outside popover closes it (ignore clicks on launch-bar controls — those manage their own open/close state)
+                document.addEventListener('click', function(e) {
+                    if (!popover.contains(e.target) && e.target !== sparkleBtn && !e.target.closest('.surf-btn')) closeInline();
+                });
+
+                // ===== Glow mark menus =====
+                var menuMap = {
+                    'assistantGlowHead': { menu: 'menuAssistant', backdrop: 'menuBackdropAssistant' },
+                    'sidebarGlowHead': { menu: 'menuSidebar', backdrop: 'menuBackdropSidebar' },
+                    'canvasGlowHead': { menu: 'menuCanvas', backdrop: 'menuBackdropCanvas' }
+                };
+                function closeAllMenus() {
+                    document.querySelectorAll('.glow-head-menu.open').forEach(function(m) { m.classList.remove('open'); });
+                    document.querySelectorAll('.glow-head-menu-backdrop.open').forEach(function(b) { b.classList.remove('open'); });
+                    document.querySelectorAll('.glow-head-trigger.menu-active').forEach(function(t) { t.classList.remove('menu-active'); });
+                }
+                document.getElementById('canvasMenuCollapse').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeAllMenus();
+                });
+                Object.keys(menuMap).forEach(function(triggerId) {
+                    var trigger = document.getElementById(triggerId);
+                    if (!trigger) return;
+                    trigger.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var ids = menuMap[triggerId];
+                        var menu = document.getElementById(ids.menu);
+                        var backdrop = document.getElementById(ids.backdrop);
+                        if (!menu) return;
+                        var wasOpen = menu.classList.contains('open');
+                        closeAllMenus();
+                        if (!wasOpen) {
+                            menu.classList.add('open');
+                            if (backdrop) backdrop.classList.add('open');
+                            trigger.classList.add('menu-active');
+                        }
+                    });
+                });
+                document.querySelectorAll('.glow-head-menu-backdrop').forEach(function(bd) {
+                    bd.addEventListener('click', function() { closeAllMenus(); });
+                });
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.glow-head-menu')) closeAllMenus();
+                });
+
+                // ===== Insights & Draft → open Canvas =====
+                document.getElementById('btnInsights').addEventListener('click', openCanvas);
+                document.getElementById('btnDraft').addEventListener('click', openCanvas);
+
+                // ===== Reset =====
+                function closeAll() {
+                    closeOverlay();
+                    closeSidebar();
+                    closeCanvas();
+                    closeInline();
+                    closeAllMenus();
+                }
+                document.getElementById('btnReset').addEventListener('click', closeAll);
+
+            })();
+            </script>
+
+        </section>
+
+        <div class="ai-hub__cards">
+            <a href="ai-foundations.html" class="ai-hub__card">
+                <span class="ai-hub__card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+                <h2 class="ai-hub__card-title">Foundations</h2>
+                <p class="ai-hub__card-desc">Core design principles, the AI maturity model, and decision frameworks for when and how to introduce AI into product surfaces.</p>
+                <div class="ai-hub__card-tags">
+                    <span class="ai-hub__card-tag">Principles</span>
+                    <span class="ai-hub__card-tag">Maturity Model</span>
+                    <span class="ai-hub__card-tag">Decision Framework</span>
+                </div>
+            </a>
+
+            <a href="ai-visual-language.html" class="ai-hub__card">
+                <span class="ai-hub__card-icon"><img src="images/glow-head-ruby.svg" width="28" height="28" alt=""></span>
+                <h2 class="ai-hub__card-title">Visual Language</h2>
+                <p class="ai-hub__card-desc">Color palettes, gradients, typography, and iconography that define Glow's visual identity. Includes exportable design tokens.</p>
+                <div class="ai-hub__card-tags">
+                    <span class="ai-hub__card-tag">Ruby Berry</span>
+                    <span class="ai-hub__card-tag">Gradients</span>
+                    <span class="ai-hub__card-tag">Iconography</span>
+                    <span class="ai-hub__card-tag">Design Tokens</span>
+                </div>
+            </a>
+
+            <a href="ai-components.html" class="ai-hub__card">
+                <span class="ai-hub__card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+                <h2 class="ai-hub__card-title">Component Gallery</h2>
+                <p class="ai-hub__card-desc">Interactive Glow Prompt Box with animated states, suggestion chips, and the Copilot Sidebar demo. The primary AI interaction toolkit.</p>
+                <div class="ai-hub__card-tags">
+                    <span class="ai-hub__card-tag">Prompt Box</span>
+                    <span class="ai-hub__card-tag">Suggestion Chips</span>
+                    <span class="ai-hub__card-tag">Copilot Layouts</span>
+                    <span class="ai-hub__card-tag">Design System Mapping</span>
+                </div>
+            </a>
+
+            <a href="ai-trust.html" class="ai-hub__card">
+                <span class="ai-hub__card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C0429F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+                <h2 class="ai-hub__card-title">Trust &amp; Governance</h2>
+                <p class="ai-hub__card-desc">Confidence indicators, processing state logic, error handling patterns, and documented anti-patterns to avoid.</p>
+                <div class="ai-hub__card-tags">
+                    <span class="ai-hub__card-tag">Confidence Scale</span>
+                    <span class="ai-hub__card-tag">Error States</span>
+                    <span class="ai-hub__card-tag">Anti-Patterns</span>
+                    <span class="ai-hub__card-tag">Processing States</span>
+                </div>
+            </a>
+        </div>
+    </main>
+
+</body>
+</html>

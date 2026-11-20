@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Suggestive Guidance - Rosewood Design System</title>
+    <link rel="stylesheet" href="../dist/styles/rosewood-base.css" />
+    <link rel="stylesheet" href="./styles/documentation.css" />
+</head>
+<body>
+    <div class="page">
+        <div class="page__container">
+            <div class="page__content">
+                <div class="content">
+                    <header class="component-header">
+                        <h1 class="heading-1">AI Suggestive Guidance</h1>
+                        <p class="text-body">Patterns for AI-driven suggestions, nudges, and progressive disclosure that guide users without overwhelming them.</p>
+                    </header>
+
+                    <section id="guidance-patterns" class="section">
+                        <h2 class="heading-2">Guidance Patterns</h2>
+                        <p class="text-body">AI suggestive guidance uses four core pattern types, each calibrated to a different level of intrusiveness. The right pattern depends on the user's current activity, the urgency of the suggestion, and how much context is needed for the user to act.</p>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Pattern</th>
+                                    <th>Use When</th>
+                                    <th>Intrusiveness Level</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Inline Suggestion</td>
+                                    <td>User is actively editing</td>
+                                    <td>Low</td>
+                                </tr>
+                                <tr>
+                                    <td>Suggestion Card</td>
+                                    <td>User needs options</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Nudge</td>
+                                    <td>User might benefit from action</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Progressive Disclosure</td>
+                                    <td>Complex decision needed</td>
+                                    <td>Low</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <section id="inline-suggestions" class="section">
+                        <h2 class="heading-2">Inline Suggestions</h2>
+                        <div class="ai-placeholder">[Insert inline suggestion example: ghost text, autocomplete, inline recommendation]</div>
+                        <p class="text-body">Inline suggestions appear directly within the user's workflow, such as ghost text in an input field or an autocomplete recommendation. They should be visually subtle, easy to accept with a single keystroke, and never block the user's current action. Dismiss on any other input.</p>
+                    </section>
+
+                    <section id="suggestion-cards" class="section">
+                        <h2 class="heading-2">Suggestion Cards</h2>
+                        <div class="ai-placeholder">[Insert suggestion card layout: card with title, description, accept/dismiss actions]</div>
+                        <p class="text-body">Suggestion cards present a structured recommendation with a title, brief description, and clear accept/dismiss actions. Each card should convey the suggestion's value in one or two lines. Cards can appear in a dedicated suggestions panel, inline within a list, or as a floating overlay near the relevant context.</p>
+                    </section>
+
+                    <section id="nudge-tooltip" class="section">
+                        <h2 class="heading-2">Nudge &amp; Tooltip Patterns</h2>
+                        <p class="text-body">Nudges proactively surface AI insights or recommended actions, while tooltips provide on-demand explanations. Use nudges when the user may not be aware of an opportunity; use tooltips when the user is exploring and needs clarification. Nudges should be dismissible and respect frequency caps to avoid fatigue.</p>
+                        <div class="ai-placeholder">[Insert nudge and tooltip examples side by side]</div>
+                    </section>
+
+                    <section id="progressive-disclosure" class="section">
+                        <h2 class="heading-2">Progressive Disclosure</h2>
+                        <p class="text-body">Progressive disclosure reveals AI-generated information in layers, starting with a concise summary and allowing users to drill into increasing levels of detail on demand. This pattern prevents information overload while keeping full transparency accessible.</p>
+                        <h3 class="heading-3">Disclosure Levels</h3>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Content Shown</th>
+                                    <th>Trigger</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Summary</td>
+                                    <td>Headline + confidence</td>
+                                    <td>Default</td>
+                                </tr>
+                                <tr>
+                                    <td>Detail</td>
+                                    <td>Explanation + data</td>
+                                    <td>Click "Show more"</td>
+                                </tr>
+                                <tr>
+                                    <td>Full</td>
+                                    <td>Raw data + audit</td>
+                                    <td>Click "Full details"</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <section id="dismissal-persistence" class="section">
+                        <h2 class="heading-2">Dismissal &amp; Persistence</h2>
+                        <p class="text-body">Suggestions must respect user preferences around dismissal. Overly persistent suggestions erode trust, while suggestions that disappear too quickly may be missed. Follow these rules to balance visibility with respect for the user's attention.</p>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Behavior</th>
+                                    <th>Rule</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Single dismiss</td>
+                                    <td>Hide for current session</td>
+                                </tr>
+                                <tr>
+                                    <td>Permanent dismiss</td>
+                                    <td>Hide after 3 dismissals of same type</td>
+                                </tr>
+                                <tr>
+                                    <td>Re-surface</td>
+                                    <td>Show again if context changes significantly</td>
+                                </tr>
+                                <tr>
+                                    <td>Snooze</td>
+                                    <td>Allow user to set "remind me later"</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <div class="related-pages">
+                        <h3>Related Pages</h3>
+                        <div class="related-pages-list">
+                            <a href="ai-prompt-input.html">Prompt Input</a>
+                            <a href="ai-confidence-markers.html">Confidence Markers</a>
+                            <a href="ai-anti-patterns.html">Anti-Patterns</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="page__nav">
+                    <div class="nav-container">
+                        <div class="nav-title">Contents</div>
+                        <ul class="nav-list">
+                            <li><a href="#guidance-patterns">Guidance Patterns</a></li>
+                            <li><a href="#inline-suggestions">Inline Suggestions</a></li>
+                            <li><a href="#suggestion-cards">Suggestion Cards</a></li>
+                            <li><a href="#nudge-tooltip">Nudge &amp; Tooltip Patterns</a></li>
+                            <li><a href="#progressive-disclosure">Progressive Disclosure</a></li>
+                            <li><a href="#dismissal-persistence">Dismissal &amp; Persistence</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./scripts/documentation.js"></script>
+</body>
+</html>

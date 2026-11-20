@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt Input - Rosewood Design System</title>
+    <link rel="stylesheet" href="../dist/styles/rosewood-base.css" />
+    <link rel="stylesheet" href="./styles/documentation.css" />
+</head>
+<body>
+    <div class="page">
+        <div class="page__container">
+            <div class="page__content">
+                <div class="content">
+                    <header class="component-header">
+                        <h1 class="heading-1">AI Prompt Input</h1>
+                        <p class="text-body">Input components and interaction patterns for users to provide instructions, queries, and context to AI features.</p>
+                    </header>
+
+                    <section id="input-anatomy" class="section">
+                        <h2 class="heading-2">Input Component Anatomy</h2>
+                        <div class="ai-placeholder">[Insert annotated anatomy diagram: input field, send button, context area, character count, suggestions dropdown]</div>
+                        <p class="text-body">The prompt input component consists of several key parts: the text input field where users type their query, a send button to submit the prompt, a context area displaying attached references, a character count indicator, and an optional suggestions dropdown that appears as the user types.</p>
+                    </section>
+
+                    <section id="prompt-field-variants" class="section">
+                        <h2 class="heading-2">Prompt Field Variants</h2>
+                        <h3 class="heading-3">Single-line</h3>
+                        <p class="text-body">Use the single-line variant for quick, simple queries where the expected input is short. This variant is ideal for search-like interactions, inline commands, and brief instructions.</p>
+                        <div class="ai-placeholder">[Insert single-line prompt input example]</div>
+                        <h3 class="heading-3">Multi-line</h3>
+                        <p class="text-body">Use the multi-line variant when users need to provide detailed instructions, longer context, or multi-step prompts. The field auto-expands as the user types and supports line breaks.</p>
+                        <div class="ai-placeholder">[Insert multi-line prompt input example]</div>
+                        <h3 class="heading-3">Contextual</h3>
+                        <p class="text-body">The contextual variant pre-fills part of the prompt with relevant context from the current view, such as a selected record, active filters, or page state. Users can edit the pre-filled context before submitting.</p>
+                        <div class="ai-placeholder">[Insert contextual prompt input with pre-filled context]</div>
+                    </section>
+
+                    <section id="auto-suggestions" class="section">
+                        <h2 class="heading-2">Auto-suggestions</h2>
+                        <p class="text-body">The auto-suggestion dropdown appears beneath the input field as the user types, offering relevant prompt completions, recently used prompts, and contextually appropriate queries. Users can navigate suggestions with arrow keys and accept with Tab or click.</p>
+                        <div class="ai-placeholder">[Insert auto-suggestion dropdown example]</div>
+                    </section>
+
+                    <section id="context-chips" class="section">
+                        <h2 class="heading-2">Context Chips</h2>
+                        <p class="text-body">Context chips attach to the prompt input to provide additional parameters, filters, or entity references that scope the AI query. They use the existing Chip component and can be added manually or auto-populated based on the current view context. Each chip is removable and editable.</p>
+                        <div class="ai-placeholder">[Insert context chips example: selected filters, entities, parameters]</div>
+                    </section>
+
+                    <section id="character-token-limits" class="section">
+                        <h2 class="heading-2">Character &amp; Token Limits</h2>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Limit Type</th>
+                                    <th>Value</th>
+                                    <th>Visual Indicator</th>
+                                    <th>Behavior at Limit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Character limit</td>
+                                    <td>2,000 characters</td>
+                                    <td>Counter turns red at 90%</td>
+                                    <td>Input is blocked; user is notified</td>
+                                </tr>
+                                <tr>
+                                    <td>Token limit</td>
+                                    <td>500 tokens</td>
+                                    <td>Token estimate shown below input</td>
+                                    <td>Warning displayed; submit still allowed</td>
+                                </tr>
+                                <tr>
+                                    <td>Context window</td>
+                                    <td>4,096 tokens (prompt + context)</td>
+                                    <td>Progress bar in context area</td>
+                                    <td>Oldest context chips are trimmed automatically</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <section id="keyboard-shortcuts" class="section">
+                        <h2 class="heading-2">Keyboard Shortcuts</h2>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Enter</td>
+                                    <td>Submit prompt</td>
+                                </tr>
+                                <tr>
+                                    <td>Shift+Enter</td>
+                                    <td>New line</td>
+                                </tr>
+                                <tr>
+                                    <td>Escape</td>
+                                    <td>Clear input</td>
+                                </tr>
+                                <tr>
+                                    <td>Up Arrow</td>
+                                    <td>Previous prompt</td>
+                                </tr>
+                                <tr>
+                                    <td>Tab</td>
+                                    <td>Accept suggestion</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <div class="related-pages">
+                        <h3>Related Pages</h3>
+                        <div class="related-pages-list">
+                            <a href="ai-prompt-box-demo.html">Prompt Box Demo</a>
+                            <a href="ai-suggestive-guidance.html">Suggestive Guidance</a>
+                            <a href="ai-component-inventory.html">design system Component Inventory</a>
+                            <a href="ai-visual-specs.html">Visual Specs</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="page__nav">
+                    <div class="nav-container">
+                        <div class="nav-title">Contents</div>
+                        <ul class="nav-list">
+                            <li><a href="#input-anatomy">Input Component Anatomy</a></li>
+                            <li><a href="#prompt-field-variants">Prompt Field Variants</a></li>
+                            <li><a href="#auto-suggestions">Auto-suggestions</a></li>
+                            <li><a href="#context-chips">Context Chips</a></li>
+                            <li><a href="#character-token-limits">Character &amp; Token Limits</a></li>
+                            <li><a href="#keyboard-shortcuts">Keyboard Shortcuts</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./scripts/documentation.js"></script>
+</body>
+</html>

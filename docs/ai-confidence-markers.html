@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Confidence Markers - Rosewood Design System</title>
+    <link rel="stylesheet" href="../dist/styles/rosewood-base.css" />
+    <link rel="stylesheet" href="./styles/documentation.css" />
+</head>
+<body>
+    <div class="page">
+        <div class="page__container">
+            <div class="page__content">
+                <div class="content">
+                    <header class="component-header">
+                        <h1 class="heading-1">AI Confidence Markers</h1>
+                        <p class="text-body">Visual and interactive patterns for communicating AI confidence levels, enabling user override, and maintaining audit trails.</p>
+                    </header>
+
+                    <section id="confidence-scale" class="section">
+                        <h2 class="heading-2">Confidence Scale</h2>
+                        <p class="text-body">The confidence scale provides a standardized way to communicate how certain the AI is about a given prediction, recommendation, or action. Each level maps to a specific color, label, and icon to ensure consistent visual communication across all AI-powered features.</p>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Range</th>
+                                    <th>Color</th>
+                                    <th>Label</th>
+                                    <th>Icon</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>High</td>
+                                    <td>90–100%</td>
+                                    <td>Green</td>
+                                    <td>High confidence</td>
+                                    <td>Checkmark</td>
+                                </tr>
+                                <tr>
+                                    <td>Medium</td>
+                                    <td>70–89%</td>
+                                    <td>Amber</td>
+                                    <td>Moderate confidence</td>
+                                    <td>Info</td>
+                                </tr>
+                                <tr>
+                                    <td>Low</td>
+                                    <td>50–69%</td>
+                                    <td>Orange</td>
+                                    <td>Low confidence</td>
+                                    <td>Warning</td>
+                                </tr>
+                                <tr>
+                                    <td>Very Low</td>
+                                    <td>&lt;50%</td>
+                                    <td>Red</td>
+                                    <td>Needs review</td>
+                                    <td>Alert</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <section id="visual-indicators" class="section">
+                        <h2 class="heading-2">Visual Indicators</h2>
+                        <div class="ai-placeholder">[Insert visual examples: confidence progress bars, color-coded borders, badge indicators, inline confidence labels]</div>
+                        <p class="text-body">Choose the right indicator based on context. Progress bars work well for detailed views where precision matters. Color-coded borders are effective for list items and cards. Badge indicators suit compact layouts, and inline labels are best for accompanying text-based AI outputs.</p>
+                    </section>
+
+                    <section id="confidence-thresholds" class="section">
+                        <h2 class="heading-2">Confidence Thresholds</h2>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Threshold Range</th>
+                                    <th>UI Behavior</th>
+                                    <th>User Action Required</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>90–100%</td>
+                                    <td>Auto-apply with notification</td>
+                                    <td>None</td>
+                                </tr>
+                                <tr>
+                                    <td>70–89%</td>
+                                    <td>Present as suggestion</td>
+                                    <td>Accept or dismiss</td>
+                                </tr>
+                                <tr>
+                                    <td>50–69%</td>
+                                    <td>Flag for review</td>
+                                    <td>Must confirm</td>
+                                </tr>
+                                <tr>
+                                    <td>&lt;50%</td>
+                                    <td>Block auto-action</td>
+                                    <td>Manual input required</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <section id="user-override" class="section">
+                        <h2 class="heading-2">User Override Patterns</h2>
+                        <h3 class="heading-3">Accept</h3>
+                        <p class="text-body">The user confirms the AI suggestion as-is. The system applies the value and logs the acceptance in the audit trail. High-confidence suggestions may be auto-accepted with an undo option.</p>
+                        <h3 class="heading-3">Modify</h3>
+                        <p class="text-body">The user edits the AI suggestion before applying it. The system preserves both the original AI value and the user-modified value in the audit trail for traceability.</p>
+                        <h3 class="heading-3">Reject</h3>
+                        <p class="text-body">The user dismisses the AI suggestion entirely and provides their own input. The system logs the rejection reason when available and uses this feedback to improve future suggestions.</p>
+                        <div class="ai-placeholder">[Insert override interaction flow diagram]</div>
+                    </section>
+
+                    <section id="audit-trail" class="section">
+                        <h2 class="heading-2">Audit Trail</h2>
+                        <p class="text-body">Every AI-driven decision should be logged with sufficient detail to support review, compliance, and model improvement. The audit trail captures the full lifecycle of an AI suggestion from generation through user action.</p>
+                        <div class="ai-placeholder">[Insert audit log UI example]</div>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Timestamp</td>
+                                    <td>Date and time the AI suggestion was generated</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Model</td>
+                                    <td>Identifier of the model and version that produced the suggestion</td>
+                                </tr>
+                                <tr>
+                                    <td>Confidence Score</td>
+                                    <td>The numeric confidence value at the time of suggestion</td>
+                                </tr>
+                                <tr>
+                                    <td>User Action</td>
+                                    <td>Whether the user accepted, modified, or rejected the suggestion</td>
+                                </tr>
+                                <tr>
+                                    <td>Original Value</td>
+                                    <td>The value proposed by the AI</td>
+                                </tr>
+                                <tr>
+                                    <td>Final Value</td>
+                                    <td>The value ultimately applied after user interaction</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <div class="related-pages">
+                        <h3>Related Pages</h3>
+                        <div class="related-pages-list">
+                            <a href="ai-visual-specs.html">Visual Specs</a>
+                            <a href="ai-processing-states.html">Processing States</a>
+                            <a href="ai-suggestive-guidance.html">Suggestive Guidance</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="page__nav">
+                    <div class="nav-container">
+                        <div class="nav-title">Contents</div>
+                        <ul class="nav-list">
+                            <li><a href="#confidence-scale">Confidence Scale</a></li>
+                            <li><a href="#visual-indicators">Visual Indicators</a></li>
+                            <li><a href="#confidence-thresholds">Confidence Thresholds</a></li>
+                            <li><a href="#user-override">User Override Patterns</a></li>
+                            <li><a href="#audit-trail">Audit Trail</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./scripts/documentation.js"></script>
+</body>
+</html>

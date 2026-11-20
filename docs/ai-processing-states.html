@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Processing States - Rosewood Design System</title>
+    <link rel="stylesheet" href="../dist/styles/rosewood-base.css" />
+    <link rel="stylesheet" href="./styles/documentation.css" />
+</head>
+<body>
+    <div class="page">
+        <div class="page__container">
+            <div class="page__content">
+                <div class="content">
+                    <header class="component-header">
+                        <h1 class="heading-1">AI Processing States</h1>
+                        <p class="text-body">Patterns for communicating AI system status including loading, streaming, success, error, and fallback states.</p>
+                    </header>
+
+                    <section id="state-overview" class="section">
+                        <h2 class="heading-2">State Overview</h2>
+                        <p class="text-body">AI interactions move through a defined set of processing states. Each state provides clear visual feedback so users understand what the system is doing and what actions are available to them. Consistent state communication builds trust and reduces uncertainty during AI-powered workflows.</p>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>State</th>
+                                    <th>Visual Indicator</th>
+                                    <th>Typical Duration</th>
+                                    <th>User Action Available</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Idle</td>
+                                    <td>Static AI icon, input field enabled</td>
+                                    <td>Indefinite</td>
+                                    <td>Submit prompt, browse suggestions</td>
+                                </tr>
+                                <tr>
+                                    <td>Loading / Thinking</td>
+                                    <td>Animated shimmer, pulsing dot indicator</td>
+                                    <td>1-5 seconds</td>
+                                    <td>Cancel request</td>
+                                </tr>
+                                <tr>
+                                    <td>Streaming</td>
+                                    <td>Progressive text reveal, typing cursor</td>
+                                    <td>2-30 seconds</td>
+                                    <td>Stop generation, scroll</td>
+                                </tr>
+                                <tr>
+                                    <td>Success</td>
+                                    <td>Completed content with confidence badge</td>
+                                    <td>Persistent</td>
+                                    <td>Accept, edit, regenerate, dismiss</td>
+                                </tr>
+                                <tr>
+                                    <td>Error</td>
+                                    <td>Error icon, red-tinted container</td>
+                                    <td>Until dismissed or retried</td>
+                                    <td>Retry, modify prompt, dismiss</td>
+                                </tr>
+                                <tr>
+                                    <td>Timeout</td>
+                                    <td>Warning icon, muted container</td>
+                                    <td>Until user action</td>
+                                    <td>Retry, use fallback, cancel</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <section id="loading-thinking" class="section">
+                        <h2 class="heading-2">Loading / Thinking</h2>
+                        <div class="ai-placeholder">[Insert animated skeleton/shimmer loading example]</div>
+                        <p class="text-body">Use skeleton screens when the shape of the expected content is predictable, such as a known card layout or list format. Use a spinner for short, indeterminate waits under two seconds. Use shimmer animations for longer waits where content structure is uncertain, as they communicate active progress without implying a specific layout.</p>
+                        <h3 class="heading-3">Guidelines</h3>
+                        <ul>
+                            <li>Do show a loading indicator within 200ms of the request being sent.</li>
+                            <li>Do include a brief contextual message such as "Analyzing your input..." rather than a generic "Loading...".</li>
+                            <li>Do provide a cancel button so users can abort long-running requests.</li>
+                            <li>Don't use multiple simultaneous loading animations in the same view.</li>
+                            <li>Don't block the entire interface while AI content is loading.</li>
+                            <li>Don't show a progress bar unless you can accurately estimate completion.</li>
+                        </ul>
+                    </section>
+
+                    <section id="streaming-progressive" class="section">
+                        <h2 class="heading-2">Streaming / Progressive</h2>
+                        <div class="ai-placeholder">[Insert streaming text animation example]</div>
+                        <p class="text-body">Progressive content reveal shows AI-generated text as it arrives, giving users immediate partial results and a sense of responsiveness. Text should appear in natural reading chunks rather than character-by-character to balance perceived speed with readability. Maintain a blinking cursor or subtle animation at the insertion point to indicate that more content is incoming.</p>
+                        <h3 class="heading-3">Implementation Notes</h3>
+                        <p class="text-body">Buffer incoming tokens and render in word or phrase groups to avoid layout thrashing. Ensure the scroll position follows the latest content unless the user has manually scrolled up. Provide a "Stop generating" control that is always visible during streaming. When streaming completes, smoothly transition the cursor away and enable action buttons such as copy, regenerate, and edit.</p>
+                    </section>
+
+                    <section id="success" class="section">
+                        <h2 class="heading-2">Success</h2>
+                        <p class="text-body">When AI processing completes successfully, transition smoothly from the loading or streaming state to the final content display. Remove loading indicators, show the confidence badge, and enable all interaction controls. The transition should feel seamless rather than abrupt to maintain the user's reading flow.</p>
+                        <h3 class="heading-3">Confirmation Patterns</h3>
+                        <ul>
+                            <li>Display a brief success micro-animation (checkmark fade-in or subtle border flash) lasting no more than 300ms.</li>
+                            <li>Show the AI attribution badge immediately upon completion.</li>
+                            <li>Enable action buttons (accept, edit, regenerate, dismiss) as a group after the content is fully rendered.</li>
+                            <li>If the response includes a confidence score, display the corresponding confidence marker alongside the content.</li>
+                            <li>Preserve the response in a scrollable container so users can review the full output at their own pace.</li>
+                        </ul>
+                    </section>
+
+                    <section id="error-retry" class="section">
+                        <h2 class="heading-2">Error & Retry</h2>
+                        <h3 class="heading-3">Error Messages</h3>
+                        <p class="text-body">Error messages for AI failures should be concise, non-technical, and actionable. Clearly state what went wrong and what the user can do next. Avoid exposing internal error codes or stack traces. Use a red-tinted container with an error icon to visually distinguish error states from other content.</p>
+                        <div class="ai-placeholder">[Insert error message templates: network error, rate limit, content filter, generic failure]</div>
+                        <h3 class="heading-3">Retry Patterns</h3>
+                        <p class="text-body">Provide a prominent retry button within the error container so users can re-attempt the request with a single click. For automatic retries, use exponential backoff starting at 1 second and capping at 30 seconds, with a maximum of 3 automatic attempts before requiring manual intervention. Always inform the user when automatic retries are happening and how many attempts remain.</p>
+                    </section>
+
+                    <section id="timeout-fallback" class="section">
+                        <h2 class="heading-2">Timeout & Fallback</h2>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Scenario</th>
+                                    <th>Timeout Threshold</th>
+                                    <th>Fallback Behavior</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Inline suggestion</td>
+                                    <td>5 seconds</td>
+                                    <td>Dismiss suggestion silently, allow manual trigger</td>
+                                </tr>
+                                <tr>
+                                    <td>Chat response</td>
+                                    <td>30 seconds</td>
+                                    <td>Show timeout message with retry and rephrase options</td>
+                                </tr>
+                                <tr>
+                                    <td>Bulk processing</td>
+                                    <td>60 seconds</td>
+                                    <td>Return partial results with option to continue or cancel</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-body">Graceful degradation ensures that timeouts never leave the user in a dead-end state. When a timeout occurs, preserve any partial results that were received and offer clear paths forward: retry the full request, work with partial results, or fall back to a non-AI workflow. Never discard user input when a timeout occurs.</p>
+                    </section>
+
+                    <section id="state-transitions" class="section">
+                        <h2 class="heading-2">State Transitions</h2>
+                        <div class="ai-placeholder">[Insert state machine diagram: Idle → Loading → Streaming → Success/Error → Idle]</div>
+                        <p class="text-body">State transitions should use consistent animation timing to create a predictable rhythm. Use 200ms ease-out for transitions into active states (Idle to Loading), 300ms ease-in-out for transitions between active states (Loading to Streaming), and 250ms ease-in for transitions to completion states (Streaming to Success or Error). Avoid instantaneous jumps between states as they feel jarring and can cause users to miss important status changes.</p>
+                    </section>
+
+                    <div class="related-pages">
+                        <h3>Related Pages</h3>
+                        <div class="related-pages-list">
+                            <a href="ai-visual-specs.html">Visual Specs</a>
+                            <a href="ai-confidence-markers.html">Confidence Markers</a>
+                            <a href="ai-anti-patterns.html">Anti-Patterns</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="page__nav">
+                    <div class="nav-container">
+                        <div class="nav-title">Contents</div>
+                        <ul class="nav-list">
+                            <li class="nav-item"><a href="#state-overview" class="nav-link">State Overview</a></li>
+                            <li class="nav-item"><a href="#loading-thinking" class="nav-link">Loading / Thinking</a></li>
+                            <li class="nav-item"><a href="#streaming-progressive" class="nav-link">Streaming / Progressive</a></li>
+                            <li class="nav-item"><a href="#success" class="nav-link">Success</a></li>
+                            <li class="nav-item"><a href="#error-retry" class="nav-link">Error & Retry</a></li>
+                            <li class="nav-item"><a href="#timeout-fallback" class="nav-link">Timeout & Fallback</a></li>
+                            <li class="nav-item"><a href="#state-transitions" class="nav-link">State Transitions</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./scripts/documentation.js"></script>
+</body>
+</html>

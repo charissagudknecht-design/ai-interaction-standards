@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Design Language Overview - Rosewood Design System</title>
+    <link rel="stylesheet" href="../dist/styles/rosewood-base.css" />
+    <link rel="stylesheet" href="./styles/documentation.css" />
+</head>
+<body>
+    <div class="page">
+        <div class="page__container">
+            <div class="page__content">
+                <div class="content">
+                    <header class="component-header">
+                        <h1 class="heading-1">AI Design Language Overview</h1>
+                        <p class="text-body">Principles, maturity model, and decision framework for integrating AI features into the Rosewood product suite.</p>
+                    </header>
+
+                    <section id="why-ai-design-language" class="section">
+                        <h2 class="heading-2">Why an AI Design Language?</h2>
+                        <p class="text-body">A unified AI design language ensures that every AI-powered feature across the Rosewood product suite delivers a coherent, trustworthy, and predictable experience. Without shared principles and patterns, AI capabilities risk feeling fragmented, inconsistent, or opaque to the users who depend on them daily.</p>
+                        <div class="ai-placeholder">[Insert mission statement and problem definition]</div>
+                    </section>
+
+                    <section id="core-design-principles" class="section">
+                        <h2 class="heading-2">Core Design Principles</h2>
+                        <p class="text-body">These principles guide every decision when designing and building AI-powered features within Rosewood. They establish the foundation for user trust and product quality.</p>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Principle</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Transparency</td>
+                                    <td>AI actions and reasoning should always be visible to users</td>
+                                </tr>
+                                <tr>
+                                    <td>User Control</td>
+                                    <td>Users must be able to override, undo, or dismiss AI suggestions</td>
+                                </tr>
+                                <tr>
+                                    <td>Graceful Degradation</td>
+                                    <td>Features must remain functional when AI is unavailable</td>
+                                </tr>
+                                <tr>
+                                    <td>Progressive Trust</td>
+                                    <td>Build user confidence through incremental AI exposure</td>
+                                </tr>
+                                <tr>
+                                    <td>Consistency</td>
+                                    <td>AI interactions should follow predictable patterns across surfaces</td>
+                                </tr>
+                                <tr>
+                                    <td>Accessibility</td>
+                                    <td>AI features must meet WCAG 2.1 AA standards</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <section id="ai-maturity-model" class="section">
+                        <h2 class="heading-2">AI Maturity Model</h2>
+                        <div class="ai-placeholder">[Insert maturity model diagram: Level 1 Assistive → Level 2 Augmentative → Level 3 Autonomous]</div>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Assistive</td>
+                                    <td>AI provides suggestions that require explicit user action to accept. The user remains fully in control of every decision.</td>
+                                    <td>Autocomplete suggestions for client search fields</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Augmentative</td>
+                                    <td>AI takes proactive actions on behalf of the user but always allows review, modification, or reversal before committing.</td>
+                                    <td>Smart scheduling that proposes an optimized staff roster for review</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Autonomous</td>
+                                    <td>AI executes decisions independently within well-defined guardrails, notifying the user of actions taken.</td>
+                                    <td>Automated no-show follow-up messages sent after configurable rules are met</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <section id="when-to-use-ai" class="section">
+                        <h2 class="heading-2">When to Use AI</h2>
+                        <div class="ai-placeholder">[Insert decision tree diagram]</div>
+                        <p class="text-body">Use the following checklist to determine whether AI is the right solution for a given feature:</p>
+                        <ul>
+                            <li>The task involves pattern recognition, prediction, or large-scale data processing that would be impractical manually.</li>
+                            <li>There is sufficient historical data available to train or inform the AI model.</li>
+                            <li>The cost of an incorrect AI suggestion is low, or safeguards can adequately mitigate risk.</li>
+                            <li>Users have expressed pain around the manual version of this workflow.</li>
+                            <li>The feature can degrade gracefully if AI is unavailable or produces low-confidence results.</li>
+                            <li>The AI output can be clearly explained and attributed so users understand why a suggestion was made.</li>
+                        </ul>
+                    </section>
+
+                    <section id="quick-start" class="section">
+                        <h2 class="heading-2">Quick Start</h2>
+                        <ol>
+                            <li>Review the Core Design Principles above to align on shared values.</li>
+                            <li>Identify the AI maturity level appropriate for your feature.</li>
+                            <li>Consult the decision framework to confirm AI is the right approach.</li>
+                            <li>Check the Usage by Surface page to see existing patterns for your product area.</li>
+                            <li>Reference the Visual Specs for component-level guidance on AI indicators, loading states, and feedback patterns.</li>
+                            <li>Prototype and test with real users, paying close attention to trust and transparency.</li>
+                        </ol>
+                    </section>
+
+                    <div class="related-pages">
+                        <h3>Related Pages</h3>
+                        <div class="related-pages-list">
+                            <a href="ai-usage-by-surface.html">Usage by Surface</a>
+                            <a href="ai-visual-specs.html">Visual Specs</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="page__nav">
+                    <div class="nav-container">
+                        <div class="nav-title">Contents</div>
+                        <ul class="nav-list">
+                            <li class="nav-item"><a href="#why-ai-design-language" class="nav-link">Why an AI Design Language?</a></li>
+                            <li class="nav-item"><a href="#core-design-principles" class="nav-link">Core Design Principles</a></li>
+                            <li class="nav-item"><a href="#ai-maturity-model" class="nav-link">AI Maturity Model</a></li>
+                            <li class="nav-item"><a href="#when-to-use-ai" class="nav-link">When to Use AI</a></li>
+                            <li class="nav-item"><a href="#quick-start" class="nav-link">Quick Start</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./scripts/documentation.js"></script>
+</body>
+</html>

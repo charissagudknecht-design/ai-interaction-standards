@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Language - AI Design Hub</title>
+    <link rel="stylesheet" href="./styles/ai-hub.css" />
+    <style>
+        .vl-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin: 1.5rem 0; }
+        .vl-swatch { border-radius: 8px; overflow: hidden; border: 1px solid rgba(40,30,20,0.07); background: white; }
+        .vl-swatch__color { height: 56px; }
+        .vl-swatch__info { padding: 8px 10px; }
+        .vl-swatch__name { font-size: 12px; font-weight: 600; color: #0a0a0a; display: block; }
+        .vl-swatch__value { font-size: 11px; color: #5f5f5f; font-family: Consolas, Monaco, monospace; }
+        .vl-swatch__token { font-size: 10px; color: var(--hub-accent, #C0429F); display: block; margin-top: 2px; }
+        .vl-confidence-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 1.5rem 0; }
+        .vl-confidence-col { display: flex; flex-direction: column; gap: 8px; }
+        .vl-confidence-col__label {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.6px; color: #78716C;
+        }
+        .vl-gradient-bar { height: 12px; border-radius: 6px; margin: 1rem 0; }
+
+        /* ===== Palette family cards (Confidence-Scale-style token rows) ===== */
+        .pal-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid rgba(214, 211, 209, 0.6);
+            padding: 24px;
+            margin: 1.25rem 0;
+        }
+        .pal-card__title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1C1917;
+            margin: 0 0 4px;
+        }
+        .pal-card__desc {
+            font-size: 12px;
+            color: #78716C;
+            margin: 0 0 16px;
+        }
+        .pal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .pal-swatch {
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(214, 211, 209, 0.6);
+            background: white;
+        }
+        .pal-swatch__bar {
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 14px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: Lato, sans-serif;
+        }
+        .pal-swatch__bar--light { color: #1C1917; }
+        .pal-swatch__bar--dark { color: white; }
+        .pal-swatch__icon { font-size: 13px; line-height: 1; }
+        .pal-swatch__meta { padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+        .pal-swatch__row {
+            display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+        }
+        .pal-swatch__name { font-size: 13px; font-weight: 600; color: #1C1917; }
+        .pal-swatch__token {
+            font-size: 10px; color: var(--hub-accent, #C0429F);
+            font-family: 'SF Mono', Consolas, Monaco, monospace; white-space: nowrap;
+        }
+        .pal-swatch__hex {
+            font-family: 'SF Mono', Consolas, Monaco, monospace;
+            font-size: 12px; color: #78716C;
+        }
+        .pal-swatch__usage { font-size: 12px; line-height: 1.5; color: #57534E; margin: 2px 0 0; }
+        .pal-swatch__bar--gradient {
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-size: 250% 250%;
+            background-position: 0% 50%;
+            transform: translateZ(0);
+        }
+        .pal-swatch__bar--gradient span { position: relative; z-index: 1; }
+
+        /* Continuous ambient wave — a slow linear drift, not a spinning beam */
+        @keyframes pal-drift {
+            from { background-position: 0% 50%; }
+            to { background-position: 100% 50%; }
+        }
+        @media (prefers-reduced-motion: no-preference) {
+            .pal-swatch__bar--gradient { animation: pal-drift 6s ease-in-out infinite alternate; }
+        }
+
+        /* Ambient glow — same atmospheric wash technique as the hub landing backdrop,
+           scoped tightly so it never escapes the swatch card's own rounded border. */
+        .pal-swatch__stage { position: relative; padding: 10px 10px 0; }
+        .pal-swatch__glow {
+            position: absolute;
+            inset: -6px 6px 4px;
+            border-radius: 14px;
+            filter: blur(40px);
+            opacity: 0.3;
+            transform: translateZ(0) scale(1.02);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .pal-swatch__glow--ruby { background: radial-gradient(ellipse at center, rgba(192, 66, 159, 0.9), transparent 70%); }
+        .pal-swatch__glow--amber { background: radial-gradient(ellipse at center, rgba(197, 93, 39, 0.9), transparent 70%); }
+
+        /* Animated gradient stroke preview */
+        @property --vl-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+        @keyframes vl-spin {
+            from { --vl-angle: 0deg; }
+            to { --vl-angle: 360deg; }
+        }
+        .vl-gradient-box {
+            width: 200px;
+            height: 80px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            background:
+                linear-gradient(white, white) padding-box,
+                conic-gradient(from var(--vl-angle, 0deg), var(--g1), var(--g2), var(--g3), var(--g4), var(--g1)) border-box;
+            animation: vl-spin 2s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 16px 0;
+            font-family: Lato, sans-serif;
+            font-size: 12px;
+            color: #9E9E9E;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body class="ai-hub">
+    <nav class="ai-hub__nav">
+        <div class="ai-hub__nav-inner">
+        <div class="ai-hub__nav-links">
+            <a href="index.html">Hub</a>
+            <a href="ai-foundations.html">Foundations</a>
+            <a href="ai-visual-language.html" class="active">Visual Language</a>
+            <a href="ai-components.html">Components</a>
+            <a href="ai-trust.html">Trust &amp; Governance</a>
+        </div>
+        </div>
+    </nav>
+    <main class="ai-hub__content">
+        <div class="ai-hub__jump-links">
+            <a href="#palette">Color Palette</a>
+            <a href="#typography">Typography</a>
+            <a href="#iconography">Iconography</a>
+            <a href="#tokens">Design Tokens</a>
+            <a href="#dark-mode">Dark Mode</a>
+        </div>
+        <div class="ai-hub__header">
+            <h1 class="ai-hub__title">Visual Language</h1>
+            <p class="ai-hub__subtitle">Color palettes, gradients, typography, and iconography that define Glow's visual identity. Includes exportable design tokens for the Ruby Berry theme.</p>
+        </div>
+
+        <section id="palette" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">AI Color Palette</h2>
+            <p class="ai-hub__section-desc">AI elements use Ruby Berry as the primary accent &mdash; visually distinct from the Blue CTA colors used for standard actions. Confidence indicators reuse the design system's semantic Green/Yellow/Red families.</p>
+
+            <div class="pal-card">
+                <h3 class="pal-card__title">AI Brand Colors</h3>
+                <p class="pal-card__desc">The two core hues that identify Glow as a distinct, high-agency intelligence layer.</p>
+                <div class="pal-grid">
+                    <div class="pal-swatch">
+                        <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:#C0429F;"><span class="pal-swatch__icon">&#10022;</span> Ruby Berry</div>
+                        <div class="pal-swatch__meta">
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Ruby Berry</span><span class="pal-swatch__token">--glow-accent</span></div>
+                            <code class="pal-swatch__hex">#C0429F</code>
+                            <p class="pal-swatch__usage">Primary brand accent for AI entry points, active states, and primary action buttons.</p>
+                        </div>
+                    </div>
+                    <div class="pal-swatch">
+                        <div class="pal-swatch__bar pal-swatch__bar--light" style="background:#FA7E3F;"><span class="pal-swatch__icon">&#10022;</span> Sunset Orange</div>
+                        <div class="pal-swatch__meta">
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Sunset Orange</span><span class="pal-swatch__token">--glow-gradient-2</span></div>
+                            <code class="pal-swatch__hex">#FA7E3F</code>
+                            <p class="pal-swatch__usage">Secondary accent in the Generating/Listening gradient spectrum and warm highlight moments.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pal-card">
+                <h3 class="pal-card__title">AI Surface Washes</h3>
+                <p class="pal-card__desc">Light background tints and the semantic stroke they pair with across AI surfaces.</p>
+                <div class="pal-grid">
+                    <div class="pal-swatch">
+                        <div class="pal-swatch__bar pal-swatch__bar--light" style="background:#FFEEE3;"><span class="pal-swatch__icon">&#10022;</span> Warm Wash</div>
+                        <div class="pal-swatch__meta">
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Warm Wash</span><span class="pal-swatch__token">--glow-warm-wash</span></div>
+                            <code class="pal-swatch__hex">#FFEEE3</code>
+                            <p class="pal-swatch__usage">Light background wash for AI surfaces, empty states, and card headers.</p>
+                        </div>
+                    </div>
+                    <div class="pal-swatch">
+                        <div class="pal-swatch__bar pal-swatch__bar--light" style="background:#FBECD6;"><span class="pal-swatch__icon">&#10022;</span> Champagne</div>
+                        <div class="pal-swatch__meta">
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Champagne</span><span class="pal-swatch__token">--glow-champagne</span></div>
+                            <code class="pal-swatch__hex">#FBECD6</code>
+                            <p class="pal-swatch__usage">Soft background tint for gradient midpoints and subtle AI surface fills.</p>
+                        </div>
+                    </div>
+                    <div class="pal-swatch">
+                        <div class="pal-swatch__bar pal-swatch__bar--light" style="background:#C55D27;"><span class="pal-swatch__icon">&#10022;</span> Deep Orange</div>
+                        <div class="pal-swatch__meta">
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Deep Orange</span><span class="pal-swatch__token">--glow-error-stroke</span></div>
+                            <code class="pal-swatch__hex">#C55D27</code>
+                            <p class="pal-swatch__usage">Error and low-confidence stroke color &mdash; pairs with Warm Wash backgrounds per the Amber Standard.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pal-card">
+                <h3 class="pal-card__title">AI Gradients</h3>
+                <p class="pal-card__desc">Animated conic-gradient spectrums used on the prompt box border ring during active states.</p>
+                <div class="pal-grid">
+                    <div class="pal-swatch">
+                        <div class="pal-swatch__stage">
+                            <div class="pal-swatch__glow pal-swatch__glow--ruby" aria-hidden="true"></div>
+                            <div class="pal-swatch__bar pal-swatch__bar--gradient pal-swatch__bar--dark" style="background-image:linear-gradient(135deg, #C0429F 0%, #E082C0 25%, #FBECD6 50%, #E082C0 75%, #C0429F 100%);"><span class="pal-swatch__icon">&#10022;</span></div>
+                        </div>
+                        <div class="pal-swatch__meta">
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Active Spectrum</span><span class="pal-swatch__token">Generating &amp; Listening</span></div>
+                            <code class="pal-swatch__hex">#C0429F &rarr; #E082C0 &rarr; #FBECD6 &rarr; #E082C0</code>
+                            <p class="pal-swatch__usage">Rainbow border animation during Generating and Listening states &mdash; Ruby Berry spectrum, no orange.</p>
+                        </div>
+                    </div>
+                    <div class="pal-swatch">
+                        <div class="pal-swatch__stage">
+                            <div class="pal-swatch__glow pal-swatch__glow--amber" aria-hidden="true"></div>
+                            <div class="pal-swatch__bar pal-swatch__bar--gradient pal-swatch__bar--dark" style="background-image:linear-gradient(135deg, #C0429F 0%, #FA7E3F 30%, #FFEEE3 50%, #C55D27 100%);"><span class="pal-swatch__icon">&#10022;</span></div>
+                        </div>
+                        <div class="pal-swatch__meta">
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Error Spectrum</span><span class="pal-swatch__token">Validation &amp; System</span></div>
+                            <code class="pal-swatch__hex">#C0429F &rarr; #FA7E3F &rarr; #FFEEE3 &rarr; #C55D27</code>
+                            <p class="pal-swatch__usage">Rainbow border animation during Validation and System error states &mdash; amber/orange caution spectrum.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="font-size:16px; font-weight:700; margin:20px 0 8px;">Confidence Indicator Colors</h3>
+            <div class="vl-confidence-grid">
+                <div class="vl-confidence-col">
+                    <div class="vl-confidence-col__label">High</div>
+                    <div class="vl-swatch"><div class="vl-swatch__color" style="background:#1E6421;"></div><div class="vl-swatch__info"><span class="vl-swatch__name">Emerald</span><span class="vl-swatch__value">#1E6421</span><span class="vl-swatch__token">--ai-confidence-high</span></div></div>
+                    <div class="vl-swatch"><div class="vl-swatch__color" style="background:#E7F4E8;"></div><div class="vl-swatch__info"><span class="vl-swatch__name">Emerald BG</span><span class="vl-swatch__value">#E7F4E8</span><span class="vl-swatch__token">--bg-green</span></div></div>
+                </div>
+                <div class="vl-confidence-col">
+                    <div class="vl-confidence-col__label">Medium</div>
+                    <div class="vl-swatch"><div class="vl-swatch__color" style="background:#B8860B;"></div><div class="vl-swatch__info"><span class="vl-swatch__name">Goldenrod</span><span class="vl-swatch__value">#B8860B</span><span class="vl-swatch__token">--ai-confidence-med</span></div></div>
+                    <div class="vl-swatch"><div class="vl-swatch__color" style="background:#FFF1BF;"></div><div class="vl-swatch__info"><span class="vl-swatch__name">Goldenrod BG</span><span class="vl-swatch__value">#FFF1BF</span><span class="vl-swatch__token">--bg-yellow</span></div></div>
+                </div>
+                <div class="vl-confidence-col">
+                    <div class="vl-confidence-col__label">Low</div>
+                    <div class="vl-swatch"><div class="vl-swatch__color" style="background:#C55D27;"></div><div class="vl-swatch__info"><span class="vl-swatch__name">Terracotta</span><span class="vl-swatch__value">#C55D27</span><span class="vl-swatch__token">--ai-confidence-low</span></div></div>
+                    <div class="vl-swatch"><div class="vl-swatch__color" style="background:#FFEEE3;"></div><div class="vl-swatch__info"><span class="vl-swatch__name">Terracotta BG</span><span class="vl-swatch__value">#FFEEE3</span><span class="vl-swatch__token">--bg-orange</span></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="typography" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">AI Typography</h2>
+            <table class="ai-hub__table">
+                <thead><tr><th>Element</th><th>Font</th><th>Size / Weight</th><th>Color</th></tr></thead>
+                <tbody>
+                    <tr><td>Primary text</td><td>Lato Regular</td><td>16px / 400</td><td>#0A0A0A (--text-primary)</td></tr>
+                    <tr><td>Ghost / Placeholder</td><td>Lato Regular</td><td>16px / 400</td><td>#9E9E9E (--text-ghost)</td></tr>
+                    <tr><td>AI Badge label</td><td>Lato Bold</td><td>10px / 700</td><td>#C0429F (--glow-accent)</td></tr>
+                    <tr><td>Helper / Error text</td><td>Lato Regular</td><td>12px / 400</td><td>#C55D27 (error) or #5F5F5F (system)</td></tr>
+                    <tr><td>Letter spacing</td><td>&mdash;</td><td>0.16px</td><td>&mdash;</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="iconography" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Iconography</h2>
+            <p class="ai-hub__section-desc">The 5 core Glow icons. All use 1.5px stroke weight, 24px (large) or 20px (small) sizing.</p>
+            <h3 style="font-size:16px; font-weight:700; margin:20px 0 8px;">Icon Hierarchy</h3>
+            <table class="ai-hub__table">
+                <thead><tr><th style="width:60px;">Icon</th><th>Name</th><th>Role</th><th>Placement</th></tr></thead>
+                <tbody>
+                    <tr><td><img src="images/glow-head-ruby.svg" width="32" height="32" alt="Glow mark"></td><td><strong>Glow mark</strong></td><td>The Glow (Trigger)</td><td>Header entry, FAB, full-page empty state. Min size: 32px.</td></tr>
+            </table>
+
+            <h3 style="font-size:16px; font-weight:700; margin:20px 0 8px;">Prompt Box Icons</h3>
+            <table class="ai-hub__table">
+                <thead><tr><th style="width:60px;">Icon</th><th>Name</th><th>Size</th><th>Usage</th></tr></thead>
+                <tbody>
+                    <tr><td><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="#C0429F"/><path d="M6.73 14.98l.33.89c.18.5.58.89 1.08 1.08l.89.33c.49.18.49.87 0 1.05l-.89.33c-.5.18-.9.58-1.08 1.08l-.33.89c-.18.49-.87.49-1.05 0l-.33-.89a1.87 1.87 0 00-1.08-1.08l-.89-.33c-.49-.18-.49-.87 0-1.05l.89-.33c.5-.18.9-.58 1.08-1.08l.33-.89c.18-.49.87-.49 1.05 0z" fill="#C0429F"/></svg></td><td><strong>Sparkle (Attribution)</strong></td><td>24px / 20px</td><td>Prompt box prefix, suggestion chip prefix, AI audit trail</td></tr>
+                    <tr><td><svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4M5 9l5-5 5 5"/></svg></td><td><strong>Send Arrow</strong></td><td>24px / 20px</td><td>Submit prompt (idle/typing states)</td></tr>
+                    <tr><td><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 4.75H16C17.7949 4.75 19.25 6.20507 19.25 8V16C19.25 17.7949 17.7949 19.25 16 19.25H8C6.20507 19.25 4.75 17.7949 4.75 16V8C4.75 6.20507 6.20507 4.75 8 4.75Z" stroke="#0a0a0a" stroke-width="1.5"/></svg></td><td><strong>Stop Square</strong></td><td>24px / 20px</td><td>Cancel generation or listening</td></tr>
+                    <tr><td><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 10.93C4 15.32 7.58 18.88 12 18.88C15.8 18.88 18.99 16.24 19.8 12.7C19.93 12.13 20 11.54 20 10.93M12 19.01V21.81M7.1 22H16.9M12 14.57C9.97864 14.57 8.34 12.9314 8.34 10.91V5.66C8.34 3.63864 9.97864 2 12 2C14.0214 2 15.66 3.63864 15.66 5.66V10.91C15.66 12.9314 14.0214 14.57 12 14.57Z" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><strong>Microphone</strong></td><td>24px / 20px</td><td>Voice input trigger (whisper enabled)</td></tr>
+                    <tr><td><svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg></td><td><strong>Plus</strong></td><td>18px / 14px</td><td>Add context, attachments (secondary action)</td></tr>
+                    <tr><td><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.95112 8.28726C5.78848 6.70072 7.12033 5.44151 8.73778 4.70713C10.3552 3.97276 12.1668 3.80476 13.8883 4.22948C15.6099 4.65421 17.144 5.64763 18.2501 7.05394C19.3562 8.46026 19.9716 10.1999 20 12M4.4889 4.82744V8.46793H8.08001M18.9867 15.8302C18.1233 17.4033 16.7703 18.6405 15.1401 19.3475C13.5099 20.0545 11.6949 20.1914 9.97987 19.7365C8.26488 19.2817 6.74709 18.2609 5.66476 16.8345C4.58244 15.4081 3.99688 13.6567 4.00001 11.8555M19.3956 19.29L19.4578 15.6405L15.8667 15.5863" stroke="#0a0a0a" stroke-width="1.5" stroke-miterlimit="10"/></svg></td><td><strong>Retry</strong></td><td>24px / 20px</td><td>System error recovery</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="tokens" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Design Tokens</h2>
+            <p class="ai-hub__section-desc">Copy the token set for your platform. All AI-specific colors are built on top of the design system's existing token pipeline.</p>
+
+            <div class="ai-hub__swatches">
+                <div class="ai-hub__swatch"><div class="ai-hub__swatch-color" style="background:#C0429F;"></div><div class="ai-hub__swatch-info"><span class="ai-hub__swatch-name">Ruby Berry</span><span class="ai-hub__swatch-value">#C0429F</span></div></div>
+                <div class="ai-hub__swatch"><div class="ai-hub__swatch-color" style="background:#FA7E3F;"></div><div class="ai-hub__swatch-info"><span class="ai-hub__swatch-name">Sunset Orange</span><span class="ai-hub__swatch-value">#FA7E3F</span></div></div>
+                <div class="ai-hub__swatch"><div class="ai-hub__swatch-color" style="background:#FFEEE3;"></div><div class="ai-hub__swatch-info"><span class="ai-hub__swatch-name">Warm Wash</span><span class="ai-hub__swatch-value">#FFEEE3</span></div></div>
+                <div class="ai-hub__swatch"><div class="ai-hub__swatch-color" style="background:#C55D27;"></div><div class="ai-hub__swatch-info"><span class="ai-hub__swatch-name">Deep Orange</span><span class="ai-hub__swatch-value">#C55D27</span></div></div>
+                <div class="ai-hub__swatch"><div class="ai-hub__swatch-color" style="background:#FBECD6;"></div><div class="ai-hub__swatch-info"><span class="ai-hub__swatch-name">Champagne</span><span class="ai-hub__swatch-value">#FBECD6</span></div></div>
+                <div class="ai-hub__swatch"><div class="ai-hub__swatch-color" style="background:white; display:flex; align-items:center; justify-content:center;"><div class="vl-gradient-box" style="--g1:#C0429F; --g2:#E082C0; --g3:#FBECD6; --g4:#E082C0; width:100%; height:100%; margin:0; border-radius:8px 8px 0 0; font-size:10px;">Active</div></div><div class="ai-hub__swatch-info"><span class="ai-hub__swatch-name">Glow Gradient</span><span class="ai-hub__swatch-value">#C0429F → #E082C0 → #FBECD6</span></div></div>
+            </div>
+
+            <button class="ai-hub__copy-btn" id="copyTokensBtn">Copy CSS Tokens</button>
+
+            <pre class="ai-hub__code" id="tokenCode">:root {
+  /* Glow AI — Ruby Berry Theme */
+  --glow-accent: #C0429F;
+  --glow-accent-light: #FBECD6;
+  --glow-accent-rgb: 192, 66, 159;
+  --glow-gradient-1: #C0429F;
+  --glow-gradient-2: #E082C0;
+  --glow-gradient-3: #FBECD6;
+  --glow-gradient-4: #E082C0;
+  --glow-warm-wash: #FFEEE3;
+  --glow-champagne: #FBECD6;
+  --glow-neutral-gray: #9E9E9E;
+  --glow-text-primary: #0A0A0A;
+  --glow-text-ghost: #9E9E9E;
+
+  /* Confidence (subdued professional palette) */
+  --glow-confidence-high: #1E6421;   /* Emerald */
+  --glow-confidence-med: #B8860B;    /* Goldenrod */
+  --glow-confidence-low: #C55D27;    /* Terracotta */
+
+  /* Error (universal amber) */
+  --glow-error-stroke: #C55D27;
+  --glow-error-bg: rgba(255, 238, 227, 0.5);
+
+  /* Glow (large layouts only) */
+  --glow-glow: 0 0 15px rgba(192, 66, 159, 0.25);
+
+  /* Timing */
+  --glow-transition: 200ms;
+  --glow-rainbow-duration: 2s;
+  --glow-buffer: 150ms;
+}</pre>
+        </section>
+
+        <section id="dark-mode" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Dark Mode</h2>
+            <p class="ai-hub__section-desc">Dark mode adjusts AI colors for contrast while maintaining the Ruby Berry identity.</p>
+            <table class="ai-hub__table">
+                <thead><tr><th>Token</th><th>Light Mode</th><th>Dark Mode</th></tr></thead>
+                <tbody>
+                    <tr><td>AI Primary</td><td>#C0429F</td><td>#E082C0 (lightened)</td></tr>
+                    <tr><td>AI Surface</td><td>#FFEEE3</td><td>#2A2B3D (dark elevated)</td></tr>
+                    <tr><td>Text Primary</td><td>#0A0A0A</td><td>#EDEFF5</td></tr>
+                    <tr><td>Confidence High</td><td>#1E6421</td><td>#4ADE80</td></tr>
+                    <tr><td>Confidence Low</td><td>#E63447</td><td>#FF8A8A</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <script>
+    document.getElementById('copyTokensBtn').addEventListener('click', function() {
+        var code = document.getElementById('tokenCode').textContent;
+        navigator.clipboard.writeText(code).then(function() {
+            var btn = document.getElementById('copyTokensBtn');
+            btn.textContent = 'Copied!';
+            btn.classList.add('ai-hub__copy-btn--copied');
+            setTimeout(function() { btn.textContent = 'Copy CSS Tokens'; btn.classList.remove('ai-hub__copy-btn--copied'); }, 2000);
+        });
+    });
+    // Continuous scroll + sticky anchor nav with scroll-spy
+    (function() {
+        var links = document.querySelectorAll('.ai-hub__jump-links a[href^="#"]');
+        var sections = [];
+        links.forEach(function(a) {
+            var id = a.getAttribute('href').slice(1);
+            var el = document.getElementById(id);
+            if (el) sections.push(el);
+        });
+        if (!sections.length) return;
+
+        function setActive(id) {
+            links.forEach(function(a) {
+                a.classList.toggle('active', a.getAttribute('href').slice(1) === id);
+            });
+        }
+
+        var navEl = document.querySelector('.ai-hub__nav');
+        var jumpEl = document.querySelector('.ai-hub__jump-links');
+        var stickyOffset = (navEl ? navEl.offsetHeight : 0) + (jumpEl ? jumpEl.offsetHeight : 0);
+
+        links.forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                var id = a.getAttribute('href').slice(1);
+                var el = document.getElementById(id);
+                if (!el) return;
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                if (window.history && history.replaceState) history.replaceState(null, '', '#' + id);
+                setActive(id);
+            });
+        });
+
+        var spyLocked = false;
+        var observer = new IntersectionObserver(function(entries) {
+            if (spyLocked) return;
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) setActive(entry.target.id);
+            });
+        }, { rootMargin: '-' + (stickyOffset + 1) + 'px 0px -70% 0px', threshold: 0 });
+        sections.forEach(function(el) { observer.observe(el); });
+
+        // Smooth-scroll clicks can briefly cross multiple sections — ignore the
+        // spy mid-flight so the clicked link stays highlighted until it settles.
+        links.forEach(function(a) {
+            a.addEventListener('click', function() {
+                spyLocked = true;
+                clearTimeout(links._unlockTimer);
+                links._unlockTimer = setTimeout(function() { spyLocked = false; }, 600);
+            });
+        });
+
+        if (window.location.hash) {
+            var initialEl = document.getElementById(window.location.hash.slice(1));
+            if (initialEl) {
+                setActive(window.location.hash.slice(1));
+                requestAnimationFrame(function() {
+                    initialEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+                });
+            } else {
+                setActive(sections[0].id);
+            }
+        } else {
+            setActive(sections[0].id);
+        }
+    })();
+    </script>
+</body>
+</html>

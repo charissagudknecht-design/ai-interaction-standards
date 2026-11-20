@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design System Component Inventory for AI - Rosewood Design System</title>
+    <link rel="stylesheet" href="../dist/styles/rosewood-base.css" />
+    <link rel="stylesheet" href="./styles/documentation.css" />
+</head>
+<body>
+    <div class="page">
+        <div class="page__container">
+            <div class="page__content">
+                <div class="content">
+                    <header class="component-header">
+                        <h1 class="heading-1">Design System Component Inventory for AI</h1>
+                        <p class="text-body">Mapping of existing design system components to AI use cases, plus new AI-specific components required.</p>
+                    </header>
+
+                    <section id="inventory-overview" class="section">
+                        <h2 class="heading-2">Inventory Overview</h2>
+                        <p class="text-body">This inventory catalogs how existing design system components can be reused, modified, or extended for AI-powered features. The guiding principle is to reuse existing design system components wherever possible, modify them where needed to support AI interactions, and create new components only when no existing component can reasonably fulfill the requirement. This approach ensures consistency across the design system while minimizing development overhead.</p>
+                    </section>
+
+                    <section id="modified-components" class="section">
+                        <h2 class="heading-2">Modified Components</h2>
+                        <p class="text-body">The following existing design system components require modifications to support AI use cases. Each modification is scoped to add AI-specific behavior without breaking existing functionality.</p>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Modification</th>
+                                    <th>AI Use Case</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>rw-button</td>
+                                    <td>Add loading/streaming state</td>
+                                    <td>Submit AI prompt</td>
+                                </tr>
+                                <tr>
+                                    <td>rw-input</td>
+                                    <td>Add auto-suggestion support</td>
+                                    <td>Prompt input field</td>
+                                </tr>
+                                <tr>
+                                    <td>rw-chip</td>
+                                    <td>Add confidence color coding</td>
+                                    <td>Context chips with confidence</td>
+                                </tr>
+                                <tr>
+                                    <td>rw-toast</td>
+                                    <td>Add AI attribution badge</td>
+                                    <td>AI-generated notifications</td>
+                                </tr>
+                                <tr>
+                                    <td>rw-dialog</td>
+                                    <td>Add streaming content support</td>
+                                    <td>AI response modal</td>
+                                </tr>
+                                <tr>
+                                    <td>rw-badge</td>
+                                    <td>Add AI-specific variants</td>
+                                    <td>Confidence and AI-generated labels</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <section id="new-ai-components" class="section">
+                        <h2 class="heading-2">New AI Components</h2>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Component Name</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>rw-ai-prompt</td>
+                                    <td>Prompt input with suggestions</td>
+                                    <td>Proposed</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>rw-ai-response</td>
+                                    <td>Streaming response container</td>
+                                    <td>Proposed</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>rw-ai-confidence</td>
+                                    <td>Confidence indicator badge</td>
+                                    <td>Proposed</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>rw-ai-suggestion-card</td>
+                                    <td>Suggestion card with actions</td>
+                                    <td>Proposed</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>rw-ai-audit-log</td>
+                                    <td>Audit trail display</td>
+                                    <td>Proposed</td>
+                                    <td>Low</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <section id="component-mapping" class="section">
+                        <h2 class="heading-2">Component Mapping Table</h2>
+                        <table class="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>AI Pattern</th>
+                                    <th>design system Component</th>
+                                    <th>Surface</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Prompt Input</td>
+                                    <td>rw-input + rw-chip</td>
+                                    <td>All surfaces</td>
+                                    <td>Extend with AI suggestions</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Response</td>
+                                    <td>rw-dialog + new</td>
+                                    <td>Communications</td>
+                                    <td>Streaming support needed</td>
+                                </tr>
+                                <tr>
+                                    <td>Confidence Display</td>
+                                    <td>rw-badge + new</td>
+                                    <td>Booking, Scheduling</td>
+                                    <td>Color-coded levels</td>
+                                </tr>
+                                <tr>
+                                    <td>Suggestion Cards</td>
+                                    <td>rw-card (new)</td>
+                                    <td>Front Desk, Reports</td>
+                                    <td>Accept/dismiss actions</td>
+                                </tr>
+                                <tr>
+                                    <td>Loading State</td>
+                                    <td>rw-button + skeleton</td>
+                                    <td>All surfaces</td>
+                                    <td>Shimmer animation</td>
+                                </tr>
+                                <tr>
+                                    <td>Error Recovery</td>
+                                    <td>rw-toast + rw-banner</td>
+                                    <td>All surfaces</td>
+                                    <td>Retry patterns</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <section id="integration-notes" class="section">
+                        <h2 class="heading-2">Integration Notes</h2>
+                        <p class="text-body">Technical integration of AI components into the existing design system architecture requires careful consideration of performance, accessibility, and backward compatibility. All modified components must maintain their existing API surface while exposing new AI-specific properties through optional attributes.</p>
+                        <h3 class="heading-3">Web Component Extensions</h3>
+                        <p class="text-body">Existing design system web components will be extended using mixins or decorator patterns to add AI capabilities without modifying core component logic. This ensures that non-AI consumers of these components are unaffected by the additions.</p>
+                        <h3 class="heading-3">CSS Variable Additions</h3>
+                        <p class="text-body">New design tokens will be introduced for AI-specific visual treatments, including confidence level colors, streaming animation parameters, and AI attribution styling. These tokens will follow the existing design system naming convention with an --zen-ai- prefix.</p>
+                        <div class="ai-placeholder">[Insert integration architecture diagram]</div>
+                    </section>
+
+                    <div class="related-pages">
+                        <h3>Related Pages</h3>
+                        <div class="related-pages-list">
+                            <a href="ai-usage-by-surface.html">Usage by Surface</a>
+                            <a href="ai-visual-specs.html">Visual Specs</a>
+                            <a href="ai-prompt-input.html">Prompt Input</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="page__nav">
+                    <div class="nav-container">
+                        <div class="nav-title">Contents</div>
+                        <ul class="nav-list">
+                            <li><a href="#inventory-overview">Inventory Overview</a></li>
+                            <li><a href="#modified-components">Modified Components</a></li>
+                            <li><a href="#new-ai-components">New AI Components</a></li>
+                            <li><a href="#component-mapping">Component Mapping Table</a></li>
+                            <li><a href="#integration-notes">Integration Notes</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./scripts/documentation.js"></script>
+</body>
+</html>
