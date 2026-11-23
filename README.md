@@ -18,7 +18,6 @@ This system was built alongside a visual-identity pivot for the AI assistant —
 - `docs/ai-components.html` — the Glow Prompt Box: states, layouts, and API
 - `docs/ai-trust.html` — confidence markers, processing states, and documented anti-patterns
 - `docs/components/GlowPromptBox/` — a standalone React implementation of the prompt box
-- `dist/styles/zen-style.css` — the compiled base component library stylesheet these docs are built on
 
 ## A note on the data
 
