@@ -151,6 +151,22 @@
         .conf-ramp__step { border-radius: 8px; padding: 14px 12px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         .conf-ramp__step code { margin-left: auto; font-size: 11px; font-weight: 400; opacity: 0.85; }
         @media (max-width: 900px) { .conf-ramp { grid-template-columns: 1fr; } }
+        /* ===== Prompt box ring preview: gradient spins around the stroke only ===== */
+        .pb-ring {
+            position: relative; z-index: 1;
+            display: flex; align-items: center; gap: 10px;
+            height: 56px; padding: 0 14px; border-radius: 14px;
+            border: 2px solid transparent;
+            background:
+                linear-gradient(#fff, #fff) padding-box,
+                conic-gradient(from var(--vl-angle, 0deg), var(--g1), var(--g2), var(--g3), var(--g4), var(--g1)) border-box;
+            animation: vl-spin 2s linear infinite;
+            font-family: Lato, sans-serif; font-size: 14px; color: #9E9E9E;
+        }
+        .pb-ring svg { flex: none; }
+        .pb-ring__text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pb-ring__stop { flex: none; width: 12px; height: 12px; border: 1.5px solid #0a0a0a; border-radius: 3px; }
+        @media (prefers-reduced-motion: reduce) { .pb-ring, .vl-gradient-box { animation: none; } }
     </style>
 </head>
 <body class="ai-hub">
@@ -348,28 +364,32 @@
 
             <div class="pal-card">
                 <h3 class="pal-card__title">Prompt Box Ring</h3>
-                <p class="pal-card__desc">Animated conic-gradient spectrums used on the prompt box border ring during active states.</p>
+                <p class="pal-card__desc">The gradient travels around the prompt box stroke during active states. The box itself stays white.</p>
                 <div class="pal-grid">
                     <div class="pal-swatch">
                         <div class="pal-swatch__stage">
                             <div class="pal-swatch__glow pal-swatch__glow--ruby" aria-hidden="true"></div>
-                            <div class="pal-swatch__bar pal-swatch__bar--gradient pal-swatch__bar--dark" style="background-image:linear-gradient(135deg, #C0429F 0%, #E082C0 25%, #FBECD6 50%, #E082C0 75%, #C0429F 100%);"><span class="pal-swatch__icon">&#10022;</span></div>
+                            <div class="pb-ring" style="--g1:#C0429F; --g2:#E082C0; --g3:#FBECD6; --g4:#E082C0;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="#C0429F"/></svg><span class="pb-ring__text">Generating a reply&hellip;</span><span class="pb-ring__stop" aria-hidden="true"></span>
+                            </div>
                         </div>
                         <div class="pal-swatch__meta">
                             <div class="pal-swatch__row"><span class="pal-swatch__name">Active Spectrum</span><span class="pal-swatch__token">Generating &amp; Listening</span></div>
                             <code class="pal-swatch__hex">#C0429F &rarr; #E082C0 &rarr; #FBECD6 &rarr; #E082C0</code>
-                            <p class="pal-swatch__usage">Rainbow border animation during Generating and Listening states &mdash; Ruby Berry spectrum, no orange.</p>
+                            <p class="pal-swatch__usage">Stroke animation during Generating and Listening states. Ruby Berry spectrum, no orange.</p>
                         </div>
                     </div>
                     <div class="pal-swatch">
                         <div class="pal-swatch__stage">
                             <div class="pal-swatch__glow pal-swatch__glow--amber" aria-hidden="true"></div>
-                            <div class="pal-swatch__bar pal-swatch__bar--gradient pal-swatch__bar--dark" style="background-image:linear-gradient(135deg, #C0429F 0%, #FA7E3F 30%, #FFEEE3 50%, #C55D27 100%);"><span class="pal-swatch__icon">&#10022;</span></div>
+                            <div class="pb-ring" style="--g1:#C0429F; --g2:#FA7E3F; --g3:#FFEEE3; --g4:#C55D27;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="#C55D27"/></svg><span class="pb-ring__text">Something went wrong. Try again.</span><span class="pb-ring__stop" aria-hidden="true"></span>
+                            </div>
                         </div>
                         <div class="pal-swatch__meta">
                             <div class="pal-swatch__row"><span class="pal-swatch__name">Error Spectrum</span><span class="pal-swatch__token">Validation &amp; System</span></div>
                             <code class="pal-swatch__hex">#C0429F &rarr; #FA7E3F &rarr; #FFEEE3 &rarr; #C55D27</code>
-                            <p class="pal-swatch__usage">Rainbow border animation during Validation and System error states &mdash; amber/orange caution spectrum.</p>
+                            <p class="pal-swatch__usage">Stroke animation during Validation and System error states. Orange caution spectrum.</p>
                         </div>
                     </div>
                 </div>
@@ -427,7 +447,7 @@
                 <div class="ai-hub__swatch"><div class="ai-hub__swatch-color" style="background:#FEEEF9;"></div><div class="ai-hub__swatch-info"><span class="ai-hub__swatch-name">Ruby Wash</span><span class="ai-hub__swatch-value">#FEEEF9</span></div></div>
                 <div class="ai-hub__swatch"><div class="ai-hub__swatch-color" style="background:#FFEEE3;"></div><div class="ai-hub__swatch-info"><span class="ai-hub__swatch-name">Warm Wash</span><span class="ai-hub__swatch-value">#FFEEE3</span></div></div>
                 <div class="ai-hub__swatch"><div class="ai-hub__swatch-color" style="background:#FFF6F1;"></div><div class="ai-hub__swatch-info"><span class="ai-hub__swatch-name">Warm Wash Light</span><span class="ai-hub__swatch-value">#FFF6F1</span></div></div>
-                <div class="ai-hub__swatch"><div class="ai-hub__swatch-color" style="background:white; display:flex; align-items:center; justify-content:center;"><div class="vl-gradient-box" style="--g1:#C0429F; --g2:#E082C0; --g3:#FBECD6; --g4:#E082C0; width:100%; height:100%; margin:0; border-radius:8px 8px 0 0; font-size:10px;">Active</div></div><div class="ai-hub__swatch-info"><span class="ai-hub__swatch-name">Glow Gradient</span><span class="ai-hub__swatch-value">#C0429F → #E082C0 → #FBECD6</span></div></div>
+                <div class="ai-hub__swatch"><div class="ai-hub__swatch-color" style="background:white; display:flex; align-items:center; justify-content:center; padding:8px; box-sizing:border-box;"><div class="vl-gradient-box" style="--g1:#C0429F; --g2:#E082C0; --g3:#FBECD6; --g4:#E082C0; width:100%; height:100%; margin:0; font-size:10px;">Active</div></div><div class="ai-hub__swatch-info"><span class="ai-hub__swatch-name">Glow Gradient</span><span class="ai-hub__swatch-value">#C0429F → #E082C0 → #FBECD6</span></div></div>
             </div>
 
             <button class="ai-hub__copy-btn" id="copyTokensBtn">Copy CSS Tokens</button>
