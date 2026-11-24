@@ -181,7 +181,7 @@
         @media (max-width: 900px) { .pal-grid, .pal-grid--4 { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 560px) { .pal-grid, .pal-grid--4 { grid-template-columns: 1fr; } }
         .theme-banner {
-            display: flex; align-items: flex-start; gap: 40px;
+            display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: flex-start; gap: 40px;
             box-sizing: border-box; padding: 48px 56px; margin: 0 0 1.5rem;
             border-radius: 16px; border: 1px solid rgba(40, 30, 20, 0.06);
             background:
@@ -190,7 +190,7 @@
                 linear-gradient(160deg, #FEEEF9 0%, #F8F0FB 55%, #FDEFF0 100%);
             font-family: Lato, sans-serif;
         }
-        .theme-banner__mark { flex: none; }
+        .theme-banner__mark { flex: none; will-change: transform; transform-origin: 50% 55%; }
         .theme-banner__name { margin: 0; font-size: 44px; font-weight: 700; line-height: 1.1; color: #0A0A0A; letter-spacing: -0.5px; }
         .theme-banner__title { display: block; margin: 10px 0 14px; font-size: 14px; font-weight: 700; color: #0A0A0A; }
         .theme-banner__body { margin: 0; font-size: 18px; line-height: 1.6; color: #1C1917; max-width: 62ch; transition: opacity 200ms ease; }
@@ -696,5 +696,20 @@
         }
     })();
     </script>
+<script>
+/* Glow turns as the page scrolls; skipped for reduced motion */
+(function () {
+    var mark = document.querySelector('.theme-banner__mark');
+    if (!mark || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var ticking = false;
+    function update() {
+        mark.style.transform = 'rotate(' + (window.scrollY * 0.25) + 'deg)';
+        ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+})();
+</script>
 </body>
 </html>
