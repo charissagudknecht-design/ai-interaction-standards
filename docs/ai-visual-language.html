@@ -22,13 +22,8 @@
         .vl-gradient-bar { height: 12px; border-radius: 6px; margin: 1rem 0; }
 
         /* ===== Palette family cards (Confidence-Scale-style token rows) ===== */
-        .pal-card {
-            background: white;
-            border-radius: 16px;
-            border: 1px solid rgba(214, 211, 209, 0.6);
-            padding: 24px;
-            margin: 1.25rem 0;
-        }
+        .pal-card { margin: 40px 0 0; }
+        .pal-card:first-of-type { margin-top: 28px; }
         .pal-card__title {
             font-size: 16px;
             font-weight: 700;
@@ -42,7 +37,7 @@
         }
         .pal-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
         }
         .pal-swatch {
@@ -188,7 +183,10 @@
         @media (max-width: 760px) { .vl-dd { grid-template-columns: 1fr; } }
         .pal-swatch__codes { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; color: #A8A29E; }
         .ic { display: inline-block; vertical-align: -0.125em; flex: none; }
-</style>
+        .pal-grid--4 { grid-template-columns: repeat(4, 1fr); }
+        @media (max-width: 900px) { .pal-grid, .pal-grid--4 { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 560px) { .pal-grid, .pal-grid--4 { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body class="ai-hub">
     <nav class="ai-hub__nav">
@@ -325,7 +323,7 @@
             <div class="pal-card">
                 <h3 class="pal-card__title">AI Gradients</h3>
                 <p class="pal-card__desc">Static gradients used across Glow's interactive elements.</p>
-                <div class="pal-grid">
+                <div class="pal-grid pal-grid--4">
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:linear-gradient(135deg, #C0429F 0%, #963DBD 100%);"></div>
                         <div class="pal-swatch__meta">
