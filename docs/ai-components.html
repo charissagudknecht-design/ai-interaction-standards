@@ -1513,53 +1513,21 @@
 
         /* Theme Showcase Banner — permanently-expanded rationale + master theme toggle */
         .theme-banner {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-height: 104px;
-            box-sizing: border-box;
-            padding: 20px 24px;
-            border-radius: 12px;
-            border: 1px solid rgba(40, 30, 20, 0.07);
-            border-left: 4px solid var(--glow-accent, #C0429F);
-            background: rgba(192, 66, 159, 0.05);
-            margin: 1.25rem 0;
-            transition: background 300ms ease, border-color 300ms ease;
-        }
-        .theme-banner__header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .theme-banner__title {
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: #78716C;
+            display: flex; align-items: flex-start; gap: 40px;
+            box-sizing: border-box; padding: 48px 56px; margin: 1.25rem 0 2rem;
+            border-radius: 16px; border: 1px solid rgba(40, 30, 20, 0.06);
+            background:
+                radial-gradient(ellipse at 100% 0%, rgba(239, 234, 247, 0.9), transparent 60%),
+                radial-gradient(ellipse at 0% 100%, rgba(255, 238, 227, 0.8), transparent 55%),
+                linear-gradient(160deg, #FEEEF9 0%, #F8F0FB 55%, #FDEFF0 100%);
             font-family: Lato, sans-serif;
         }
-        .theme-banner__body {
-            margin: 0;
-            font-size: 15px;
-            line-height: 1.65;
-            color: #57534E;
-            font-family: Lato, sans-serif;
-            max-width: 68ch;
-            transition: opacity 200ms ease;
-        }
-        .theme-banner__toggle {
-            flex-shrink: 0;
-        }
-        .theme-banner__toggle .demo-btn {
-            font-size: 13px;
-            font-weight: 500;
-            padding: 8px 16px;
-        }
-        /* Theme toggle's own active pill previews the selected theme's tint */
-        #themeToggle .demo-btn--active { background: #FDF4FF; color: #701A75; }
+        .theme-banner__mark { flex: none; }
+        .theme-banner__name { margin: 0; font-size: 44px; font-weight: 700; line-height: 1.1; color: #0A0A0A; letter-spacing: -0.5px; }
+        .theme-banner__title { display: block; margin: 10px 0 14px; font-size: 14px; font-weight: 700; color: #0A0A0A; }
+        .theme-banner__body { margin: 0; font-size: 18px; line-height: 1.6; color: #1C1917; max-width: 62ch; transition: opacity 200ms ease; }
+        .theme-banner__toggle[hidden] { display: none; }
+        @media (max-width: 700px) { .theme-banner { flex-direction: column; align-items: flex-start; gap: 20px; padding: 28px 24px; } .theme-banner__mark { width: 56px; height: 56px; } .theme-banner__name { font-size: 32px; } }
 
         /* Technical Spec — accordion-style collapsible spec items */
         .tech-spec {
@@ -1649,13 +1617,15 @@
                         <h2 class="heading-2">Interactive Playground</h2>
 
                         <div class="theme-banner" id="themeBanner">
-                            <div class="theme-banner__header">
-                                <span class="theme-banner__title">Theme Rationale</span>
-                                <div class="theme-banner__toggle demo-controls__buttons theme-live" id="themeToggle" data-theme="ruby">
-                                    <button class="demo-btn demo-btn--active" data-control="theme" data-value="ruby">Ruby Berry</button>
-                                </div>
+                            <img class="theme-banner__mark" src="images/glow-head-ruby.svg" width="88" height="88" alt="">
+                            <div class="theme-banner__content">
+                                <h3 class="theme-banner__name">Ruby Berry</h3>
+                                <span class="theme-banner__title">Theme rationale</span>
+                                <p class="theme-banner__body" id="themeBannerBody">While our core platform is built on the stability and seriousness of Rosewood Blue, Ruby Berry represents Glow's proactive, high-energy intelligence. It's a warm, vibrant tone that signals a transformative AI partner.</p>
                             </div>
-                            <p class="theme-banner__body" id="themeBannerBody">While our core platform is built on the stability and seriousness of Rosewood Blue, Ruby Berry represents Glow's proactive, high-energy intelligence &mdash; a warm, vibrant tone signaling a transformative AI partner.</p>
+                            <div class="theme-banner__toggle demo-controls__buttons theme-live" id="themeToggle" data-theme="ruby" hidden>
+                                <button class="demo-btn demo-btn--active" data-control="theme" data-value="ruby">Ruby Berry</button>
+                            </div>
                         </div>
 
                         <div class="demo-controls theme-live" id="demoControls" data-theme="ruby">
@@ -3018,7 +2988,7 @@ promptBox.addEventListener('glow-prompt-submit', (e) =&gt; {
 
             // Theme Showcase Banner — permanently-visible rationale
             var rationaleCopy = {
-                ruby: "While our core platform is built on the stability and seriousness of Rosewood Blue, Ruby Berry represents Glow's proactive, high-energy intelligence — a warm, vibrant tone signaling a transformative AI partner."
+                ruby: "While our core platform is built on the stability and seriousness of Rosewood Blue, Ruby Berry represents Glow's proactive, high-energy intelligence. It's a warm, vibrant tone that signals a transformative AI partner."
             };
             var banner = document.getElementById('themeBanner');
             var bannerBody = document.getElementById('themeBannerBody');
@@ -3031,8 +3001,6 @@ promptBox.addEventListener('glow-prompt-submit', (e) =&gt; {
                         bannerBody.style.opacity = '1';
                     }
                 }, 200);
-                banner.style.background = bgColors[theme] || bgColors.ruby;
-                banner.style.borderLeftColor = accent;
             }
         }
 
