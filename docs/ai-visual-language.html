@@ -190,7 +190,18 @@
                 linear-gradient(160deg, #FEEEF9 0%, #F8F0FB 55%, #FDEFF0 100%);
             font-family: Lato, sans-serif;
         }
-        .theme-banner__mark { flex: none; will-change: transform; transform-origin: 50% 55%; }
+        .theme-banner__mark {
+            flex: none; width: 88px; height: 88px; position: relative;
+            will-change: transform; transform-origin: 50% 55%;
+            background: #C0429F;
+            -webkit-mask: url("images/glow-head-ruby.svg") center / contain no-repeat;
+            mask: url("images/glow-head-ruby.svg") center / contain no-repeat;
+        }
+        .theme-banner__mark::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(137deg, #C0429F 0%, #5A2A7A 100%);
+            opacity: var(--shift, 0);
+        }
         .theme-banner__name { margin: 0; font-size: 44px; font-weight: 700; line-height: 1.1; color: #0A0A0A; letter-spacing: -0.5px; }
         .theme-banner__title { display: block; margin: 10px 0 14px; font-size: 14px; font-weight: 700; color: #0A0A0A; }
         .theme-banner__body { margin: 0; font-size: 18px; line-height: 1.6; color: #1C1917; max-width: 62ch; transition: opacity 200ms ease; }
@@ -228,7 +239,7 @@
         </div>
 
         <div class="theme-banner">
-            <img class="theme-banner__mark" src="images/glow-head-ruby.svg" width="88" height="88" alt="">
+            <div class="theme-banner__mark" aria-hidden="true"></div>
             <div class="theme-banner__content">
                 <h3 class="theme-banner__name">Ruby Berry</h3>
                 <span class="theme-banner__title">Theme rationale</span>
@@ -704,6 +715,7 @@
     var ticking = false;
     function update() {
         mark.style.transform = 'rotate(' + (window.scrollY * 0.08) + 'deg)';
+        mark.style.setProperty('--shift', Math.min(window.scrollY / 250, 1));
         ticking = false;
     }
     window.addEventListener('scroll', function () {
