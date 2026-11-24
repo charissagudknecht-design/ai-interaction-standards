@@ -157,9 +157,42 @@ body.ai-hub {
     height: 460px;
     z-index: -1;
     pointer-events: none;
-    background:
-        radial-gradient(ellipse 900px 340px at 50% 0%, rgba(192, 66, 159, 0.05), transparent 70%),
-        linear-gradient(180deg, #FFEEE3 0%, rgba(251, 236, 214, 0.35) 40%, rgba(255, 255, 255, 0) 82%);
+    overflow: hidden;
+    background: linear-gradient(180deg, #FFEEE3 0%, rgba(251, 236, 214, 0.35) 40%, rgba(255, 255, 255, 0) 82%);
+}
+/* Slow drifting color: Ruby Berry and Cool Magenta glows wander across the wash */
+.ai-hub-backdrop::before,
+.ai-hub-backdrop::after {
+    content: "";
+    position: absolute;
+    top: -120px;
+    width: 900px;
+    height: 460px;
+    border-radius: 50%;
+    filter: blur(40px);
+    -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent 85%);
+    mask-image: linear-gradient(180deg, #000 30%, transparent 85%);
+}
+.ai-hub-backdrop::before {
+    left: -10%;
+    background: radial-gradient(closest-side, rgba(192, 66, 159, 0.18), transparent);
+    animation: hub-drift-a 22s ease-in-out infinite alternate;
+}
+.ai-hub-backdrop::after {
+    right: -10%;
+    background: radial-gradient(closest-side, rgba(150, 61, 189, 0.14), transparent);
+    animation: hub-drift-b 28s ease-in-out infinite alternate;
+}
+@keyframes hub-drift-a {
+    from { transform: translateX(0) scale(1); }
+    to { transform: translateX(45vw) scale(1.15); }
+}
+@keyframes hub-drift-b {
+    from { transform: translateX(0) scale(1.1); }
+    to { transform: translateX(-45vw) scale(0.95); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ai-hub-backdrop::before, .ai-hub-backdrop::after { animation: none; }
 }
 
 /* ===== Page Header ===== */
