@@ -148,8 +148,8 @@
         .conf-ramp__col { display: flex; flex-direction: column; gap: 8px; border: 1px solid rgba(40,30,20,0.07); border-radius: 12px; padding: 16px; background: white; }
         .conf-ramp__title { font-size: 16px; font-weight: 700; color: #1C1917; }
         .conf-ramp__desc { font-size: 14px; line-height: 1.5; color: #57534E; margin: 0 0 6px; }
-        .conf-ramp__step { border-radius: 8px; padding: 14px 12px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .conf-ramp__step code { margin-left: auto; font-size: 12px; font-weight: 400; opacity: 0.85; }
+        .conf-ramp__step { border-radius: 8px; padding: 12px 14px; font-size: 15px; font-weight: 600; display: flex; flex-direction: column; gap: 2px; }
+        .conf-ramp__step code { font-size: 12px; font-weight: 400; opacity: 0.85; }
         @media (max-width: 900px) { .conf-ramp { grid-template-columns: 1fr; } }
         /* ===== Prompt box ring preview: gradient spins around the stroke only ===== */
         .pb-ring {
@@ -167,6 +167,19 @@
         .pb-ring__text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .pb-ring__stop { flex: none; width: 12px; height: 12px; border: 1.5px solid #0a0a0a; border-radius: 3px; }
         @media (prefers-reduced-motion: reduce) { .pb-ring, .vl-gradient-box { animation: none; } }
+        .pal-swatch__contrast { align-self: flex-start; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+        .pal-swatch__contrast--pass { background: #E7F4E8; color: #1E6421; }
+        .pal-swatch__contrast--large { background: #FFF1BF; color: #705201; }
+        .pal-swatch__contrast--fail { background: #FFEEE3; color: #8E4018; }
+        .vl-subhead { font-size: 16px; font-weight: 700; margin: 24px 0 8px; }
+        .vl-chip { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 8px; vertical-align: -2px; border: 1px solid rgba(0,0,0,0.1); }
+        .vl-dd { display: flex; flex-direction: column; gap: 12px; }
+        .vl-dd__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .vl-dd__do, .vl-dd__dont { font-size: 15px; line-height: 1.5; color: #44403C; background: white; border-radius: 10px; padding: 14px 16px; border: 1px solid rgba(40,30,20,0.07); border-top: 3px solid #1E6421; }
+        .vl-dd__dont { border-top-color: #8E4018; }
+        .vl-dd__tag { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; color: #1E6421; }
+        .vl-dd__dont .vl-dd__tag { color: #8E4018; }
+        @media (max-width: 700px) { .vl-dd__row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body class="ai-hub">
@@ -184,6 +197,7 @@
     <main class="ai-hub__content">
         <div class="ai-hub__jump-links">
             <a href="#palette">Color Palette</a>
+            <a href="#usage">Usage</a>
             <a href="#typography">Typography</a>
             <a href="#iconography">Iconography</a>
             <a href="#tokens">Design Tokens</a>
@@ -207,6 +221,7 @@
                         <div class="pal-swatch__meta">
                             <div class="pal-swatch__row"><span class="pal-swatch__name">Ruby Berry</span><span class="pal-swatch__token">--glow-accent</span></div>
                             <code class="pal-swatch__hex">#C0429F</code>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 4.6:1 &middot; AA</span>
                             <p class="pal-swatch__usage">Primary brand color. Active triggers (the Glow mark), primary action buttons and active states.</p>
                         </div>
                     </div>
@@ -215,6 +230,7 @@
                         <div class="pal-swatch__meta">
                             <div class="pal-swatch__row"><span class="pal-swatch__name">Cool Magenta</span><span class="pal-swatch__token">--glow-magenta</span></div>
                             <code class="pal-swatch__hex">#963DBD</code>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 5.7:1 &middot; AA</span>
                             <p class="pal-swatch__usage">Secondary AI accent. Gradient transitions, sidebar headers and AI badge fills.</p>
                         </div>
                     </div>
@@ -223,6 +239,7 @@
                         <div class="pal-swatch__meta">
                             <div class="pal-swatch__row"><span class="pal-swatch__name">Deep Plum</span><span class="pal-swatch__token">--glow-plum</span></div>
                             <code class="pal-swatch__hex">#5A2A7A</code>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 10.3:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">Dark anchor for AI gradients. Headings and bold text on light wash backgrounds.</p>
                         </div>
                     </div>
@@ -231,6 +248,7 @@
                         <div class="pal-swatch__meta">
                             <div class="pal-swatch__row"><span class="pal-swatch__name">Dark Berry</span><span class="pal-swatch__token">--glow-dark-berry</span></div>
                             <code class="pal-swatch__hex">#6E265C</code>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 10.0:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">High-contrast emphasis. Strong text on wash surfaces and the dark mode accent fallback.</p>
                         </div>
                     </div>
@@ -239,6 +257,7 @@
                         <div class="pal-swatch__meta">
                             <div class="pal-swatch__row"><span class="pal-swatch__name">Coral</span><span class="pal-swatch__token">--glow-coral</span></div>
                             <code class="pal-swatch__hex">#FF7584</code>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Dark text 7.7:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">Highlight color. Gradient endpoints, active state accents and warm highlights.</p>
                         </div>
                     </div>
@@ -254,6 +273,7 @@
                         <div class="pal-swatch__meta">
                             <div class="pal-swatch__row"><span class="pal-swatch__name">Ruby Wash</span><span class="pal-swatch__token">--glow-ruby-wash</span></div>
                             <code class="pal-swatch__hex">#FEEEF9</code>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Deep Plum text 9.2:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">5% Ruby Berry tint for AI chat bubbles, chip hover states and suggestion cards.</p>
                         </div>
                     </div>
@@ -262,6 +282,7 @@
                         <div class="pal-swatch__meta">
                             <div class="pal-swatch__row"><span class="pal-swatch__name">Warm Wash Medium</span><span class="pal-swatch__token">--glow-warm-wash</span></div>
                             <code class="pal-swatch__hex">#FFEEE3</code>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Deep Plum text 9.1:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">Warm tint for user chat bubbles and hover states on chips.</p>
                         </div>
                     </div>
@@ -270,6 +291,7 @@
                         <div class="pal-swatch__meta">
                             <div class="pal-swatch__row"><span class="pal-swatch__name">Warm Wash Light</span><span class="pal-swatch__token">--glow-warm-wash-light</span></div>
                             <code class="pal-swatch__hex">#FFF6F1</code>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Deep Plum text 9.6:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">Lightest warm wash for subtle AI surface backgrounds and empty states.</p>
                         </div>
                     </div>
@@ -333,31 +355,31 @@
 
             <div class="pal-card">
                 <h3 class="pal-card__title">Confidence Colors</h3>
-                <p class="pal-card__desc">Confidence indicators reuse the design system's semantic Green, Yellow and Orange families. Each has a 4-step ramp: icons and text, dark accents, light accents and backgrounds. Orange is reserved for low confidence and errors.</p>
+                <p class="pal-card__desc">Confidence indicators reuse the design system's semantic Green, Yellow and Orange families. Each has a 4-step ramp: icons and text, dark accents, light accents and backgrounds. Orange is reserved for low confidence and errors. Dark accents pass AA only for large text and icons, so use the icons and text step for body copy.</p>
                 <div class="conf-ramp">
                 <div class="conf-ramp__col">
                     <div class="conf-ramp__title">High (90%+) &middot; Confident</div>
                     <p class="conf-ramp__desc">AI is very sure. The user can accept with minimal review.</p>
-                    <div class="conf-ramp__step" style="background:#1E6421;color:#FFFFFF;">Green &middot; Icons and text<code>#1E6421</code></div>
-                    <div class="conf-ramp__step" style="background:#418A44;color:#FFFFFF;">Green &middot; Dark accents<code>#418A44</code></div>
-                    <div class="conf-ramp__step" style="background:#76AD78;color:#FFFFFF;">Green &middot; Light accents<code>#76AD78</code></div>
-                    <div class="conf-ramp__step" style="background:#E7F4E8;color:#1E6421;">Green &middot; Backgrounds<code>#E7F4E8</code></div>
+                    <div class="conf-ramp__step" style="background:#1E6421;color:#FFFFFF;">Green &middot; Icons and text<code>#1E6421 &middot; 7.2:1</code></div>
+                    <div class="conf-ramp__step" style="background:#418A44;color:#FFFFFF;">Green &middot; Dark accents<code>#418A44 &middot; 4.2:1</code></div>
+                    <div class="conf-ramp__step" style="background:#76AD78;color:#1C1917;">Green &middot; Light accents<code>#76AD78 &middot; 6.7:1</code></div>
+                    <div class="conf-ramp__step" style="background:#E7F4E8;color:#1E6421;">Green &middot; Backgrounds<code>#E7F4E8 &middot; 6.4:1</code></div>
                 </div>
                 <div class="conf-ramp__col">
                     <div class="conf-ramp__title">Medium (60&ndash;89%) &middot; Likely</div>
                     <p class="conf-ramp__desc">AI is fairly sure. The user should review before accepting.</p>
-                    <div class="conf-ramp__step" style="background:#705201;color:#FFFFFF;">Yellow &middot; Icons and text<code>#705201</code></div>
-                    <div class="conf-ramp__step" style="background:#9C7506;color:#FFFFFF;">Yellow &middot; Dark accents<code>#9C7506</code></div>
-                    <div class="conf-ramp__step" style="background:#C89A17;color:#FFFFFF;">Yellow &middot; Light accents<code>#C89A17</code></div>
-                    <div class="conf-ramp__step" style="background:#FFF1BF;color:#705201;">Yellow &middot; Backgrounds<code>#FFF1BF</code></div>
+                    <div class="conf-ramp__step" style="background:#705201;color:#FFFFFF;">Yellow &middot; Icons and text<code>#705201 &middot; 7.3:1</code></div>
+                    <div class="conf-ramp__step" style="background:#9C7506;color:#FFFFFF;">Yellow &middot; Dark accents<code>#9C7506 &middot; 4.2:1</code></div>
+                    <div class="conf-ramp__step" style="background:#C89A17;color:#1C1917;">Yellow &middot; Light accents<code>#C89A17 &middot; 6.7:1</code></div>
+                    <div class="conf-ramp__step" style="background:#FFF1BF;color:#705201;">Yellow &middot; Backgrounds<code>#FFF1BF &middot; 6.4:1</code></div>
                 </div>
                 <div class="conf-ramp__col">
                     <div class="conf-ramp__title">Low (under 60%) &middot; Uncertain</div>
                     <p class="conf-ramp__desc">AI is unsure. The user needs to verify or try another approach.</p>
-                    <div class="conf-ramp__step" style="background:#8E4018;color:#FFFFFF;">Orange &middot; Icons and text<code>#8E4018</code></div>
-                    <div class="conf-ramp__step" style="background:#C55D27;color:#FFFFFF;">Orange &middot; Dark accents<code>#C55D27</code></div>
-                    <div class="conf-ramp__step" style="background:#FA7E3F;color:#FFFFFF;">Orange &middot; Light accents<code>#FA7E3F</code></div>
-                    <div class="conf-ramp__step" style="background:#FFEEE3;color:#8E4018;">Orange &middot; Backgrounds<code>#FFEEE3</code></div>
+                    <div class="conf-ramp__step" style="background:#8E4018;color:#FFFFFF;">Orange &middot; Icons and text<code>#8E4018 &middot; 7.2:1</code></div>
+                    <div class="conf-ramp__step" style="background:#C55D27;color:#FFFFFF;">Orange &middot; Dark accents<code>#C55D27 &middot; 4.2:1</code></div>
+                    <div class="conf-ramp__step" style="background:#FA7E3F;color:#1C1917;">Orange &middot; Light accents<code>#FA7E3F &middot; 6.8:1</code></div>
+                    <div class="conf-ramp__step" style="background:#FFEEE3;color:#8E4018;">Orange &middot; Backgrounds<code>#FFEEE3 &middot; 6.4:1</code></div>
                 </div>
                 </div>
             </div>
@@ -396,15 +418,58 @@
             </div>
         </section>
 
+        <section id="usage" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Color Usage</h2>
+            <p class="ai-hub__section-desc">Rules that keep AI color meaningful.</p>
+            <div class="vl-dd">
+                <div class="vl-dd__row">
+                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Use Ruby Berry only for AI entry points, AI actions and AI states.</div>
+                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Use Ruby Berry for standard buttons or links. Blue stays the CTA color.</div>
+                </div>
+                <div class="vl-dd__row">
+                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Use orange only for low confidence, caution and errors.</div>
+                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Use orange as a brand accent or decoration.</div>
+                </div>
+                <div class="vl-dd__row">
+                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Put body copy on washes in Deep Plum or near black.</div>
+                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Put white text on Coral, light accents or any wash.</div>
+                </div>
+                <div class="vl-dd__row">
+                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Pair a confidence color with a label, like "Likely" or "60&ndash;89%".</div>
+                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Rely on color alone to show confidence.</div>
+                </div>
+                <div class="vl-dd__row">
+                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Use one gradient per surface, on the element that signals AI.</div>
+                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Stack gradients on cards, buttons and backgrounds at once.</div>
+                </div>
+            </div>
+        </section>
+
         <section id="typography" class="ai-hub__section">
-            <h2 class="ai-hub__section-title">AI Typography</h2>
+            <h2 class="ai-hub__section-title">Typography</h2>
+            <p class="ai-hub__section-desc">Lato across every AI surface. The scale below covers docs and product UI. 16px is the floor for body copy and 12px is the floor for any text.</p>
+            <h3 class="vl-subhead">Type scale</h3>
+            <table class="ai-hub__table">
+                <thead><tr><th>Style</th><th>Size / Weight</th><th>Line height</th><th>Color</th></tr></thead>
+                <tbody>
+                    <tr><td><span style="font-size:28px;font-weight:700;line-height:1.2">Page title</span></td><td>28px / 700</td><td>1.2</td><td>#0A0A0A</td></tr>
+                    <tr><td><span style="font-size:22px;font-weight:700;line-height:1.3">Section heading</span></td><td>22px / 700</td><td>1.3</td><td>#0A0A0A</td></tr>
+                    <tr><td><span style="font-size:18px;line-height:1.6;color:#57534E">Lead</span></td><td>18px / 400</td><td>1.6</td><td>#57534E</td></tr>
+                    <tr><td><span style="font-size:16px;font-weight:700">Card title</span></td><td>16px / 700</td><td>1.4</td><td>#1C1917</td></tr>
+                    <tr><td><span style="font-size:16px;line-height:1.6">Body</span></td><td>16px / 400</td><td>1.6</td><td>#0A0A0A</td></tr>
+                    <tr><td><span style="font-size:14px;line-height:1.5;color:#57534E">Small body</span></td><td>14px / 400</td><td>1.5</td><td>#57534E</td></tr>
+                    <tr><td><span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#78716C">Label</span></td><td>12px / 700, caps</td><td>1.4</td><td>#78716C</td></tr>
+                    <tr><td><span style="font-size:12px;font-family:'SF Mono',Consolas,Monaco,monospace;color:#78716C">Code and tokens</span></td><td>12px / 400 mono</td><td>1.4</td><td>#78716C</td></tr>
+                </tbody>
+            </table>
+            <h3 class="vl-subhead">AI elements</h3>
             <table class="ai-hub__table">
                 <thead><tr><th>Element</th><th>Font</th><th>Size / Weight</th><th>Color</th></tr></thead>
                 <tbody>
-                    <tr><td>Primary text</td><td>Lato Regular</td><td>16px / 400</td><td>#0A0A0A (--text-primary)</td></tr>
-                    <tr><td>Ghost / Placeholder</td><td>Lato Regular</td><td>16px / 400</td><td>#9E9E9E (--text-ghost)</td></tr>
-                    <tr><td>AI Badge label</td><td>Lato Bold</td><td>10px / 700</td><td>#C0429F (--glow-accent)</td></tr>
-                    <tr><td>Helper / Error text</td><td>Lato Regular</td><td>12px / 400</td><td>#C55D27 (error) or #5F5F5F (system)</td></tr>
+                    <tr><td>Prompt text</td><td>Lato Regular</td><td>16px / 400</td><td>#0A0A0A (--text-primary)</td></tr>
+                    <tr><td>Placeholder</td><td>Lato Regular</td><td>16px / 400</td><td>#9E9E9E (--text-ghost)</td></tr>
+                    <tr><td>AI badge label</td><td>Lato Bold</td><td>12px / 700</td><td>#C0429F (--glow-accent)</td></tr>
+                    <tr><td>Helper and error text</td><td>Lato Regular</td><td>14px / 400</td><td>#8E4018 (error) or #5F5F5F (system)</td></tr>
                     <tr><td>Letter spacing</td><td>&mdash;</td><td>0.16px</td><td>&mdash;</td></tr>
                 </tbody>
             </table>
@@ -496,15 +561,22 @@
 
         <section id="dark-mode" class="ai-hub__section">
             <h2 class="ai-hub__section-title">Dark Mode</h2>
-            <p class="ai-hub__section-desc">Dark mode adjusts AI colors for contrast while maintaining the Ruby Berry identity.</p>
+            <p class="ai-hub__section-desc">Dark mode keeps the Ruby Berry identity. Accents get lighter, washes become dark tinted surfaces and every text color stays at AA or better on the #1C1B22 base.</p>
             <table class="ai-hub__table">
-                <thead><tr><th>Token</th><th>Light Mode</th><th>Dark Mode</th></tr></thead>
+                <thead><tr><th>Token</th><th>Light</th><th>Dark</th><th>Use and contrast</th></tr></thead>
                 <tbody>
-                    <tr><td>AI Primary</td><td>#C0429F</td><td>#E082C0 (lightened)</td></tr>
-                    <tr><td>AI Surface</td><td>#FFEEE3</td><td>#2A2B3D (dark elevated)</td></tr>
-                    <tr><td>Text Primary</td><td>#0A0A0A</td><td>#EDEFF5</td></tr>
-                    <tr><td>Confidence High</td><td>#1E6421</td><td>#4ADE80</td></tr>
-                    <tr><td>Confidence Low</td><td>#8E4018</td><td>#FA7E3F</td></tr>
+                    <tr><td>Ruby Berry</td><td><span class="vl-chip" style="background:#C0429F;"></span>#C0429F</td><td><span class="vl-chip" style="background:#E082C0;"></span>#E082C0</td><td>Lightened for contrast on dark surfaces. 6.6:1 on #1C1B22</td></tr>
+                    <tr><td>Cool Magenta</td><td><span class="vl-chip" style="background:#963DBD;"></span>#963DBD</td><td><span class="vl-chip" style="background:#C49BE8;"></span>#C49BE8</td><td>Gradient transitions and badge fills. 7.5:1 on #1C1B22</td></tr>
+                    <tr><td>Deep Plum</td><td><span class="vl-chip" style="background:#5A2A7A;"></span>#5A2A7A</td><td><span class="vl-chip" style="background:#2A1E3A;"></span>#2A1E3A</td><td>Becomes an elevated AI surface. Surface for #EDEFF5 text, 13.6:1</td></tr>
+                    <tr><td>Dark Berry</td><td><span class="vl-chip" style="background:#6E265C;"></span>#6E265C</td><td><span class="vl-chip" style="background:#F2B8E0;"></span>#F2B8E0</td><td>Flips to light text emphasis. 10.3:1 on #1C1B22</td></tr>
+                    <tr><td>Coral</td><td><span class="vl-chip" style="background:#FF7584;"></span>#FF7584</td><td><span class="vl-chip" style="background:#FF8F9B;"></span>#FF8F9B</td><td>Highlights and gradient endpoints. 7.9:1 on #1C1B22</td></tr>
+                    <tr><td>Ruby Wash</td><td><span class="vl-chip" style="background:#FEEEF9;"></span>#FEEEF9</td><td><span class="vl-chip" style="background:#33202F;"></span>#33202F</td><td>AI chat bubbles and suggestion cards. Surface for #EDEFF5 text, 13.2:1</td></tr>
+                    <tr><td>Warm Wash Medium</td><td><span class="vl-chip" style="background:#FFEEE3;"></span>#FFEEE3</td><td><span class="vl-chip" style="background:#33261F;"></span>#33261F</td><td>User chat bubbles and chip hovers. Surface for #EDEFF5 text, 12.7:1</td></tr>
+                    <tr><td>Warm Wash Light</td><td><span class="vl-chip" style="background:#FFF6F1;"></span>#FFF6F1</td><td><span class="vl-chip" style="background:#28211E;"></span>#28211E</td><td>Empty states and subtle AI surfaces. Surface for #EDEFF5 text, 13.8:1</td></tr>
+                    <tr><td>Confidence high</td><td><span class="vl-chip" style="background:#1E6421;"></span>#1E6421</td><td><span class="vl-chip" style="background:#7BD88A;"></span>#7BD88A</td><td>Icons and text. 9.8:1 on #1C1B22</td></tr>
+                    <tr><td>Confidence medium</td><td><span class="vl-chip" style="background:#705201;"></span>#705201</td><td><span class="vl-chip" style="background:#E8C35A;"></span>#E8C35A</td><td>Icons and text. 10.1:1 on #1C1B22</td></tr>
+                    <tr><td>Confidence low</td><td><span class="vl-chip" style="background:#8E4018;"></span>#8E4018</td><td><span class="vl-chip" style="background:#FA9A66;"></span>#FA9A66</td><td>Icons and text. 8.0:1 on #1C1B22</td></tr>
+                    <tr><td>Text primary</td><td><span class="vl-chip" style="background:#0A0A0A;"></span>#0A0A0A</td><td><span class="vl-chip" style="background:#EDEFF5;"></span>#EDEFF5</td><td>Body copy. 14.9:1 on #1C1B22</td></tr>
                 </tbody>
             </table>
         </section>
