@@ -50,6 +50,7 @@
             overflow: hidden;
             border: 1px solid rgba(214, 211, 209, 0.6);
             background: white;
+            display: flex; flex-direction: column;
         }
         .pal-swatch__bar {
             min-height: 48px;
@@ -64,7 +65,7 @@
         .pal-swatch__bar--light { color: #1C1917; }
         .pal-swatch__bar--dark { color: white; }
         .pal-swatch__icon { font-size: 15px; line-height: 1; }
-        .pal-swatch__meta { padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+        .pal-swatch__meta { padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
         .pal-swatch__row {
             display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
         }
@@ -77,7 +78,7 @@
             font-family: 'SF Mono', Consolas, Monaco, monospace;
             font-size: 14px; color: #78716C;
         }
-        .pal-swatch__usage { font-size: 14px; line-height: 1.5; color: #57534E; margin: 2px 0 0; }
+        .pal-swatch__usage { font-size: 14px; line-height: 1.5; color: #57534E; margin: 2px 0 10px; }
         .pal-swatch__bar--gradient {
             justify-content: center;
             position: relative;
@@ -167,7 +168,7 @@
         .pb-ring__text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .pb-ring__stop { flex: none; width: 12px; height: 12px; border: 1.5px solid #0a0a0a; border-radius: 3px; }
         @media (prefers-reduced-motion: reduce) { .pb-ring, .vl-gradient-box { animation: none; } }
-        .pal-swatch__contrast { align-self: flex-start; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+        .pal-swatch__contrast { align-self: flex-start; margin-top: auto; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
         .pal-swatch__contrast--pass { background: #E7F4E8; color: #1E6421; }
         .pal-swatch__contrast--large { background: #FFF1BF; color: #705201; }
         .pal-swatch__contrast--fail { background: #FFEEE3; color: #8E4018; }
@@ -219,46 +220,46 @@
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:#C0429F;"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Ruby Berry</span><span class="pal-swatch__token">--glow-accent</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Ruby Berry</span></div>
                             <code class="pal-swatch__hex">#C0429F</code>
-                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 4.6:1 &middot; AA</span>
                             <p class="pal-swatch__usage">Primary brand color. Active triggers (the Glow mark), primary action buttons and active states.</p>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 4.6:1 &middot; AA</span>
                         </div>
                     </div>
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:#963DBD;"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Cool Magenta</span><span class="pal-swatch__token">--glow-magenta</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Cool Magenta</span></div>
                             <code class="pal-swatch__hex">#963DBD</code>
-                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 5.7:1 &middot; AA</span>
                             <p class="pal-swatch__usage">Secondary AI accent. Gradient transitions, sidebar headers and AI badge fills.</p>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 5.7:1 &middot; AA</span>
                         </div>
                     </div>
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:#5A2A7A;"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Deep Plum</span><span class="pal-swatch__token">--glow-plum</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Deep Plum</span></div>
                             <code class="pal-swatch__hex">#5A2A7A</code>
-                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 10.3:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">Dark anchor for AI gradients. Headings and bold text on light wash backgrounds.</p>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 10.3:1 &middot; AAA</span>
                         </div>
                     </div>
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:#6E265C;"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Dark Berry</span><span class="pal-swatch__token">--glow-dark-berry</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Dark Berry</span></div>
                             <code class="pal-swatch__hex">#6E265C</code>
-                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 10.0:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">High-contrast emphasis. Strong text on wash surfaces and the dark mode accent fallback.</p>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">White text 10.0:1 &middot; AAA</span>
                         </div>
                     </div>
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:#FF7584;"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Coral</span><span class="pal-swatch__token">--glow-coral</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Coral</span></div>
                             <code class="pal-swatch__hex">#FF7584</code>
-                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Dark text 7.7:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">Highlight color. Gradient endpoints, active state accents and warm highlights.</p>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Dark text 7.7:1 &middot; AAA</span>
                         </div>
                     </div>
                 </div>
@@ -271,34 +272,34 @@
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--light" style="background:#FEEEF9;"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Ruby Wash</span><span class="pal-swatch__token">--glow-ruby-wash</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Ruby Wash</span></div>
                             <code class="pal-swatch__hex">#FEEEF9</code>
-                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Deep Plum text 9.2:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">5% Ruby Berry tint for AI chat bubbles, chip hover states and suggestion cards.</p>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Deep Plum text 9.2:1 &middot; AAA</span>
                         </div>
                     </div>
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--light" style="background:#FFEEE3;"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Warm Wash Medium</span><span class="pal-swatch__token">--glow-warm-wash</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Warm Wash Medium</span></div>
                             <code class="pal-swatch__hex">#FFEEE3</code>
-                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Deep Plum text 9.1:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">Warm tint for user chat bubbles and hover states on chips.</p>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Deep Plum text 9.1:1 &middot; AAA</span>
                         </div>
                     </div>
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--light" style="background:#FFF6F1;"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Warm Wash Light</span><span class="pal-swatch__token">--glow-warm-wash-light</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Warm Wash Light</span></div>
                             <code class="pal-swatch__hex">#FFF6F1</code>
-                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Deep Plum text 9.6:1 &middot; AAA</span>
                             <p class="pal-swatch__usage">Lightest warm wash for subtle AI surface backgrounds and empty states.</p>
+                            <span class="pal-swatch__contrast pal-swatch__contrast--pass">Deep Plum text 9.6:1 &middot; AAA</span>
                         </div>
                     </div>
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--light" style="background:linear-gradient(135deg, #FEEEF9 0%, #F1F0FD 100%);"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Gradient Wash</span><span class="pal-swatch__token">--glow-gradient-wash</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Gradient Wash</span></div>
                             <code class="pal-swatch__hex">#FEEEF9 &rarr; #F1F0FD</code>
                             <p class="pal-swatch__usage">Soft gradient behind AI-generated content areas and panels.</p>
                         </div>
@@ -306,7 +307,7 @@
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--light" style="background:linear-gradient(165deg, #FFFFFF 30%, #EFEAF7 55%, #FFFFFF 80%);"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Gradient Highlight</span><span class="pal-swatch__token">--glow-gradient-highlight</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Gradient Highlight</span></div>
                             <code class="pal-swatch__hex">#FFFFFF &rarr; #EFEAF7</code>
                             <p class="pal-swatch__usage">Gentle sheen for subtle AI-touched surfaces.</p>
                         </div>
@@ -321,7 +322,7 @@
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:linear-gradient(135deg, #C0429F 0%, #963DBD 100%);"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Glow Gradient</span><span class="pal-swatch__token">--glow-gradient</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Glow Gradient</span></div>
                             <code class="pal-swatch__hex">Berry &rarr; Magenta</code>
                             <p class="pal-swatch__usage">Primary AI gradient. Used in the Glow FAB and the Glow mark across all surfaces.</p>
                         </div>
@@ -329,7 +330,7 @@
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:linear-gradient(135deg, #C0429F 0%, #963DBD 50%, #5A2A7A 100%);"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Deep Berry Gradient</span><span class="pal-swatch__token">--glow-gradient-deep</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Deep Berry Gradient</span></div>
                             <code class="pal-swatch__hex">Berry &rarr; Magenta &rarr; Plum</code>
                             <p class="pal-swatch__usage">Deep AI gradient. Dark overlays, processing states and full-canvas AI backgrounds.</p>
                         </div>
@@ -337,7 +338,7 @@
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:linear-gradient(135deg, #C0429F 0%, #5A2A7A 100%);"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Dark Berry Gradient</span><span class="pal-swatch__token">--glow-gradient-dark</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Dark Berry Gradient</span></div>
                             <code class="pal-swatch__hex">Berry &rarr; Plum</code>
                             <p class="pal-swatch__usage">Two-stop dark gradient. Text on Ruby Wash backgrounds.</p>
                         </div>
@@ -345,7 +346,7 @@
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:linear-gradient(135deg, #C0429F 0%, #FF7584 100%);"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Warm Gradient</span><span class="pal-swatch__token">--glow-gradient-warm</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Warm Gradient</span></div>
                             <code class="pal-swatch__hex">Berry &rarr; Coral</code>
                             <p class="pal-swatch__usage">Warm highlight gradient. Active listening states, success confirmations and warm AI moments.</p>
                         </div>
