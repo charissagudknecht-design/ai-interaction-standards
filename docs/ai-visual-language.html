@@ -196,7 +196,10 @@
     </nav>
     <main class="ai-hub__content">
         <div class="ai-hub__jump-links">
-            <a href="#palette">Color Palette</a>
+            <a href="#palette">Brand Colors</a>
+            <a href="#washes">Washes</a>
+            <a href="#gradients">Gradients</a>
+            <a href="#confidence">Confidence</a>
             <a href="#usage">Usage</a>
             <a href="#typography">Typography</a>
             <a href="#iconography">Iconography</a>
@@ -209,12 +212,9 @@
         </div>
 
         <section id="palette" class="ai-hub__section">
-            <h2 class="ai-hub__section-title">AI Color Palette</h2>
-            <p class="ai-hub__section-desc">AI elements use Ruby Berry as the primary accent, visually distinct from the Blue CTA colors used for standard actions. Confidence indicators reuse the design system's semantic Green, Yellow and Orange families.</p>
+            <h2 class="ai-hub__section-title">AI Brand Colors</h2>
+            <p class="ai-hub__section-desc">Core solid colors that define Glow's visual identity. Ruby Berry is the primary accent, visually distinct from the Blue CTA colors used for standard actions.</p>
 
-            <div class="pal-card">
-                <h3 class="pal-card__title">AI Brand Colors</h3>
-                <p class="pal-card__desc">Core solid colors that define Glow's visual identity across all AI surfaces.</p>
                 <div class="pal-grid">
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:#C0429F;"></div>
@@ -262,11 +262,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
+        </section>
 
-            <div class="pal-card">
-                <h3 class="pal-card__title">AI Surface Washes</h3>
-                <p class="pal-card__desc">Light tint backgrounds for AI-generated content areas, chat bubbles and chip hover states.</p>
+        <section id="washes" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">AI Surface Washes</h2>
+            <p class="ai-hub__section-desc">Light tint backgrounds for AI-generated content areas, chat bubbles and chip hover states.</p>
+
                 <div class="pal-grid">
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--light" style="background:#FEEEF9;"></div>
@@ -312,11 +313,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
+        </section>
 
-            <div class="pal-card">
-                <h3 class="pal-card__title">AI Gradients</h3>
-                <p class="pal-card__desc">Static gradients used across Glow's interactive elements.</p>
+        <section id="gradients" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">AI Gradients</h2>
+            <p class="ai-hub__section-desc">Static gradients used across Glow's interactive elements.</p>
+
                 <div class="pal-grid pal-grid--4">
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:linear-gradient(135deg, #C0429F 0%, #963DBD 100%);"></div>
@@ -351,11 +353,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
+        </section>
 
-            <div class="pal-card">
-                <h3 class="pal-card__title">Confidence Colors</h3>
-                <p class="pal-card__desc">Confidence indicators reuse the design system's semantic Green, Yellow and Orange families. Each has a 4-step ramp: icons and text, dark accents, light accents and backgrounds. Orange is reserved for low confidence and errors. Dark accents pass AA only for large text and icons, so use the icons and text step for body copy.</p>
+        <section id="confidence" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Confidence Colors</h2>
+            <p class="ai-hub__section-desc">Confidence indicators reuse the design system's semantic Green, Yellow and Orange families. Each has a 4-step ramp: icons and text, dark accents, light accents and backgrounds. Orange is reserved for low confidence and errors. Dark accents pass AA only for large text and icons, so use the icons and text step for body copy.</p>
+
                 <div class="conf-ramp">
                 <div class="conf-ramp__col">
                     <div class="conf-ramp__title">High (90%+) &middot; Confident</div>
@@ -382,11 +385,12 @@
                     <div class="conf-ramp__step" style="background:#FFEEE3;color:#8E4018;">Orange &middot; Backgrounds<code>#FFEEE3 &middot; 6.4:1</code></div>
                 </div>
                 </div>
-            </div>
+        </section>
 
-            <div class="pal-card">
-                <h3 class="pal-card__title">Prompt Box Ring</h3>
-                <p class="pal-card__desc">The gradient travels around the prompt box stroke during active states. The box stays white.</p>
+        <section id="prompt-ring" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Prompt Box Ring</h2>
+            <p class="ai-hub__section-desc">The gradient travels around the prompt box stroke during active states. The box stays white.</p>
+
                 <div class="pal-grid">
                     <div class="pal-swatch">
                         <div class="pb-ring" style="--g1:#C0429F; --g2:#E082C0; --g3:#FBECD6; --g4:#E082C0;"></div>
@@ -405,7 +409,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </section>
 
         <section id="usage" class="ai-hub__section">
