@@ -174,13 +174,18 @@
         .pal-swatch__contrast--fail { background: #FFEEE3; color: #8E4018; }
         .vl-subhead { font-size: 16px; font-weight: 700; margin: 24px 0 8px; }
         .vl-chip { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 8px; vertical-align: -2px; border: 1px solid rgba(0,0,0,0.1); }
-        .vl-dd { display: flex; flex-direction: column; gap: 12px; }
-        .vl-dd__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .vl-dd__do, .vl-dd__dont { font-size: 15px; line-height: 1.5; color: #44403C; background: white; border-radius: 10px; padding: 14px 16px; border: 1px solid rgba(40,30,20,0.07); border-top: 3px solid #1E6421; }
-        .vl-dd__dont { border-top-color: #8E4018; }
-        .vl-dd__tag { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; color: #1E6421; }
-        .vl-dd__dont .vl-dd__tag { color: #8E4018; }
-        @media (max-width: 700px) { .vl-dd__row { grid-template-columns: 1fr; } }
+        .vl-dd { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 28px; }
+        .vl-dd__card { position: relative; background: white; border: 1px solid rgba(40,30,20,0.07); border-bottom: 4px solid #1E6421; border-radius: 10px 10px 4px 4px; }
+        .vl-dd__card--dont { border-bottom-color: #C55D27; }
+        .vl-dd__badge { position: absolute; top: -18px; left: -18px; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700; background: #1E6421; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+        .vl-dd__card--dont .vl-dd__badge { background: #C55D27; }
+        .vl-dd__preview { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 32px 20px; border-bottom: 1px solid rgba(40,30,20,0.06); background: #FCFBFA; border-radius: 10px 10px 0 0; }
+        .vl-dd__btns { display: flex; align-items: center; gap: 12px; }
+        .vl-btn { display: inline-flex; align-items: center; gap: 6px; color: white; font-size: 14px; font-weight: 700; padding: 9px 18px; border-radius: 8px; }
+        .vl-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+        .vl-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+        .vl-dd__list { margin: 0; padding: 18px 20px 20px 38px; font-size: 15px; line-height: 1.5; color: #44403C; display: flex; flex-direction: column; gap: 6px; }
+        @media (max-width: 760px) { .vl-dd { grid-template-columns: 1fr; } }
         .pal-swatch__codes { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; color: #A8A29E; }
     </style>
 </head>
@@ -422,27 +427,47 @@
 
         <section id="usage" class="ai-hub__section">
             <h2 class="ai-hub__section-title">Color Usage</h2>
-            <p class="ai-hub__section-desc">Rules that keep AI color meaningful.</p>
+            <p class="ai-hub__section-desc">Rules that keep AI color meaningful. Blue stays the color for standard actions.</p>
             <div class="vl-dd">
-                <div class="vl-dd__row">
-                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Use Ruby Berry only for AI entry points, AI actions and AI states.</div>
-                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Use Ruby Berry for standard buttons or links. Blue stays the CTA color.</div>
+                <div class="vl-dd__card vl-dd__card--dont">
+                    <span class="vl-dd__badge" aria-label="Don't">&#10005;</span>
+                    <div class="vl-dd__preview">
+                        <div class="vl-dd__btns">
+                            <span class="vl-btn" style="background:#C0429F;">Save</span>
+                            <span class="vl-btn" style="background:#FA7E3F;"><span aria-hidden="true">&#10022;</span> Ask Glow</span>
+                        </div>
+                        <div class="vl-dd__btns">
+                            <span class="vl-pill" style="background:#FF7584;color:#fff;">New</span>
+                            <span class="vl-dot" style="background:#C89A17;"></span>
+                        </div>
+                    </div>
+                    <ul class="vl-dd__list">
+                        <li>Ruby Berry on standard buttons or links</li>
+                        <li>Orange as a brand accent or decoration</li>
+                        <li>White text on Coral, light accents or washes</li>
+                        <li>Confidence shown by color alone</li>
+                        <li>Gradients stacked on cards, buttons and backgrounds</li>
+                    </ul>
                 </div>
-                <div class="vl-dd__row">
-                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Use orange only for low confidence, caution and errors.</div>
-                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Use orange as a brand accent or decoration.</div>
-                </div>
-                <div class="vl-dd__row">
-                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Put body copy on washes in Deep Plum or near black.</div>
-                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Put white text on Coral, light accents or any wash.</div>
-                </div>
-                <div class="vl-dd__row">
-                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Pair a confidence color with a label, like "Likely" or "60&ndash;89%".</div>
-                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Rely on color alone to show confidence.</div>
-                </div>
-                <div class="vl-dd__row">
-                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Use one gradient per surface, on the element that signals AI.</div>
-                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Stack gradients on cards, buttons and backgrounds at once.</div>
+                <div class="vl-dd__card vl-dd__card--do">
+                    <span class="vl-dd__badge" aria-label="Do">&#10003;</span>
+                    <div class="vl-dd__preview">
+                        <div class="vl-dd__btns">
+                            <span class="vl-btn" style="background:#1A78C1;">Save</span>
+                            <span class="vl-btn" style="background:#C0429F;"><span aria-hidden="true">&#10022;</span> Ask Glow</span>
+                        </div>
+                        <div class="vl-dd__btns">
+                            <span class="vl-pill" style="background:#FEEEF9;color:#5A2A7A;">New</span>
+                            <span class="vl-pill" style="background:#FFF1BF;color:#705201;"><span class="vl-dot" style="background:#C89A17;"></span> Likely &middot; 72%</span>
+                        </div>
+                    </div>
+                    <ul class="vl-dd__list">
+                        <li>Ruby Berry only for AI entry points, actions and states</li>
+                        <li>Orange only for low confidence, caution and errors</li>
+                        <li>Deep Plum or near black text on washes</li>
+                        <li>A label with every confidence color</li>
+                        <li>One gradient per surface, on the element that signals AI</li>
+                    </ul>
                 </div>
             </div>
         </section>
