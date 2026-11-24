@@ -703,7 +703,7 @@
     if (!mark || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var ticking = false;
     function update() {
-        mark.style.transform = 'rotate(' + (window.scrollY * 0.25) + 'deg)';
+        mark.style.transform = 'rotate(' + (window.scrollY * 0.08) + 'deg)';
         ticking = false;
     }
     window.addEventListener('scroll', function () {
