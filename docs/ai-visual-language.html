@@ -187,7 +187,8 @@
         .vl-dd__list { margin: 0; padding: 18px 20px 20px 38px; font-size: 15px; line-height: 1.5; color: #44403C; display: flex; flex-direction: column; gap: 6px; }
         @media (max-width: 760px) { .vl-dd { grid-template-columns: 1fr; } }
         .pal-swatch__codes { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; color: #A8A29E; }
-    </style>
+        .ic { display: inline-block; vertical-align: -0.125em; flex: none; }
+</style>
 </head>
 <body class="ai-hub">
     <nav class="ai-hub__nav">
@@ -430,7 +431,7 @@
             <p class="ai-hub__section-desc">Rules that keep AI color meaningful. Blue stays the color for standard actions.</p>
             <div class="vl-dd">
                 <div class="vl-dd__card vl-dd__card--dont">
-                    <span class="vl-dd__badge" aria-label="Don't">&#10005;</span>
+                    <span class="vl-dd__badge" aria-label="Don't"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
                     <div class="vl-dd__preview">
                         <div class="vl-dd__btns">
                             <span class="vl-btn" style="background:#C0429F;">Save</span>
@@ -450,7 +451,7 @@
                     </ul>
                 </div>
                 <div class="vl-dd__card vl-dd__card--do">
-                    <span class="vl-dd__badge" aria-label="Do">&#10003;</span>
+                    <span class="vl-dd__badge" aria-label="Do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
                     <div class="vl-dd__preview">
                         <div class="vl-dd__btns">
                             <span class="vl-btn" style="background:#1A78C1;">Save</span>
