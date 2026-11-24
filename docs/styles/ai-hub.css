@@ -44,7 +44,7 @@ body.ai-hub {
 }
 
 .ai-hub__logo {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     color: #435773;
     text-decoration: none;
@@ -64,7 +64,7 @@ body.ai-hub {
     line-height: 1;
     padding: 6px 14px;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     color: #4a4a4a;
     text-decoration: none;
@@ -91,7 +91,7 @@ body.ai-hub {
     border: 1px solid rgba(40, 30, 20, 0.12);
     border-radius: 6px;
     background: white;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     font-family: Lato, sans-serif;
     cursor: pointer;
@@ -123,7 +123,7 @@ body.ai-hub {
     margin-bottom: 24px;
     border-bottom: 1px solid rgba(40, 30, 20, 0.08);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-    font-size: 13px;
+    font-size: 15px;
     font-family: Lato, sans-serif;
     display: flex;
     gap: 24px;
@@ -184,7 +184,7 @@ body.ai-hub {
     margin: 0 0 8px;
 }
 .ai-hub__section-desc {
-    font-size: 14px;
+    font-size: 16px;
     color: #5f5f5f;
     line-height: 1.6;
     margin: 0 0 20px;
@@ -225,7 +225,7 @@ body.ai-hub {
     margin: 0 0 8px;
 }
 .ai-hub__card-desc {
-    font-size: 14px;
+    font-size: 16px;
     color: #5f5f5f;
     line-height: 1.5;
     margin: 0 0 12px;
@@ -238,7 +238,7 @@ body.ai-hub {
 .ai-hub__card-tag {
     padding: 3px 10px;
     border-radius: 12px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     background: var(--hub-accent-light);
     color: var(--hub-accent);
@@ -248,7 +248,7 @@ body.ai-hub {
 .ai-hub__table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 15px;
     margin: 16px 0;
 }
 .ai-hub__table th {
@@ -265,7 +265,7 @@ body.ai-hub {
     color: #4a4a4a;
 }
 .ai-hub__table code {
-    font-size: 12px;
+    font-size: 14px;
     background: rgba(0, 0, 0, 0.04);
     padding: 2px 6px;
     border-radius: 3px;
@@ -292,13 +292,13 @@ body.ai-hub {
     padding: 8px 10px;
 }
 .ai-hub__swatch-name {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     color: #0a0a0a;
     display: block;
 }
 .ai-hub__swatch-value {
-    font-size: 11px;
+    font-size: 12px;
     color: #5f5f5f;
     font-family: Consolas, Monaco, monospace;
 }
@@ -313,7 +313,7 @@ body.ai-hub {
     border-radius: 6px;
     background: white;
     color: var(--hub-accent);
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     font-family: Lato, sans-serif;
     cursor: pointer;
@@ -335,7 +335,7 @@ body.ai-hub {
     color: #cdd6f4;
     border-radius: 8px;
     padding: 16px 20px;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.6;
     font-family: Consolas, Monaco, monospace;
     overflow-x: auto;
