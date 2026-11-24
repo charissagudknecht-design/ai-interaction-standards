@@ -850,5 +850,16 @@
         }
     })();
     </script>
+<script>
+/* Sub nav sits clear on the wash, gets a white bar once it sticks */
+(function () {
+    var bar = document.querySelector('.ai-hub__jump-links');
+    if (!bar) return;
+    var start = bar.getBoundingClientRect().top + window.scrollY - 46;
+    function check() { bar.classList.toggle('is-stuck', window.scrollY > start - 1); }
+    window.addEventListener('scroll', check, { passive: true });
+    check();
+})();
+</script>
 </body>
 </html>
