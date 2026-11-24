@@ -22,13 +22,8 @@
         .vl-gradient-bar { height: 12px; border-radius: 6px; margin: 1rem 0; }
 
         /* ===== Palette family cards (Confidence-Scale-style token rows) ===== */
-        .pal-card {
-            background: white;
-            border-radius: 16px;
-            border: 1px solid rgba(214, 211, 209, 0.6);
-            padding: 24px;
-            margin: 1.25rem 0;
-        }
+        .pal-card { margin: 40px 0 0; }
+        .pal-card:first-of-type { margin-top: 28px; }
         .pal-card__title {
             font-size: 16px;
             font-weight: 700;
@@ -42,7 +37,7 @@
         }
         .pal-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
         }
         .pal-swatch {
@@ -146,27 +141,21 @@
         }
         /* ===== Confidence ramps ===== */
         .conf-ramp { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .conf-ramp__col { display: flex; flex-direction: column; gap: 8px; border: 1px solid rgba(40,30,20,0.07); border-radius: 12px; padding: 16px; background: white; }
-        .conf-ramp__title { font-size: 16px; font-weight: 700; color: #1C1917; }
-        .conf-ramp__desc { font-size: 14px; line-height: 1.5; color: #57534E; margin: 0 0 6px; }
-        .conf-ramp__step { border-radius: 8px; padding: 12px 14px; font-size: 15px; font-weight: 600; display: flex; flex-direction: column; gap: 2px; }
+        .conf-ramp__col { display: flex; flex-direction: column; border: 1px solid rgba(40,30,20,0.07); border-radius: 12px; overflow: hidden; background: white; }
+        .conf-ramp__title { font-size: 16px; font-weight: 700; color: #1C1917; padding: 20px 20px 4px; }
+        .conf-ramp__desc { font-size: 14px; line-height: 1.5; color: #57534E; margin: 0; padding: 0 20px 20px; }
+        .conf-ramp__step { min-height: 120px; box-sizing: border-box; padding: 16px 20px; font-size: 15px; font-weight: 700; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; }
         .conf-ramp__step code { font-size: 12px; font-weight: 400; opacity: 0.85; }
         @media (max-width: 900px) { .conf-ramp { grid-template-columns: 1fr; } }
         /* ===== Prompt box ring preview: gradient spins around the stroke only ===== */
         .pb-ring {
-            position: relative; z-index: 1;
-            display: flex; align-items: center; gap: 10px;
-            height: 56px; padding: 0 14px; border-radius: 14px;
-            border: 2px solid transparent;
+            height: 120px; box-sizing: border-box;
+            border: 2px solid transparent; border-radius: 10px 10px 0 0;
             background:
                 linear-gradient(#fff, #fff) padding-box,
                 conic-gradient(from var(--vl-angle, 0deg), var(--g1), var(--g2), var(--g3), var(--g4), var(--g1)) border-box;
-            animation: vl-spin 2s linear infinite;
-            font-family: Lato, sans-serif; font-size: 14px; color: #9E9E9E;
+            animation: vl-spin 3s linear infinite;
         }
-        .pb-ring svg { flex: none; }
-        .pb-ring__text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .pb-ring__stop { flex: none; width: 12px; height: 12px; border: 1.5px solid #0a0a0a; border-radius: 3px; }
         @media (prefers-reduced-motion: reduce) { .pb-ring, .vl-gradient-box { animation: none; } }
         .pal-swatch__contrast { align-self: flex-start; margin-top: auto; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
         .pal-swatch__contrast--pass { background: #E7F4E8; color: #1E6421; }
@@ -174,14 +163,50 @@
         .pal-swatch__contrast--fail { background: #FFEEE3; color: #8E4018; }
         .vl-subhead { font-size: 16px; font-weight: 700; margin: 24px 0 8px; }
         .vl-chip { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 8px; vertical-align: -2px; border: 1px solid rgba(0,0,0,0.1); }
-        .vl-dd { display: flex; flex-direction: column; gap: 12px; }
-        .vl-dd__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .vl-dd__do, .vl-dd__dont { font-size: 15px; line-height: 1.5; color: #44403C; background: white; border-radius: 10px; padding: 14px 16px; border: 1px solid rgba(40,30,20,0.07); border-top: 3px solid #1E6421; }
-        .vl-dd__dont { border-top-color: #8E4018; }
-        .vl-dd__tag { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; color: #1E6421; }
-        .vl-dd__dont .vl-dd__tag { color: #8E4018; }
-        @media (max-width: 700px) { .vl-dd__row { grid-template-columns: 1fr; } }
+        .vl-dd { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 28px; }
+        .vl-dd__card { position: relative; background: white; border: 1px solid rgba(40,30,20,0.07); border-bottom: 4px solid #1E6421; border-radius: 10px 10px 4px 4px; }
+        .vl-dd__card--dont { border-bottom-color: #C55D27; }
+        .vl-dd__badge { position: absolute; top: -18px; left: -18px; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700; background: #1E6421; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+        .vl-dd__card--dont .vl-dd__badge { background: #C55D27; }
+        .vl-dd__preview { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 32px 20px; border-bottom: 1px solid rgba(40,30,20,0.06); background: #FCFBFA; border-radius: 10px 10px 0 0; }
+        .vl-dd__btns { display: flex; align-items: center; gap: 12px; }
+        .vl-btn { display: inline-flex; align-items: center; gap: 6px; color: white; font-size: 14px; font-weight: 700; padding: 9px 18px; border-radius: 8px; }
+        .vl-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+        .vl-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+        .vl-dd__list { margin: 0; padding: 18px 20px 20px 38px; font-size: 15px; line-height: 1.5; color: #44403C; display: flex; flex-direction: column; gap: 6px; }
+        @media (max-width: 760px) { .vl-dd { grid-template-columns: 1fr; } }
         .pal-swatch__codes { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; color: #A8A29E; }
+        .ic { display: inline-block; vertical-align: -0.125em; flex: none; }
+        .pal-grid--4 { grid-template-columns: repeat(4, 1fr); }
+        @media (max-width: 900px) { .pal-grid, .pal-grid--4 { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 560px) { .pal-grid, .pal-grid--4 { grid-template-columns: 1fr; } }
+        .theme-banner {
+            display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: flex-start; gap: 40px;
+            box-sizing: border-box; padding: 48px 56px; margin: 0 0 1.5rem;
+            border-radius: 16px; border: 1px solid rgba(40, 30, 20, 0.06);
+            background:
+                radial-gradient(ellipse at 100% 0%, rgba(239, 234, 247, 0.9), transparent 60%),
+                radial-gradient(ellipse at 0% 100%, rgba(255, 238, 227, 0.8), transparent 55%),
+                linear-gradient(160deg, #FEEEF9 0%, #F8F0FB 55%, #FDEFF0 100%);
+            font-family: Lato, sans-serif;
+        }
+        .theme-banner__mark {
+            flex: none; width: 88px; height: 88px; position: relative;
+            will-change: transform; transform-origin: 50% 55%;
+            background: #C0429F;
+            -webkit-mask: url("images/glow-head-ruby.svg") center / contain no-repeat;
+            mask: url("images/glow-head-ruby.svg") center / contain no-repeat;
+        }
+        .theme-banner__mark::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(137deg, #C0429F 0%, #5A2A7A 100%);
+            opacity: var(--shift, 0);
+        }
+        .theme-banner__name { margin: 0; font-size: 32px; font-weight: 700; line-height: 1.1; color: #0A0A0A; letter-spacing: -0.5px; }
+        .theme-banner__title { display: block; margin: 10px 0 14px; font-size: 14px; font-weight: 700; color: #0A0A0A; }
+        .theme-banner__body { margin: 0; font-size: 18px; line-height: 1.6; color: #1C1917; max-width: 62ch; transition: opacity 200ms ease; }
+        .theme-banner__toggle[hidden] { display: none; }
+        @media (max-width: 700px) { .theme-banner { flex-direction: column; align-items: flex-start; gap: 20px; padding: 28px 24px; } .theme-banner__mark { width: 56px; height: 56px; } .theme-banner__name { font-size: 32px; } }
     </style>
 </head>
 <body class="ai-hub">
@@ -196,9 +221,14 @@
         </div>
         </div>
     </nav>
+    <div class="ai-hub-backdrop" aria-hidden="true"></div>
+
     <main class="ai-hub__content">
         <div class="ai-hub__jump-links">
-            <a href="#palette">Color Palette</a>
+            <a href="#palette">Brand Colors</a>
+            <a href="#washes">Washes</a>
+            <a href="#gradients">Gradients</a>
+            <a href="#confidence">Confidence</a>
             <a href="#usage">Usage</a>
             <a href="#typography">Typography</a>
             <a href="#iconography">Iconography</a>
@@ -210,13 +240,19 @@
             <p class="ai-hub__subtitle">Color palettes, gradients, typography, and iconography that define Glow's visual identity. Includes exportable design tokens for the Ruby Berry theme.</p>
         </div>
 
-        <section id="palette" class="ai-hub__section">
-            <h2 class="ai-hub__section-title">AI Color Palette</h2>
-            <p class="ai-hub__section-desc">AI elements use Ruby Berry as the primary accent, visually distinct from the Blue CTA colors used for standard actions. Confidence indicators reuse the design system's semantic Green, Yellow and Orange families.</p>
+        <div class="theme-banner">
+            <div class="theme-banner__mark" aria-hidden="true"></div>
+            <div class="theme-banner__content">
+                <h3 class="theme-banner__name">Ruby Berry</h3>
+                <span class="theme-banner__title">Theme rationale</span>
+                <p class="theme-banner__body">While our core platform is built on the stability and seriousness of Rosewood Blue, Ruby Berry represents Glow's proactive, high-energy intelligence. It's a warm, vibrant tone that signals a transformative AI partner.</p>
+            </div>
+        </div>
 
-            <div class="pal-card">
-                <h3 class="pal-card__title">AI Brand Colors</h3>
-                <p class="pal-card__desc">Core solid colors that define Glow's visual identity across all AI surfaces.</p>
+        <section id="palette" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">AI Brand Colors</h2>
+            <p class="ai-hub__section-desc">Core solid colors that define Glow's visual identity. Ruby Berry is the primary accent, visually distinct from the Blue CTA colors used for standard actions.</p>
+
                 <div class="pal-grid">
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:#C0429F;"></div>
@@ -264,11 +300,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
+        </section>
 
-            <div class="pal-card">
-                <h3 class="pal-card__title">AI Surface Washes</h3>
-                <p class="pal-card__desc">Light tint backgrounds for AI-generated content areas, chat bubbles and chip hover states.</p>
+        <section id="washes" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">AI Surface Washes</h2>
+            <p class="ai-hub__section-desc">Light tint backgrounds for AI-generated content areas, chat bubbles and chip hover states.</p>
+
                 <div class="pal-grid">
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--light" style="background:#FEEEF9;"></div>
@@ -314,12 +351,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
+        </section>
 
-            <div class="pal-card">
-                <h3 class="pal-card__title">AI Gradients</h3>
-                <p class="pal-card__desc">Static gradients used across Glow's interactive elements.</p>
-                <div class="pal-grid">
+        <section id="gradients" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">AI Gradients</h2>
+            <p class="ai-hub__section-desc">Static gradients used across Glow's interactive elements.</p>
+
+                <div class="pal-grid pal-grid--4">
                     <div class="pal-swatch">
                         <div class="pal-swatch__bar pal-swatch__bar--dark" style="background:linear-gradient(135deg, #C0429F 0%, #963DBD 100%);"></div>
                         <div class="pal-swatch__meta">
@@ -353,11 +391,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
+        </section>
 
-            <div class="pal-card">
-                <h3 class="pal-card__title">Confidence Colors</h3>
-                <p class="pal-card__desc">Confidence indicators reuse the design system's semantic Green, Yellow and Orange families. Each has a 4-step ramp: icons and text, dark accents, light accents and backgrounds. Orange is reserved for low confidence and errors. Dark accents pass AA only for large text and icons, so use the icons and text step for body copy.</p>
+        <section id="confidence" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Confidence Colors</h2>
+            <p class="ai-hub__section-desc">Confidence indicators reuse the design system's semantic Green, Yellow and Orange families. Each has a 4-step ramp: icons and text, dark accents, light accents and backgrounds. Orange is reserved for low confidence and errors. Dark accents pass AA only for large text and icons, so use the icons and text step for body copy.</p>
+
                 <div class="conf-ramp">
                 <div class="conf-ramp__col">
                     <div class="conf-ramp__title">High (90%+) &middot; Confident</div>
@@ -384,65 +423,75 @@
                     <div class="conf-ramp__step" style="background:#FFEEE3;color:#8E4018;">Orange &middot; Backgrounds<code>#FFEEE3 &middot; 6.4:1</code></div>
                 </div>
                 </div>
-            </div>
+        </section>
 
-            <div class="pal-card">
-                <h3 class="pal-card__title">Prompt Box Ring</h3>
-                <p class="pal-card__desc">The gradient travels around the prompt box stroke during active states. The box itself stays white.</p>
+        <section id="prompt-ring" class="ai-hub__section">
+            <h2 class="ai-hub__section-title">Prompt Box Ring</h2>
+            <p class="ai-hub__section-desc">The gradient travels around the prompt box stroke during active states. The box stays white.</p>
+
                 <div class="pal-grid">
                     <div class="pal-swatch">
-                        <div class="pal-swatch__stage">
-                            <div class="pal-swatch__glow pal-swatch__glow--ruby" aria-hidden="true"></div>
-                            <div class="pb-ring" style="--g1:#C0429F; --g2:#E082C0; --g3:#FBECD6; --g4:#E082C0;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="#C0429F"/></svg><span class="pb-ring__text">Generating a reply&hellip;</span><span class="pb-ring__stop" aria-hidden="true"></span>
-                            </div>
-                        </div>
+                        <div class="pb-ring" style="--g1:#C0429F; --g2:#E082C0; --g3:#FBECD6; --g4:#E082C0;"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Active Spectrum</span><span class="pal-swatch__token">Generating &amp; Listening</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Active Spectrum</span></div>
                             <code class="pal-swatch__hex">#C0429F &rarr; #E082C0 &rarr; #FBECD6 &rarr; #E082C0</code>
-                            <p class="pal-swatch__usage">Stroke animation during Generating and Listening states. Ruby Berry spectrum, no orange.</p>
+                            <p class="pal-swatch__usage">Generating and Listening states. Ruby Berry spectrum, no orange.</p>
                         </div>
                     </div>
                     <div class="pal-swatch">
-                        <div class="pal-swatch__stage">
-                            <div class="pal-swatch__glow pal-swatch__glow--amber" aria-hidden="true"></div>
-                            <div class="pb-ring" style="--g1:#C0429F; --g2:#FA7E3F; --g3:#FFEEE3; --g4:#C55D27;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14.19 3.45l1.08 2.89a4.5 4.5 0 002.38 2.38l2.9 1.07c.6.22.6 1.07 0 1.29l-2.9 1.07a4.5 4.5 0 00-2.38 2.38l-1.08 2.89c-.22.6-1.07.6-1.29 0l-1.07-2.89a4.5 4.5 0 00-2.39-2.38l-2.9-1.07c-.6-.22-.6-1.07 0-1.29l2.9-1.07a4.5 4.5 0 002.39-2.38l1.07-2.89c.22-.6 1.07-.6 1.29 0z" fill="#C55D27"/></svg><span class="pb-ring__text">Something went wrong. Try again.</span><span class="pb-ring__stop" aria-hidden="true"></span>
-                            </div>
-                        </div>
+                        <div class="pb-ring" style="--g1:#C0429F; --g2:#FA7E3F; --g3:#FFEEE3; --g4:#C55D27;"></div>
                         <div class="pal-swatch__meta">
-                            <div class="pal-swatch__row"><span class="pal-swatch__name">Error Spectrum</span><span class="pal-swatch__token">Validation &amp; System</span></div>
+                            <div class="pal-swatch__row"><span class="pal-swatch__name">Error Spectrum</span></div>
                             <code class="pal-swatch__hex">#C0429F &rarr; #FA7E3F &rarr; #FFEEE3 &rarr; #C55D27</code>
-                            <p class="pal-swatch__usage">Stroke animation during Validation and System error states. Orange caution spectrum.</p>
+                            <p class="pal-swatch__usage">Validation and System error states. Orange caution spectrum.</p>
                         </div>
                     </div>
                 </div>
-            </div>
         </section>
 
         <section id="usage" class="ai-hub__section">
             <h2 class="ai-hub__section-title">Color Usage</h2>
-            <p class="ai-hub__section-desc">Rules that keep AI color meaningful.</p>
+            <p class="ai-hub__section-desc">Rules that keep AI color meaningful. Blue stays the color for standard actions.</p>
             <div class="vl-dd">
-                <div class="vl-dd__row">
-                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Use Ruby Berry only for AI entry points, AI actions and AI states.</div>
-                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Use Ruby Berry for standard buttons or links. Blue stays the CTA color.</div>
+                <div class="vl-dd__card vl-dd__card--dont">
+                    <span class="vl-dd__badge" aria-label="Don't"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
+                    <div class="vl-dd__preview">
+                        <div class="vl-dd__btns">
+                            <span class="vl-btn" style="background:#C0429F;">Save</span>
+                            <span class="vl-btn" style="background:#FA7E3F;"><span aria-hidden="true">&#10022;</span> Ask Glow</span>
+                        </div>
+                        <div class="vl-dd__btns">
+                            <span class="vl-pill" style="background:#FF7584;color:#fff;">New</span>
+                            <span class="vl-dot" style="background:#C89A17;"></span>
+                        </div>
+                    </div>
+                    <ul class="vl-dd__list">
+                        <li>Ruby Berry on standard buttons or links</li>
+                        <li>Orange as a brand accent or decoration</li>
+                        <li>White text on Coral, light accents or washes</li>
+                        <li>Confidence shown by color alone</li>
+                        <li>Gradients stacked on cards, buttons and backgrounds</li>
+                    </ul>
                 </div>
-                <div class="vl-dd__row">
-                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Use orange only for low confidence, caution and errors.</div>
-                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Use orange as a brand accent or decoration.</div>
-                </div>
-                <div class="vl-dd__row">
-                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Put body copy on washes in Deep Plum or near black.</div>
-                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Put white text on Coral, light accents or any wash.</div>
-                </div>
-                <div class="vl-dd__row">
-                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Pair a confidence color with a label, like "Likely" or "60&ndash;89%".</div>
-                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Rely on color alone to show confidence.</div>
-                </div>
-                <div class="vl-dd__row">
-                    <div class="vl-dd__do"><span class="vl-dd__tag">Do</span>Use one gradient per surface, on the element that signals AI.</div>
-                    <div class="vl-dd__dont"><span class="vl-dd__tag">Don't</span>Stack gradients on cards, buttons and backgrounds at once.</div>
+                <div class="vl-dd__card vl-dd__card--do">
+                    <span class="vl-dd__badge" aria-label="Do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+                    <div class="vl-dd__preview">
+                        <div class="vl-dd__btns">
+                            <span class="vl-btn" style="background:#1A78C1;">Save</span>
+                            <span class="vl-btn" style="background:#C0429F;"><span aria-hidden="true">&#10022;</span> Ask Glow</span>
+                        </div>
+                        <div class="vl-dd__btns">
+                            <span class="vl-pill" style="background:#FEEEF9;color:#5A2A7A;">New</span>
+                            <span class="vl-pill" style="background:#FFF1BF;color:#705201;"><span class="vl-dot" style="background:#C89A17;"></span> Likely &middot; 72%</span>
+                        </div>
+                    </div>
+                    <ul class="vl-dd__list">
+                        <li>Ruby Berry only for AI entry points, actions and states</li>
+                        <li>Orange only for low confidence, caution and errors</li>
+                        <li>Deep Plum or near black text on washes</li>
+                        <li>A label with every confidence color</li>
+                        <li>One gradient per surface, on the element that signals AI</li>
+                    </ul>
                 </div>
             </div>
         </section>
@@ -660,5 +709,32 @@
         }
     })();
     </script>
+<script>
+/* Glow turns as the page scrolls; skipped for reduced motion */
+(function () {
+    var mark = document.querySelector('.theme-banner__mark');
+    if (!mark || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var ticking = false;
+    function update() {
+        mark.style.transform = 'rotate(' + (window.scrollY * 0.08) + 'deg)';
+        mark.style.setProperty('--shift', Math.min(window.scrollY / 250, 1));
+        ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+})();
+</script>
+<script>
+/* Sub nav sits clear on the wash, gets a white bar once it sticks */
+(function () {
+    var bar = document.querySelector('.ai-hub__jump-links');
+    if (!bar) return;
+    var start = bar.getBoundingClientRect().top + window.scrollY - 46;
+    function check() { bar.classList.toggle('is-stuck', window.scrollY > start - 1); }
+    window.addEventListener('scroll', check, { passive: true });
+    check();
+})();
+</script>
 </body>
 </html>

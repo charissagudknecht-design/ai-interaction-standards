@@ -117,12 +117,10 @@ body.ai-hub {
     position: sticky;
     top: 46px;
     z-index: 30;
-    background: rgba(250, 248, 246, 0.9);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
+    background: transparent;
     margin-bottom: 24px;
     border-bottom: 1px solid rgba(40, 30, 20, 0.08);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: background 200ms ease, box-shadow 200ms ease;
     font-size: 15px;
     font-family: Lato, sans-serif;
     display: flex;
@@ -138,6 +136,13 @@ body.ai-hub {
     border-bottom: 2px solid transparent;
     transition: color 150ms ease, border-color 150ms ease;
 }
+/* Once stuck, the white bar runs edge to edge like a second row of the main nav */
+.ai-hub__jump-links.is-stuck {
+    background: #fff;
+    border-bottom-color: transparent;
+    box-shadow: 0 0 0 100vmax #fff, 0 1px 0 100vmax rgba(40, 30, 20, 0.08);
+    clip-path: inset(0 -100vmax -1px -100vmax);
+}
 .ai-hub__jump-links a:hover {
     color: var(--hub-accent);
 }
@@ -145,6 +150,54 @@ body.ai-hub {
     color: var(--hub-accent);
     font-weight: 600;
     border-bottom-color: var(--hub-accent);
+}
+
+/* ===== Soft wash behind the top of every page ===== */
+.ai-hub { position: relative; }
+.ai-hub-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 460px;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    background: linear-gradient(180deg, #FFEEE3 0%, rgba(251, 236, 214, 0.35) 40%, rgba(255, 255, 255, 0) 82%);
+}
+/* Slow drifting color: Ruby Berry and Cool Magenta glows wander across the wash */
+.ai-hub-backdrop::before,
+.ai-hub-backdrop::after {
+    content: "";
+    position: absolute;
+    top: -120px;
+    width: 900px;
+    height: 460px;
+    border-radius: 50%;
+    filter: blur(40px);
+    -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent 85%);
+    mask-image: linear-gradient(180deg, #000 30%, transparent 85%);
+}
+.ai-hub-backdrop::before {
+    left: -10%;
+    background: radial-gradient(closest-side, rgba(192, 66, 159, 0.18), transparent);
+    animation: hub-drift-a 22s ease-in-out infinite alternate;
+}
+.ai-hub-backdrop::after {
+    right: -10%;
+    background: radial-gradient(closest-side, rgba(150, 61, 189, 0.14), transparent);
+    animation: hub-drift-b 28s ease-in-out infinite alternate;
+}
+@keyframes hub-drift-a {
+    from { transform: translateX(0) scale(1); }
+    to { transform: translateX(45vw) scale(1.15); }
+}
+@keyframes hub-drift-b {
+    from { transform: translateX(0) scale(1.1); }
+    to { transform: translateX(-45vw) scale(0.95); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ai-hub-backdrop::before, .ai-hub-backdrop::after { animation: none; }
 }
 
 /* ===== Page Header ===== */
@@ -197,25 +250,47 @@ body.ai-hub {
     gap: 20px;
     margin: 32px 0;
 }
+@property --hub-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+@keyframes hub-spin {
+    from { --hub-angle: 0deg; }
+    to { --hub-angle: 360deg; }
+}
 .ai-hub__card {
-    background: white;
     border-radius: 12px;
-    border: 1px solid rgba(40, 30, 20, 0.06);
-    border-left: 4px solid var(--hub-accent);
+    border: 2px solid transparent;
+    background: linear-gradient(#fff, #fff) padding-box;
     padding: 28px 24px;
     text-decoration: none;
     color: inherit;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    transition: all 200ms ease;
+    transition: box-shadow 200ms ease, transform 200ms ease;
     display: block;
 }
-.ai-hub__card:hover {
+/* Hover: the prompt box's Ruby gradient spins around the stroke */
+.ai-hub__card:hover,
+.ai-hub__card:focus-visible {
+    background:
+        linear-gradient(#fff, #fff) padding-box,
+        conic-gradient(from var(--hub-angle), #C0429F, #E082C0, #FBECD6, #E082C0, #C0429F) border-box;
+    animation: hub-spin 6s linear infinite;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
 }
+@media (prefers-reduced-motion: reduce) {
+    .ai-hub__card:hover, .ai-hub__card:focus-visible { animation: none; transform: none; }
+}
 .ai-hub__card-icon {
-    font-size: 24px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+    display: block;
+}
+.ai-hub__card-icon svg,
+.ai-hub__card-icon img {
+    width: 32px;
+    height: 32px;
     display: block;
 }
 .ai-hub__card-title {

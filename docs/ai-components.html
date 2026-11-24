@@ -401,14 +401,13 @@
         }
 
         /* Do/Don't grid */
-        .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
-        .do-dont__col { padding: 16px; border-radius: 8px; font-family: Lato, sans-serif; }
-        .do-dont__col--do { background: rgba(30, 100, 33, 0.05); border: 1px solid rgba(30, 100, 33, 0.15); }
-        .do-dont__col--dont { background: rgba(197, 93, 39, 0.05); border: 1px solid rgba(197, 93, 39, 0.15); }
-        .do-dont__title { font-size: 15px; font-weight: 700; margin: 0 0 8px; }
-        .do-dont__title--do { color: #1E6421; }
-        .do-dont__title--dont { color: #C55D27; }
-        .do-dont__list { margin: 0; padding-left: 16px; font-size: 14px; color: #4a4a4a; line-height: 1.6; }
+        .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 28px 0 16px; padding-left: 14px; }
+        .do-dont__col { position: relative; background: white; border: 1px solid rgba(40,30,20,0.07); border-bottom: 4px solid #1E6421; border-radius: 10px 10px 4px 4px; padding: 22px 22px 20px 30px; font-family: Lato, sans-serif; }
+        .do-dont__col--dont { border-bottom-color: #C55D27; }
+        .do-dont__badge { position: absolute; top: -14px; left: -14px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; background: #1E6421; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+        .do-dont__col--dont .do-dont__badge { background: #C55D27; }
+        .do-dont__list { margin: 0; padding-left: 18px; font-size: 15px; color: #44403C; line-height: 1.6; display: flex; flex-direction: column; gap: 4px; }
+        @media (max-width: 760px) { .do-dont { grid-template-columns: 1fr; gap: 28px; } }
 
         /* ===== Canvas (Full Page) — Dynamic States ===== */
         .copilot-canvas {
@@ -1514,53 +1513,21 @@
 
         /* Theme Showcase Banner — permanently-expanded rationale + master theme toggle */
         .theme-banner {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-height: 104px;
-            box-sizing: border-box;
-            padding: 20px 24px;
-            border-radius: 12px;
-            border: 1px solid rgba(40, 30, 20, 0.07);
-            border-left: 4px solid var(--glow-accent, #C0429F);
-            background: rgba(192, 66, 159, 0.05);
-            margin: 1.25rem 0;
-            transition: background 300ms ease, border-color 300ms ease;
-        }
-        .theme-banner__header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .theme-banner__title {
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: #78716C;
+            display: flex; align-items: flex-start; gap: 40px;
+            box-sizing: border-box; padding: 48px 56px; margin: 1.25rem 0 2rem;
+            border-radius: 16px; border: 1px solid rgba(40, 30, 20, 0.06);
+            background:
+                radial-gradient(ellipse at 100% 0%, rgba(239, 234, 247, 0.9), transparent 60%),
+                radial-gradient(ellipse at 0% 100%, rgba(255, 238, 227, 0.8), transparent 55%),
+                linear-gradient(160deg, #FEEEF9 0%, #F8F0FB 55%, #FDEFF0 100%);
             font-family: Lato, sans-serif;
         }
-        .theme-banner__body {
-            margin: 0;
-            font-size: 15px;
-            line-height: 1.65;
-            color: #57534E;
-            font-family: Lato, sans-serif;
-            max-width: 68ch;
-            transition: opacity 200ms ease;
-        }
-        .theme-banner__toggle {
-            flex-shrink: 0;
-        }
-        .theme-banner__toggle .demo-btn {
-            font-size: 13px;
-            font-weight: 500;
-            padding: 8px 16px;
-        }
-        /* Theme toggle's own active pill previews the selected theme's tint */
-        #themeToggle .demo-btn--active { background: #FDF4FF; color: #701A75; }
+        .theme-banner__mark { flex: none; }
+        .theme-banner__name { margin: 0; font-size: 44px; font-weight: 700; line-height: 1.1; color: #0A0A0A; letter-spacing: -0.5px; }
+        .theme-banner__title { display: block; margin: 10px 0 14px; font-size: 14px; font-weight: 700; color: #0A0A0A; }
+        .theme-banner__body { margin: 0; font-size: 18px; line-height: 1.6; color: #1C1917; max-width: 62ch; transition: opacity 200ms ease; }
+        .theme-banner__toggle[hidden] { display: none; }
+        @media (max-width: 700px) { .theme-banner { flex-direction: column; align-items: flex-start; gap: 20px; padding: 28px 24px; } .theme-banner__mark { width: 56px; height: 56px; } .theme-banner__name { font-size: 32px; } }
 
         /* Technical Spec — accordion-style collapsible spec items */
         .tech-spec {
@@ -1615,7 +1582,8 @@
             color: #4a4a4a;
             font-family: Lato, sans-serif;
         }
-    </style>
+        .ic { display: inline-block; vertical-align: -0.125em; flex: none; }
+</style>
 </head>
 <body class="ai-hub">
     <nav class="ai-hub__nav">
@@ -1629,6 +1597,8 @@
         </div>
         </div>
     </nav>
+    <div class="ai-hub-backdrop" aria-hidden="true"></div>
+
     <main class="ai-hub__content">
         <div class="ai-hub__jump-links">
             <a href="#prompt-box">Prompt Box</a>
@@ -1640,7 +1610,7 @@
         </div>
         <div class="ai-hub__header">
             <h1 class="ai-hub__title">Glow Prompt Box</h1>
-            <p class="ai-hub__subtitle">Interactive AI input component with animated states, multiple layouts, and swappable color themes. The primary interface for all Glow AI interactions across Rosewood products.</p>
+            <p class="ai-hub__subtitle">Interactive AI input component with animated states and multiple layouts. The primary interface for all Glow AI interactions across Rosewood products.</p>
         </div>
 
                     <!-- ===== Interactive Playground ===== -->
@@ -1648,14 +1618,10 @@
                     <section id="prompt-box" class="section">
                         <h2 class="heading-2">Interactive Playground</h2>
 
-                        <div class="theme-banner" id="themeBanner">
-                            <div class="theme-banner__header">
-                                <span class="theme-banner__title">Theme Rationale</span>
-                                <div class="theme-banner__toggle demo-controls__buttons theme-live" id="themeToggle" data-theme="ruby">
-                                    <button class="demo-btn demo-btn--active" data-control="theme" data-value="ruby">Ruby Berry</button>
-                                </div>
+                        <div id="themeBanner" hidden>
+                            <div class="theme-banner__toggle demo-controls__buttons theme-live" id="themeToggle" data-theme="ruby" hidden>
+                                <button class="demo-btn demo-btn--active" data-control="theme" data-value="ruby">Ruby Berry</button>
                             </div>
-                            <p class="theme-banner__body" id="themeBannerBody">While our core platform is built on the stability and seriousness of Rosewood Blue, Ruby Berry represents Glow's proactive, high-energy intelligence &mdash; a warm, vibrant tone signaling a transformative AI partner.</p>
                         </div>
 
                         <div class="demo-controls theme-live" id="demoControls" data-theme="ruby">
@@ -1722,7 +1688,7 @@
 
                         <!-- ===== Interactive States Showcase ===== -->
                         <h3 class="heading-3" style="margin-top:32px;">Interactive States Showcase</h3>
-                        <p class="text-body">Live-rendered against the active theme above &mdash; switch Theme to see every state re-skin instantly.</p>
+                        <p class="text-body">Every state of the prompt box, live-rendered.</p>
 
                         <svg style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">
                             <defs>
@@ -1972,7 +1938,7 @@
                                                 <div class="glow-rec-card__header">Extend Shift Coverage</div>
                                                 <div class="glow-rec-card__body">Adding 2 hours to the afternoon shift would cover the 2&ndash;4 PM peak demand.</div>
                                                 <div class="glow-rec-card__actions">
-                                                    <button class="glow-rec-card__btn glow-rec-card__btn--apply">&#10003; Applied</button>
+                                                    <button class="glow-rec-card__btn glow-rec-card__btn--apply"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Applied</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -2028,24 +1994,24 @@
 
                         <h3 class="heading-3">Do / Don't</h3>
                         <div class="do-dont">
-                            <div class="do-dont__col do-dont__col--do">
-                                <div class="do-dont__title do-dont__title--do">&#10003; Do</div>
-                                <ul class="do-dont__list">
-                                    <li>Use chips for quick, contextual AI prompts</li>
-                                    <li>Use cards when the recommendation needs rationale</li>
-                                    <li>Limit chips to 4 max per context</li>
-                                    <li>Show "Applied" confirmation with green tint</li>
-                                    <li>Keep dismissed cards visible but faded</li>
-                                </ul>
-                            </div>
                             <div class="do-dont__col do-dont__col--dont">
-                                <div class="do-dont__title do-dont__title--dont">&#10007; Don't</div>
+                                <span class="do-dont__badge" role="img" aria-label="Don't"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
                                 <ul class="do-dont__list">
                                     <li>Use cards for simple navigation tasks (use chips)</li>
                                     <li>Show more than 4 chips — causes decision paralysis</li>
                                     <li>Use chips without the Sparkle prefix</li>
                                     <li>Auto-dismiss cards without user action</li>
                                     <li>Mix chip and card styles in the same row</li>
+                                </ul>
+                            </div>
+                            <div class="do-dont__col do-dont__col--do">
+                                <span class="do-dont__badge" role="img" aria-label="Do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+                                <ul class="do-dont__list">
+                                    <li>Use chips for quick, contextual AI prompts</li>
+                                    <li>Use cards when the recommendation needs rationale</li>
+                                    <li>Limit chips to 4 max per context</li>
+                                    <li>Show "Applied" confirmation with green tint</li>
+                                    <li>Keep dismissed cards visible but faded</li>
                                 </ul>
                             </div>
                         </div>
@@ -2112,24 +2078,24 @@
                                 </table>
                                 <p class="spec-card__specs-label">Do / Don't</p>
                                 <div class="do-dont">
-                                    <div class="do-dont__col do-dont__col--do">
-                                        <div class="do-dont__title do-dont__title--do">&#10003; Do</div>
-                                        <ul class="do-dont__list">
-                                            <li>Always place bottom-right with 16px clearance</li>
-                                            <li>Use the white Glow mark icon on the ruby background</li>
-                                            <li>Animate the icon only — not the container</li>
-                                            <li>Hide the FAB when Glow is open/expanded</li>
-                                            <li>Maintain a minimum 56px tap target</li>
-                                        </ul>
-                                    </div>
                                     <div class="do-dont__col do-dont__col--dont">
-                                        <div class="do-dont__title do-dont__title--dont">&#10007; Don't</div>
+                                        <span class="do-dont__badge" role="img" aria-label="Don't"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
                                         <ul class="do-dont__list">
                                             <li>Change the FAB colour or use a non-ruby background</li>
                                             <li>Place FAB on top of navigation bars or CTAs</li>
                                             <li>Resize the FAB below 56px</li>
                                             <li>Use a text label inside the FAB</li>
                                             <li>Show more than one FAB on a screen</li>
+                                        </ul>
+                                    </div>
+                                    <div class="do-dont__col do-dont__col--do">
+                                        <span class="do-dont__badge" role="img" aria-label="Do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+                                        <ul class="do-dont__list">
+                                            <li>Always place bottom-right with 16px clearance</li>
+                                            <li>Use the white Glow mark icon on the ruby background</li>
+                                            <li>Animate the icon only — not the container</li>
+                                            <li>Hide the FAB when Glow is open/expanded</li>
+                                            <li>Maintain a minimum 56px tap target</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -3018,7 +2984,7 @@ promptBox.addEventListener('glow-prompt-submit', (e) =&gt; {
 
             // Theme Showcase Banner — permanently-visible rationale
             var rationaleCopy = {
-                ruby: "While our core platform is built on the stability and seriousness of Rosewood Blue, Ruby Berry represents Glow's proactive, high-energy intelligence — a warm, vibrant tone signaling a transformative AI partner."
+                ruby: "While our core platform is built on the stability and seriousness of Rosewood Blue, Ruby Berry represents Glow's proactive, high-energy intelligence. It's a warm, vibrant tone that signals a transformative AI partner."
             };
             var banner = document.getElementById('themeBanner');
             var bannerBody = document.getElementById('themeBannerBody');
@@ -3031,8 +2997,6 @@ promptBox.addEventListener('glow-prompt-submit', (e) =&gt; {
                         bannerBody.style.opacity = '1';
                     }
                 }, 200);
-                banner.style.background = bgColors[theme] || bgColors.ruby;
-                banner.style.borderLeftColor = accent;
             }
         }
 
@@ -3237,5 +3201,16 @@ promptBox.addEventListener('glow-prompt-submit', (e) =&gt; {
         }
     })();
     </script>
+<script>
+/* Sub nav sits clear on the wash, gets a white bar once it sticks */
+(function () {
+    var bar = document.querySelector('.ai-hub__jump-links');
+    if (!bar) return;
+    var start = bar.getBoundingClientRect().top + window.scrollY - 46;
+    function check() { bar.classList.toggle('is-stuck', window.scrollY > start - 1); }
+    window.addEventListener('scroll', check, { passive: true });
+    check();
+})();
+</script>
 </body>
 </html>
