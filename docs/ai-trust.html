@@ -128,19 +128,14 @@
         }
 
         /* --- Anti-Patterns: Do / Don't pairs --- */
-        .tg-antipattern { margin-bottom: 28px; }
+        .tg-antipattern { margin-bottom: 36px; }
         .tg-antipattern:last-child { margin-bottom: 0; }
-        .tg-antipattern__title { font-size: 15px; font-weight: 700; color: #1C1917; margin: 0 0 10px; }
-        .tg-antipattern__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .tg-ap-card { border-radius: 12px; padding: 20px; border: 1px solid; }
-        .tg-ap-card--dont { background: rgba(155, 44, 44, 0.045); border-color: rgba(155, 44, 44, 0.18); }
-        .tg-ap-card--do { background: rgba(30, 100, 33, 0.045); border-color: rgba(30, 100, 33, 0.18); }
-        .tg-ap-card__tag {
-            display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px;
-        }
-        .tg-ap-card--dont .tg-ap-card__tag { color: #9B2C2C; }
-        .tg-ap-card--do .tg-ap-card__tag { color: #1E6421; }
+        .tg-antipattern__title { font-size: 16px; font-weight: 700; color: #1C1917; margin: 0 0 24px; }
+        .tg-antipattern__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding-left: 14px; }
+        .tg-ap-card { position: relative; background: white; border: 1px solid rgba(40,30,20,0.07); border-bottom: 4px solid #1E6421; border-radius: 10px 10px 4px 4px; padding: 22px 22px 20px 30px; }
+        .tg-ap-card--dont { border-bottom-color: #C55D27; }
+        .tg-ap-card__badge { position: absolute; top: -14px; left: -14px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; background: #1E6421; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+        .tg-ap-card--dont .tg-ap-card__badge { background: #C55D27; }
         .tg-ap-card__body { font-size: 15px; color: #44403C; line-height: 1.55; margin: 0; }
 
         /* --- Feature Checklist --- */
@@ -334,11 +329,11 @@
                 <h3 class="tg-antipattern__title">Overconfident AI</h3>
                 <div class="tg-antipattern__pair">
                     <div class="tg-ap-card tg-ap-card--dont">
-                        <div class="tg-ap-card__tag"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg> Don't</div>
+                        <span class="tg-ap-card__badge" role="img" aria-label="Don't"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
                         <p class="tg-ap-card__body">Present AI outputs without confidence indicators, making users assume 100% accuracy.</p>
                     </div>
                     <div class="tg-ap-card tg-ap-card--do">
-                        <div class="tg-ap-card__tag"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Do</div>
+                        <span class="tg-ap-card__badge" role="img" aria-label="Do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
                         <p class="tg-ap-card__body">Always show confidence level. Use the 3-tier scale. Never hide uncertainty.</p>
                     </div>
                 </div>
@@ -348,11 +343,11 @@
                 <h3 class="tg-antipattern__title">Black Box Responses</h3>
                 <div class="tg-antipattern__pair">
                     <div class="tg-ap-card tg-ap-card--dont">
-                        <div class="tg-ap-card__tag"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg> Don't</div>
+                        <span class="tg-ap-card__badge" role="img" aria-label="Don't"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
                         <p class="tg-ap-card__body">Provide answers without explaining reasoning or data sources.</p>
                     </div>
                     <div class="tg-ap-card tg-ap-card--do">
-                        <div class="tg-ap-card__tag"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Do</div>
+                        <span class="tg-ap-card__badge" role="img" aria-label="Do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
                         <p class="tg-ap-card__body">Include "Why?" expandable sections. Link to source data. Show the reasoning chain.</p>
                     </div>
                 </div>
@@ -362,11 +357,11 @@
                 <h3 class="tg-antipattern__title">Unrecoverable Actions</h3>
                 <div class="tg-antipattern__pair">
                     <div class="tg-ap-card tg-ap-card--dont">
-                        <div class="tg-ap-card__tag"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg> Don't</div>
+                        <span class="tg-ap-card__badge" role="img" aria-label="Don't"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
                         <p class="tg-ap-card__body">Execute irreversible actions (sending emails, deleting records) without confirmation.</p>
                     </div>
                     <div class="tg-ap-card tg-ap-card--do">
-                        <div class="tg-ap-card__tag"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Do</div>
+                        <span class="tg-ap-card__badge" role="img" aria-label="Do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
                         <p class="tg-ap-card__body">Always require explicit confirmation for destructive actions. Use "Review before sending" patterns.</p>
                     </div>
                 </div>
@@ -376,11 +371,11 @@
                 <h3 class="tg-antipattern__title">Notification Overload</h3>
                 <div class="tg-antipattern__pair">
                     <div class="tg-ap-card tg-ap-card--dont">
-                        <div class="tg-ap-card__tag"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg> Don't</div>
+                        <span class="tg-ap-card__badge" role="img" aria-label="Don't"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
                         <p class="tg-ap-card__body">Generate too many suggestions at once, overwhelming the user.</p>
                     </div>
                     <div class="tg-ap-card tg-ap-card--do">
-                        <div class="tg-ap-card__tag"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Do</div>
+                        <span class="tg-ap-card__badge" role="img" aria-label="Do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
                         <p class="tg-ap-card__body">Use progressive disclosure. Show the top 1&ndash;3 suggestions, hide the rest behind "Show more."</p>
                     </div>
                 </div>
