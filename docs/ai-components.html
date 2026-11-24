@@ -401,14 +401,13 @@
         }
 
         /* Do/Don't grid */
-        .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
-        .do-dont__col { padding: 16px; border-radius: 8px; font-family: Lato, sans-serif; }
-        .do-dont__col--do { background: rgba(30, 100, 33, 0.05); border: 1px solid rgba(30, 100, 33, 0.15); }
-        .do-dont__col--dont { background: rgba(197, 93, 39, 0.05); border: 1px solid rgba(197, 93, 39, 0.15); }
-        .do-dont__title { font-size: 15px; font-weight: 700; margin: 0 0 8px; }
-        .do-dont__title--do { color: #1E6421; }
-        .do-dont__title--dont { color: #C55D27; }
-        .do-dont__list { margin: 0; padding-left: 16px; font-size: 14px; color: #4a4a4a; line-height: 1.6; }
+        .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 28px 0 16px; padding-left: 14px; }
+        .do-dont__col { position: relative; background: white; border: 1px solid rgba(40,30,20,0.07); border-bottom: 4px solid #1E6421; border-radius: 10px 10px 4px 4px; padding: 22px 22px 20px 30px; font-family: Lato, sans-serif; }
+        .do-dont__col--dont { border-bottom-color: #C55D27; }
+        .do-dont__badge { position: absolute; top: -14px; left: -14px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; background: #1E6421; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+        .do-dont__col--dont .do-dont__badge { background: #C55D27; }
+        .do-dont__list { margin: 0; padding-left: 18px; font-size: 15px; color: #44403C; line-height: 1.6; display: flex; flex-direction: column; gap: 4px; }
+        @media (max-width: 760px) { .do-dont { grid-template-columns: 1fr; gap: 28px; } }
 
         /* ===== Canvas (Full Page) — Dynamic States ===== */
         .copilot-canvas {
@@ -2029,24 +2028,24 @@
 
                         <h3 class="heading-3">Do / Don't</h3>
                         <div class="do-dont">
-                            <div class="do-dont__col do-dont__col--do">
-                                <div class="do-dont__title do-dont__title--do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Do</div>
-                                <ul class="do-dont__list">
-                                    <li>Use chips for quick, contextual AI prompts</li>
-                                    <li>Use cards when the recommendation needs rationale</li>
-                                    <li>Limit chips to 4 max per context</li>
-                                    <li>Show "Applied" confirmation with green tint</li>
-                                    <li>Keep dismissed cards visible but faded</li>
-                                </ul>
-                            </div>
                             <div class="do-dont__col do-dont__col--dont">
-                                <div class="do-dont__title do-dont__title--dont"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg> Don't</div>
+                                <span class="do-dont__badge" role="img" aria-label="Don't"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
                                 <ul class="do-dont__list">
                                     <li>Use cards for simple navigation tasks (use chips)</li>
                                     <li>Show more than 4 chips — causes decision paralysis</li>
                                     <li>Use chips without the Sparkle prefix</li>
                                     <li>Auto-dismiss cards without user action</li>
                                     <li>Mix chip and card styles in the same row</li>
+                                </ul>
+                            </div>
+                            <div class="do-dont__col do-dont__col--do">
+                                <span class="do-dont__badge" role="img" aria-label="Do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+                                <ul class="do-dont__list">
+                                    <li>Use chips for quick, contextual AI prompts</li>
+                                    <li>Use cards when the recommendation needs rationale</li>
+                                    <li>Limit chips to 4 max per context</li>
+                                    <li>Show "Applied" confirmation with green tint</li>
+                                    <li>Keep dismissed cards visible but faded</li>
                                 </ul>
                             </div>
                         </div>
@@ -2113,24 +2112,24 @@
                                 </table>
                                 <p class="spec-card__specs-label">Do / Don't</p>
                                 <div class="do-dont">
-                                    <div class="do-dont__col do-dont__col--do">
-                                        <div class="do-dont__title do-dont__title--do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Do</div>
-                                        <ul class="do-dont__list">
-                                            <li>Always place bottom-right with 16px clearance</li>
-                                            <li>Use the white Glow mark icon on the ruby background</li>
-                                            <li>Animate the icon only — not the container</li>
-                                            <li>Hide the FAB when Glow is open/expanded</li>
-                                            <li>Maintain a minimum 56px tap target</li>
-                                        </ul>
-                                    </div>
                                     <div class="do-dont__col do-dont__col--dont">
-                                        <div class="do-dont__title do-dont__title--dont"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg> Don't</div>
+                                        <span class="do-dont__badge" role="img" aria-label="Don't"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
                                         <ul class="do-dont__list">
                                             <li>Change the FAB colour or use a non-ruby background</li>
                                             <li>Place FAB on top of navigation bars or CTAs</li>
                                             <li>Resize the FAB below 56px</li>
                                             <li>Use a text label inside the FAB</li>
                                             <li>Show more than one FAB on a screen</li>
+                                        </ul>
+                                    </div>
+                                    <div class="do-dont__col do-dont__col--do">
+                                        <span class="do-dont__badge" role="img" aria-label="Do"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+                                        <ul class="do-dont__list">
+                                            <li>Always place bottom-right with 16px clearance</li>
+                                            <li>Use the white Glow mark icon on the ruby background</li>
+                                            <li>Animate the icon only — not the container</li>
+                                            <li>Hide the FAB when Glow is open/expanded</li>
+                                            <li>Maintain a minimum 56px tap target</li>
                                         </ul>
                                     </div>
                                 </div>
